@@ -35,8 +35,8 @@ import {
   findBestBoardCombination,
   selectAICards,
 } from './engine/poker';
+import feltTableImage from './assets/images/memory_poker_felt_table_1794895838152.jpg';
 
-const FELT_TABLE_IMAGE = '/src/assets/images/memory_poker_felt_table_1794895838152.jpg';
 const MEMORIZE_SECONDS = 20;
 
 type GameShell = 'TITLE_MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER';
@@ -453,7 +453,7 @@ export default function App() {
       <div className="pointer-events-none fixed inset-0 z-0">
         {!bgFailed && (
           <img
-            src={FELT_TABLE_IMAGE}
+            src={feltTableImage}
             alt="에메랄드 펠트 카드 테이블 배경"
             referrerPolicy="no-referrer"
             onError={() => setBgFailed(true)}
