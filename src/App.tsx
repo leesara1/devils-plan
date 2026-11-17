@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import feltTableImage from './assets/images/memory_poker_felt_table_1794895838152.jpg';
+import arenaBackdrop from './assets/images/obsidian_brass_arena_1794918534030.jpg';
 import { GAMES_REGISTRY } from './games/registry';
+import { loadCareerStats } from './games/memory-poker/engine/stats';
 
 export default function App() {
   const [activeGameId, setActiveGameId] = useState<string | null>(null);
   const [bgFailed, setBgFailed] = useState(false);
+
+  const memoryStats = useMemo(() => {
+    const stats = loadCareerStats();
+    const totalAi = stats.ai.p1Wins + stats.ai.opponentWins + stats.ai.draws;
+    const total2p = stats.local2p.p1Wins + stats.local2p.opponentWins + stats.local2p.draws;
+    return {
+      totalRounds: totalAi + total2p,
+      aiWins: stats.ai.p1Wins,
+      aiTotal: totalAi,
+    };
+  }, [activeGameId]);
 
   const activeGame = activeGameId
     ? GAMES_REGISTRY.find((game) => game.id === activeGameId) ?? null
@@ -17,88 +29,100 @@ export default function App() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#061c13] text-[#f5f3ee] flex flex-col">
-      {/* Felt Table Backdrop */}
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#090a0f] text-[#f3f1ec] flex flex-col">
+      {/* Architectural Obsidian & Brass Lounge Backdrop */}
       <div className="pointer-events-none fixed inset-0 z-0">
         {!bgFailed && (
           <img
-            src={feltTableImage}
-            alt="에메랄드 펠트 게임 테이블 배경"
+            src={arenaBackdrop}
+            alt="옵시디언과 브러시드 골드 전략 게임 테이블 배경"
             referrerPolicy="no-referrer"
             onError={() => setBgFailed(true)}
-            className="w-full h-full object-cover opacity-50"
+            className="w-full h-full object-cover opacity-45"
           />
         )}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(circle at 50% 35%, rgba(11, 59, 39, 0.42) 0%, rgba(5, 22, 15, 0.9) 72%, rgba(3, 14, 9, 0.98) 100%)',
+              'radial-gradient(circle at 50% 35%, rgba(20, 25, 38, 0.35) 0%, rgba(9, 10, 15, 0.88) 70%, rgba(7, 8, 12, 0.98) 100%)',
           }}
         />
       </div>
 
-      {/* Main Game Selection Hub */}
-      <main className="relative z-10 flex-1 flex flex-col justify-between max-w-5xl w-full mx-auto px-6 py-10 sm:px-10 sm:py-14">
-        <div className="my-auto space-y-10">
-          {/* Hub Header */}
-          <header className="space-y-4">
+      {/* Main Game Lounge Hub */}
+      <main className="relative z-10 flex-1 flex flex-col justify-between max-w-6xl w-full mx-auto px-6 py-8 sm:px-10 sm:py-12">
+        {/* Clean Minimal Top Bar */}
+        <div className="flex items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <span className="font-mono-tabular text-xs font-semibold tracking-[0.22em] text-[#d4af37]">
+            DEVIL&apos;S PLAN ARCHIVE
+          </span>
+          <span className="font-mono-tabular text-xs text-slate-400">
+            {memoryStats.totalRounds > 0
+              ? `누적 플레이 ${memoryStats.totalRounds}라운드`
+              : '게임 라운지'}
+          </span>
+        </div>
+
+        {/* Central Hero & Game Selector */}
+        <div className="my-auto py-8 space-y-10">
+          <header className="space-y-4 max-w-2xl">
             <svg
-              viewBox="0 0 420 90"
-              className="w-full max-w-[380px] h-auto"
+              viewBox="0 0 460 94"
+              className="w-full max-w-[430px] h-auto"
               role="img"
-              aria-label="데블스 플랜 게임 아케이드"
+              aria-label="데블스 플랜 두뇌 게임 라운지"
             >
-              <g transform="translate(4, 8)">
+              {/* Golden Piece Emblem */}
+              <g transform="translate(4, 9)">
                 <polygon
-                  points="32,4 58,20 58,52 32,68 6,52 6,20"
-                  fill="#0b281c"
-                  stroke="#d97706"
+                  points="36,2 68,20 68,56 36,74 4,56 4,20"
+                  fill="#131620"
+                  stroke="#d4af37"
                   strokeWidth="2"
                 />
-                <text
-                  x="32"
-                  y="44"
-                  textAnchor="middle"
-                  fill="#fef3c7"
-                  fontSize="24"
-                  fontWeight="700"
-                  fontFamily="Fraunces, serif"
-                >
-                  ♠
-                </text>
+                <polygon
+                  points="36,11 60,25 60,51 36,65 12,51 12,25"
+                  fill="none"
+                  stroke="#f3e2a6"
+                  strokeOpacity="0.35"
+                  strokeWidth="1"
+                />
+                <polygon points="36,24 48,38 36,52 24,38" fill="#d4af37" />
               </g>
+
               <text
-                x="82"
-                y="45"
-                fill="#fef3c7"
-                fontSize="36"
+                x="92"
+                y="48"
+                fill="#f8f4e8"
+                fontSize="38"
                 fontWeight="700"
                 fontFamily="Fraunces, Noto Sans KR, serif"
                 letterSpacing="-0.02em"
               >
-                게임 컬렉션
+                브레인 게임 라운지
               </text>
+              <line x1="94" y1="60" x2="380" y2="60" stroke="#d4af37" strokeOpacity="0.38" strokeWidth="1" />
               <text
-                x="84"
-                y="70"
-                fill="#a7f3d0"
-                fontSize="13"
+                x="94"
+                y="80"
+                fill="#94a3b8"
+                fontSize="12"
                 fontWeight="600"
                 fontFamily="Plus Jakarta Sans, sans-serif"
-                letterSpacing="0.2em"
+                letterSpacing="0.24em"
               >
-                STRATEGY &amp; MEMORY GAMES
+                PSYCHOLOGICAL &amp; MEMORY MATCHES
               </text>
             </svg>
 
-            <p className="max-w-xl text-sm sm:text-base text-emerald-100/85 leading-relaxed text-pretty">
-              플레이할 게임을 선택하세요. 각 게임은 독립된 모듈로 구성되어 새로운 게임이 계속 추가됩니다.
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed text-pretty">
+              기억력과 추리, 수 싸움으로 승부하는 두뇌 게임 아카이브입니다. 입장할 매치를 선택하세요.
             </p>
           </header>
 
-          {/* Game Launcher Grid */}
-          <section aria-label="게임 목록" className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Game Launcher Cards */}
+          <section aria-label="매치 선택" className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {GAMES_REGISTRY.map((game) => {
               const isPlayable = game.status === 'playable';
               return (
@@ -107,46 +131,65 @@ export default function App() {
                   type="button"
                   onClick={() => setActiveGameId(game.id)}
                   className={[
-                    'group text-left rounded-2xl p-6 sm:p-7 border transition-all duration-150 flex flex-col justify-between gap-6 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
+                    'group relative text-left rounded-2xl p-6 sm:p-7 transition-all duration-150 flex flex-col justify-between gap-7 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e5c158]',
                     isPlayable
-                      ? 'bg-[#082419]/92 border-emerald-600/60 hover:border-amber-400/75 hover:-translate-y-0.5 shadow-xl'
-                      : 'bg-[#071c14]/75 border-emerald-800/55 hover:border-emerald-600/70 hover:-translate-y-0.5',
+                      ? 'obsidian-panel hover:border-[#e5c158]/70 hover:-translate-y-0.5'
+                      : 'bg-[#101218]/85 border border-slate-700/45 hover:border-slate-500/60 hover:-translate-y-0.5',
                   ].join(' ')}
                 >
+                  {/* Architectural Corner Brackets */}
+                  <span
+                    aria-hidden="true"
+                    className={[
+                      'pointer-events-none absolute top-3 left-3 w-3 h-3 border-t border-l',
+                      isPlayable ? 'border-[#d4af37]/60' : 'border-slate-600/50',
+                    ].join(' ')}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className={[
+                      'pointer-events-none absolute bottom-3 right-3 w-3 h-3 border-b border-r',
+                      isPlayable ? 'border-[#d4af37]/60' : 'border-slate-600/50',
+                    ].join(' ')}
+                  />
+
                   <div className="space-y-3">
-                    {/* Unboxed editorial metadata */}
                     <div className="flex items-center justify-between gap-3 text-xs">
-                      <span className="font-mono-tabular font-bold text-amber-300">
-                        {game.indexLabel}. {game.titleEn}
+                      <span className="font-mono-tabular font-semibold tracking-wider text-[#e5c158]">
+                        MATCH {game.indexLabel} · {game.titleEn}
                       </span>
-                      <span className={isPlayable ? 'text-emerald-300 font-semibold' : 'text-emerald-400/70'}>
-                        {isPlayable ? '플레이 가능' : '개발 준비 중'}
+                      <span className={isPlayable ? 'text-sky-300 font-semibold' : 'text-slate-400'}>
+                        {isPlayable ? '입장 가능' : '개발 준비 중'}
                       </span>
                     </div>
 
-                    <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">
+                    <h2 className="font-display text-2xl sm:text-3xl font-bold text-[#faf6ea]">
                       {game.titleKo}
                     </h2>
 
-                    <p className="text-sm text-emerald-100/80 leading-relaxed">
+                    <p className="text-sm text-slate-300/90 leading-relaxed">
                       {game.description}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-emerald-800/50 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 text-xs text-emerald-200/75">
+                  <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-xs text-slate-400 font-mono-tabular">
                       <span>{game.playersLabel}</span>
                       <span aria-hidden="true">·</span>
-                      <span>{game.durationLabel}</span>
+                      <span>
+                        {game.id === 'memory-poker' && memoryStats.aiTotal > 0
+                          ? `AI전 ${memoryStats.aiWins}/${memoryStats.aiTotal}승`
+                          : game.durationLabel}
+                      </span>
                     </div>
 
                     <span
                       className={[
                         'inline-flex items-center gap-1.5 text-sm font-bold whitespace-nowrap transition-transform duration-150 group-hover:translate-x-0.5',
-                        isPlayable ? 'text-amber-300' : 'text-emerald-200/80',
+                        isPlayable ? 'text-[#f3e2a6]' : 'text-slate-300',
                       ].join(' ')}
                     >
-                      {isPlayable ? '게임 시작' : '슬롯 열기'}
+                      {isPlayable ? '매치 입장' : '슬롯 확인'}
                       <ArrowRight className="w-4 h-4" />
                     </span>
                   </div>
@@ -156,8 +199,9 @@ export default function App() {
           </section>
         </div>
 
-        <footer className="pt-8 text-xs text-emerald-300/60">
-          게임을 선택해 바로 플레이하거나 새 게임 슬롯을 확장할 수 있습니다.
+        <footer className="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+          <span>매치를 선택하면 전용 아레나로 이동합니다</span>
+          <span className="font-mono-tabular">Click to Enter · Esc to Pause</span>
         </footer>
       </main>
     </div>
