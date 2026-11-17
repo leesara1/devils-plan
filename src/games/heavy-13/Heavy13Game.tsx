@@ -24,6 +24,7 @@ import {
 import arenaBackdrop from '../../assets/images/obsidian_brass_arena_1794918534030.jpg';
 import { GameScreenProps } from '../types';
 import { heavy13Sound } from './audio/heavy13Sound';
+import { Heavy13HistoryPanel } from './components/Heavy13HistoryPanel';
 import {
   ChipTokenButton,
   PedestalStation,
@@ -41,6 +42,7 @@ import {
   PedestalColor,
   PedestalsState,
   PlacementEventLog,
+  PlayerCount,
   PlayerState,
   ROCK_NUMBERS,
   RockNumber,
@@ -83,15 +85,19 @@ const PLAYER_CHART_COLORS = [
   'var(--color-lounge-sky-400)',
   'var(--color-rival-400)',
   '#34d399',
+  '#c084fc',
+  '#fb923c',
+  '#2dd4bf',
 ];
 
 export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   // Shell & Configuration
   const [shell, setShell] = useState<GameShell>('TITLE_MENU');
   const [mode, setMode] = useState<GameMode>('ai');
-  const [playerCount, setPlayerCount] = useState<3 | 4>(4);
+  const [playerCount, setPlayerCount] = useState<PlayerCount>(4);
   const [startingSeatChoice, setStartingSeatChoice] = useState<number>(0);
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('hard');
+  const [memoryMode, setMemoryMode] = useState(false);
   const [muted, setMuted] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
   const [bgFailed, setBgFailed] = useState(false);
@@ -181,15 +187,16 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
         : Array.from({ length: playerCount }, (_, idx) => idx);
 
     const initialPlayers = createInitialPlayers(playerCount, humanSeats, mode);
+    const randomFirstSeat = Math.floor(Math.random() * playerCount);
     cubeCounterRef.current = 0;
 
     setPlayers(initialPlayers);
     setPedestals(createEmptyPedestals());
-    setFirstPlayerSeat(0); // Seat 0 holds 1R First Player marker
+    setFirstPlayerSeat(randomFirstSeat);
     setPenaltySeq(0);
     setRoundHistory([]);
     setShell('PLAYING');
-    startRound(1, initialPlayers, 0);
+    startRound(1, initialPlayers, randomFirstSeat);
   }, [mode, playerCount, startingSeatChoice, startRound]);
 
   // Helper to commit a human submission and advance either to next human or AI + Reveal
@@ -232,7 +239,15 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       const finalSubmissions: Record<string, SecretSubmission> = { ...nextSubmissions };
       const finalPlayers = updatedPlayers.map((p) => {
         if (p.isHuman) return p;
-        const aiSub = chooseAISubmission(p, pedestals, roundNumber, aiDifficulty);
+        const aiSub = chooseAISubmission(
+          p,
+          players,
+          roundHistory,
+          pedestals,
+          firstPlayerSeat,
+          roundNumber,
+          aiDifficulty
+        );
         finalSubmissions[p.id] = aiSub;
         return {
           ...p,
@@ -250,7 +265,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       heavy13Sound.playReveal();
       setPhase('REVEAL_CHIPS');
     },
-    [players, submissions, humanSubmitQueue, pedestals, roundNumber, aiDifficulty]
+    [players, submissions, humanSubmitQueue, roundHistory, pedestals, firstPlayerSeat, roundNumber, aiDifficulty]
   );
 
   const handleConfirmSubmission = useCallback(() => {
@@ -277,35 +292,28 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     return () => cancelAnimationFrame(rafId);
   }, [shell, phase, rulesOpen]);
 
-  // Auto-submit if 3-minute timer expires
+  // Auto-submit random remaining card & chip if 3-minute timer expires
   useEffect(() => {
     if (shell !== 'PLAYING' || phase !== 'SUBMISSION') return;
     if (submitTimeLeftMs > 0 || !currentSubmittingPlayer) return;
 
-    const fallbackCard =
-      selectedCard !== null && currentSubmittingPlayer.cards.includes(selectedCard)
-        ? selectedCard
-        : currentSubmittingPlayer.cards[0];
+    const remainingCards = currentSubmittingPlayer.cards;
     const availableChips = getAvailableChipTypes(currentSubmittingPlayer.chips);
-    const fallbackChip =
-      selectedChip !== null && currentSubmittingPlayer.chips[selectedChip] > 0
-        ? selectedChip
-        : availableChips[0];
 
-    if (fallbackCard !== undefined && fallbackChip !== undefined) {
-      commitHumanSubmission(currentSubmittingPlayer, fallbackCard, fallbackChip);
+    if (remainingCards.length > 0 && availableChips.length > 0) {
+      const randomCard = remainingCards[Math.floor(Math.random() * remainingCards.length)];
+      const randomChip = availableChips[Math.floor(Math.random() * availableChips.length)];
+      commitHumanSubmission(currentSubmittingPlayer, randomCard, randomChip);
     }
   }, [
     shell,
     phase,
     submitTimeLeftMs,
     currentSubmittingPlayer,
-    selectedCard,
-    selectedChip,
     commitHumanSubmission,
   ]);
 
-  // Staged reveal: Chips -> Cards -> Placement Step
+  // Staged reveal: Chips (2.5s) -> Cards -> Placement Step
   useEffect(() => {
     if (shell !== 'PLAYING' || rulesOpen) return;
 
@@ -313,7 +321,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       const timer = window.setTimeout(() => {
         heavy13Sound.playReveal();
         setPhase('REVEAL_CARDS');
-      }, 950);
+      }, 2500);
       return () => window.clearTimeout(timer);
     }
 
@@ -378,6 +386,8 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
         ...prev,
         {
           roundNumber,
+          submissionsByPlayer: submissions,
+          passedPlayerIds: passedThisRoundIds,
           penaltiesByPlayer: nextRoundPenalties,
           cumulativeByPlayer,
           firstPlayerIdBefore: prevFirstPlayerObj?.id ?? nextPlayers[0].id,
@@ -395,7 +405,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
         heavy13Sound.playMatchEnd();
       }
     },
-    [firstPlayerSeat, roundNumber]
+    [firstPlayerSeat, roundNumber, submissions, passedThisRoundIds]
   );
 
   // Execute a Pass or Place for the head of placementQueue
@@ -410,7 +420,13 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       const remainingQueue = placementQueue.slice(1);
 
       if (action === 'PASS') {
-        if (head.isDeferredPass || passedThisRoundIds.includes(actor.id)) return;
+        if (
+          head.isDeferredPass ||
+          passedThisRoundIds.includes(actor.id) ||
+          placementQueue.length <= 1
+        ) {
+          return;
+        }
         heavy13Sound.playPass();
 
         const logEntry: PlacementEventLog = {
@@ -537,18 +553,18 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     if (!activePlacementEntry || !activePlacementPlayer || activePlacementPlayer.isHuman) return;
 
     const timer = window.setTimeout(() => {
-      const remainingUnplaced = [...placementQueue.slice(1), ...deferredPassStack];
+      const remainingInitialQueue = placementQueue.slice(1);
       const canPass =
         !activePlacementEntry.isDeferredPass &&
         !passedThisRoundIds.includes(activePlacementPlayer.id) &&
-        remainingUnplaced.length > 0;
+        remainingInitialQueue.length > 0;
 
       if (activePlacementEntry.chip === 'rainbow') {
         const decision = chooseAIRainbowDecision(
           pedestals,
           activePlacementEntry.card,
           canPass,
-          remainingUnplaced,
+          remainingInitialQueue,
           aiDifficulty
         );
         if (decision.shouldPass && canPass) {
@@ -561,7 +577,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
 
       if (
         canPass &&
-        shouldAINormalChipPass(pedestals, activePlacementEntry, remainingUnplaced, aiDifficulty)
+        shouldAINormalChipPass(pedestals, activePlacementEntry, remainingInitialQueue, aiDifficulty)
       ) {
         executePlacementAction('PASS');
       } else {
@@ -678,7 +694,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     isHumanPlacementTurn &&
     !activePlacementEntry.isDeferredPass &&
     !passedThisRoundIds.includes(activePlacementPlayer.id) &&
-    placementQueue.length + deferredPassStack.length > 1;
+    placementQueue.length > 1;
 
   const isRainbowSelectionActive =
     isHumanPlacementTurn && activePlacementEntry.chip === 'rainbow';
@@ -910,13 +926,13 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                 </div>
               </div>
 
-              {/* Player Count */}
+              {/* Player Count (3 to 7) */}
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-lounge-slate-400">
                   참가 인원
                 </label>
-                <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl obsidian-subpanel">
-                  {([3, 4] as const).map((count) => (
+                <div className="grid grid-cols-5 gap-1.5 p-1 rounded-xl obsidian-subpanel">
+                  {([3, 4, 5, 6, 7] as const).map((count) => (
                     <button
                       key={count}
                       type="button"
@@ -925,13 +941,13 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                         if (startingSeatChoice >= count) setStartingSeatChoice(0);
                       }}
                       className={[
-                        'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                        'py-2 px-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
                         playerCount === count
                           ? 'bg-lounge-slate-700/90 text-gold-200 border border-gold-500/40'
                           : 'text-lounge-slate-300 hover:text-white',
                       ].join(' ')}
                     >
-                      {count}인 테이블
+                      {count}인
                     </button>
                   ))}
                 </div>
@@ -941,22 +957,22 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               {mode === 'ai' && (
                 <div className="space-y-2">
                   <label className="block text-xs font-semibold text-lounge-slate-400">
-                    첫 자리 선택 (1번 좌석이 1라운드 선 플레이어)
+                    내 좌석 선택 (1라운드 선 플레이어는 무작위 추첨)
                   </label>
-                  <div className={`grid gap-1.5 p-1 rounded-xl obsidian-subpanel ${playerCount === 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+                  <div className="flex flex-wrap gap-1.5 p-1.5 rounded-xl obsidian-subpanel">
                     {Array.from({ length: playerCount }, (_, idx) => (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => setStartingSeatChoice(idx)}
                         className={[
-                          'py-2 px-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                          'flex-1 min-w-[64px] py-2 px-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap',
                           startingSeatChoice === idx
                             ? 'bg-lounge-slate-700/90 text-gold-200 border border-gold-500/40'
                             : 'text-lounge-slate-300 hover:text-white',
                         ].join(' ')}
                       >
-                        {idx === 0 ? '1번 (선)' : `${idx + 1}번 자리`}
+                        {idx + 1}번 자리
                       </button>
                     ))}
                   </div>
@@ -988,6 +1004,39 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                   </div>
                 </div>
               )}
+
+              {/* Memory Mode (Original No-History Mode) */}
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold text-lounge-slate-400">
+                  기억 모드 (원작 방식)
+                </label>
+                <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl obsidian-subpanel">
+                  <button
+                    type="button"
+                    onClick={() => setMemoryMode(false)}
+                    className={[
+                      'py-2 px-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                      !memoryMode
+                        ? 'bg-lounge-slate-700/90 text-gold-200 border border-gold-500/40'
+                        : 'text-lounge-slate-300 hover:text-white',
+                    ].join(' ')}
+                  >
+                    기록 패널 표시
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMemoryMode(true)}
+                    className={[
+                      'py-2 px-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                      memoryMode
+                        ? 'bg-lounge-sky-900/80 text-lounge-sky-200 border border-lounge-sky-400/50'
+                        : 'text-lounge-slate-300 hover:text-white',
+                    ].join(' ')}
+                  >
+                    기억 모드 (숨김)
+                  </button>
+                </div>
+              </div>
 
               <button
                 type="button"
@@ -1026,6 +1075,14 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               <span className="hidden md:inline text-xs sm:text-sm font-semibold text-lounge-sky-300 truncate">
                 {phaseTitle}
               </span>
+              {memoryMode && (
+                <>
+                  <span className="hidden sm:inline text-lounge-slate-500" aria-hidden="true">·</span>
+                  <span className="hidden sm:inline text-xs font-semibold text-gold-300 whitespace-nowrap">
+                    기억 모드
+                  </span>
+                </>
+              )}
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
@@ -1073,7 +1130,13 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
           {/* Player Seating Strip (Clockwise order) */}
           <section
             aria-label="플레이어 현황"
-            className={`grid gap-2.5 ${players.length === 3 ? 'grid-cols-3' : 'grid-cols-2 lg:grid-cols-4'}`}
+            className={`grid gap-2.5 ${
+              players.length === 3
+                ? 'grid-cols-1 sm:grid-cols-3'
+                : players.length === 4
+                  ? 'grid-cols-2 lg:grid-cols-4'
+                  : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+            }`}
           >
             {players.map((p) => {
               const isFirst = p.seatIndex === firstPlayerSeat;
@@ -1484,6 +1547,14 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               </button>
             </section>
           )}
+
+          {!memoryMode && (
+            <Heavy13HistoryPanel
+              players={players}
+              roundHistory={roundHistory}
+              currentRoundNumber={roundNumber}
+            />
+          )}
         </div>
       )}
 
@@ -1550,25 +1621,35 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
           aria-label="무거운 13 최종 결과"
         >
           <div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto obsidian-panel rounded-2xl p-5 sm:p-7 space-y-5">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-gold-400/15 border border-gold-400/50 text-gold-200 flex items-center justify-center shrink-0">
-                <Trophy className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="font-display text-2xl font-bold text-white">
-                  {finalRankings[0]?.name} 최종 우승
-                </h2>
-                <p className="text-sm text-lounge-slate-300 mt-0.5">
-                  14라운드 종료 · 벌점 최다자가 최하위(동점 시 최근 벌점자가 하위)
-                </p>
-              </div>
-            </div>
+            {(() => {
+              const topWinners = finalRankings.filter((r) => r.rank === 1);
+              const eliminationCount = players.length <= 5 ? 1 : 2;
+              const headline =
+                topWinners.length > 1
+                  ? `${topWinners.map((w) => w.player.name).join(', ')} 공동 우승`
+                  : `${topWinners[0]?.player.name ?? ''} 최종 우승`;
+              return (
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-gold-400/15 border border-gold-400/50 text-gold-200 flex items-center justify-center shrink-0">
+                    <Trophy className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="font-display text-2xl font-bold text-white">
+                      {headline}
+                    </h2>
+                    <p className="text-sm text-lounge-slate-300 mt-0.5">
+                      14라운드 종료 · 하위 {eliminationCount}명 탈락 (동점 시 최근 벌점자가 하위, 무벌점 동점은 공동 순위)
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Standings Table */}
             <div className="obsidian-subpanel rounded-xl divide-y divide-white/10">
-              {finalRankings.map((p, idx) => {
-                const isWinner = idx === 0;
-                const isLast = idx === finalRankings.length - 1;
+              {finalRankings.map((item) => {
+                const { player: p, rank, isTied, isEliminated } = item;
+                const isWinner = rank === 1;
                 return (
                   <div
                     key={p.id}
@@ -1577,32 +1658,37 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                     <div className="flex items-center gap-3 min-w-0">
                       <span
                         className={[
-                          'font-mono-tabular font-bold w-8 text-center',
+                          'font-mono-tabular font-bold min-w-[54px] whitespace-nowrap',
                           isWinner
                             ? 'text-gold-300'
-                            : isLast
+                            : isEliminated
                               ? 'text-rival-400'
                               : 'text-lounge-slate-300',
                         ].join(' ')}
                       >
-                        {idx + 1}위
+                        {isTied ? `공동 ${rank}위` : `${rank}위`}
                       </span>
                       <span className="font-semibold text-white truncate flex items-center gap-1.5">
                         {isWinner && <Crown className="w-4 h-4 text-gold-400 shrink-0" />}
                         {p.name}
                       </span>
+                      {isEliminated && (
+                        <span className="text-xs font-bold text-rival-400 border border-rival-400/50 bg-rival-950/60 px-2 py-0.5 rounded whitespace-nowrap shrink-0">
+                          탈락
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-4 text-xs font-mono-tabular shrink-0">
                       <span className="text-lounge-slate-400">
                         {p.lastPenaltyRound !== null
                           ? `최근 벌점 R${p.lastPenaltyRound}`
-                          : '무벌점'}
+                          : '벌점 기록 없음'}
                       </span>
                       <span
                         className={[
                           'text-sm font-bold',
-                          isLast ? 'text-rival-400' : isWinner ? 'text-gold-200' : 'text-white',
+                          isEliminated ? 'text-rival-400' : isWinner ? 'text-gold-200' : 'text-white',
                         ].join(' ')}
                       >
                         {p.penaltyPoints}점

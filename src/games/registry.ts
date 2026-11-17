@@ -22,7 +22,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
     titleEn: 'Heavy 13',
     description:
       '바위 카드(0~6)와 색깔 칩을 비공개로 제출해 3개의 받침대 합계가 13 이상이 되지 않도록 수 싸움을 벌이는 14라운드 전략 게임입니다.',
-    playersLabel: '3–4인 AI · 로컬 대전',
+    playersLabel: '3–7인 AI · 로컬 대전',
     durationLabel: '14라운드',
     status: 'playable',
     component: Heavy13Game,
