@@ -1,0 +1,8 @@
+{
+  "name": "기억 포커 · Memory Poker",
+  "description": "16장의 카드를 20초 동안 암기한 뒤 공유 카드 3장과 조합해 가장 높은 홀덤 족보를 완성하는 기억력 포커 게임",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
