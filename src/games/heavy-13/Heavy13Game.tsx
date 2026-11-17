@@ -33,6 +33,7 @@ import {
   RevealFlipCard,
   RockCardButton,
 } from './components/Heavy13Pieces';
+import { Heavy13ResultBoard } from './components/Heavy13ResultBoard';
 import { Heavy13RulesModal } from './components/Heavy13RulesModal';
 import {
   AIDifficulty,
@@ -1144,16 +1145,16 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
 
       {/* ================= ACTIVE PLAYING ARENA ================= */}
       {(shell === 'PLAYING' || shell === 'PAUSED' || shell === 'GAME_OVER') && (
-        <div className="relative z-10 flex-1 flex flex-col max-w-6xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-4 gap-3 sm:gap-4">
+        <div className="relative z-10 flex-1 flex flex-col max-w-6xl w-full mx-auto px-2.5 sm:px-6 py-2 sm:py-4 gap-2 sm:gap-4">
           {/* Top HUD */}
-          <header className="obsidian-panel flex items-center justify-between gap-3 px-3 sm:px-4 py-2.5 rounded-xl">
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="font-display font-bold text-base sm:text-lg text-gold-200 whitespace-nowrap">
+          <header className="obsidian-panel flex items-center justify-between gap-2 sm:gap-3 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <span className="font-display font-bold text-sm sm:text-lg text-gold-200 whitespace-nowrap">
                 무거운 13
               </span>
               <span className="text-lounge-slate-500" aria-hidden="true">·</span>
               <span className="font-mono-tabular text-xs sm:text-sm font-semibold text-lounge-slate-200 whitespace-nowrap">
-                {roundNumber} / {TOTAL_ROUNDS}R
+                {roundNumber}/{TOTAL_ROUNDS}R
                 <span className="hidden sm:inline text-lounge-slate-400 ml-1.5">
                   (세트 {roundNumber <= HALF_ROUND ? '1' : '2'})
                 </span>
@@ -1172,11 +1173,11 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               )}
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               {phase === 'SUBMISSION' && (
                 <span
                   className={[
-                    'font-mono-tabular text-xs sm:text-sm font-bold px-2.5 py-1 rounded-lg obsidian-subpanel',
+                    'font-mono-tabular text-xs sm:text-sm font-bold px-2 sm:px-2.5 py-1 rounded-lg obsidian-subpanel',
                     submitTimeLeftMs <= 15000 ? 'text-rival-400' : 'text-lounge-sky-300',
                   ].join(' ')}
                 >
@@ -1187,7 +1188,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                 type="button"
                 onClick={() => setRulesOpen(true)}
                 aria-label="게임 규칙"
-                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
               >
                 <BookOpen className="w-4 h-4" />
               </button>
@@ -1195,7 +1196,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                 type="button"
                 onClick={toggleMute}
                 aria-label={muted ? '소리 켜기' : '음소거'}
-                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
               >
                 {muted ? (
                   <VolumeX className="w-4 h-4 text-rival-400" />
@@ -1207,7 +1208,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                 type="button"
                 onClick={() => setShell('PAUSED')}
                 aria-label="일시정지"
-                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
               >
                 <Pause className="w-4 h-4" />
               </button>
@@ -1217,9 +1218,9 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
           {/* Player Seating Strip (Clockwise order) */}
           <section
             aria-label="플레이어 현황"
-            className={`grid gap-2.5 ${
+            className={`grid gap-1.5 sm:gap-2.5 ${
               players.length === 3
-                ? 'grid-cols-1 sm:grid-cols-3'
+                ? 'grid-cols-3'
                 : players.length === 4
                   ? 'grid-cols-2 lg:grid-cols-4'
                   : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
@@ -1248,36 +1249,36 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                 <div
                   key={p.id}
                   className={[
-                    'rounded-xl border px-3.5 py-2.5 flex items-center justify-between gap-2.5 transition-colors',
+                    'rounded-lg sm:rounded-xl border px-2.5 sm:px-3.5 py-1.5 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-2.5 transition-colors',
                     isTurn
                       ? 'bg-obsidian-800 border-gold-400 shadow-[0_0_16px_rgba(229,193,88,0.16)]'
                       : 'bg-obsidian-850/90 border-lounge-slate-700/80',
                   ].join(' ')}
                 >
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    <div className="flex items-center justify-between gap-1.5">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="font-mono-tabular text-[11px] text-lounge-slate-400">
+                  <div className="min-w-0 flex-1 space-y-0.5 sm:space-y-1.5">
+                    <div className="flex items-center justify-between gap-1">
+                      <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+                        <span className="font-mono-tabular text-[10px] sm:text-[11px] text-lounge-slate-400 shrink-0">
                           {p.seatIndex + 1}번
                         </span>
-                        <span className="text-xs sm:text-sm font-bold text-white truncate">
+                        <span className="text-[11px] sm:text-sm font-bold text-white truncate">
                           {p.name}
                         </span>
                       </div>
                       {isFirst && (
-                        <span className="text-[11px] font-bold text-gold-300 shrink-0">
+                        <span className="text-[10px] sm:text-[11px] font-bold text-gold-300 shrink-0">
                           선
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="font-mono-tabular text-rival-400 font-bold">
-                        벌점 {p.penaltyPoints}점
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+                      <span className="font-mono-tabular text-rival-400 font-bold whitespace-nowrap">
+                        벌점 {p.penaltyPoints}
                       </span>
                       <span className="text-lounge-slate-500" aria-hidden="true">·</span>
                       {showChip ? (
-                        <span className="inline-flex items-center gap-1.5 font-mono-tabular text-lounge-slate-300">
+                        <span className="inline-flex items-center gap-1 sm:gap-1.5 font-mono-tabular text-lounge-slate-300 whitespace-nowrap">
                           <ChipMiniEmblem chip={sub.chip} size="sm" />
                           <span>{CHIP_META[sub.chip].shortKo}</span>
                           {hasPassed && (
@@ -1285,8 +1286,8 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                           )}
                         </span>
                       ) : (
-                        <span className="font-mono-tabular text-lounge-slate-400">
-                          카드 {p.cards.length}장
+                        <span className="font-mono-tabular text-lounge-slate-400 whitespace-nowrap">
+                          {p.cards.length}장
                         </span>
                       )}
                     </div>
@@ -1369,23 +1370,23 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
           )}
 
           {/* Center Stage: 3 Bearer Pedestals + Live Placement Queue/Feed */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-4 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-2.5 sm:gap-4 items-stretch">
             {/* 3 Pedestals */}
-            <section className="obsidian-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3">
+            <section className="obsidian-panel rounded-2xl p-2.5 sm:p-5 flex flex-col justify-between gap-2 sm:gap-3">
               <div className="flex items-center justify-between gap-2">
-                <h2 className="text-sm sm:text-base font-bold text-gold-200">
-                  짐꾼 받침대 (13 이상 시 수거 벌점)
+                <h2 className="text-xs sm:text-base font-bold text-gold-200">
+                  짐꾼 받침대 (13 이상 수거)
                 </h2>
-                <span className="text-xs text-lounge-slate-400">
+                <span className="text-[11px] sm:text-xs text-lounge-slate-400 truncate">
                   {isRainbowSelectionActive
-                    ? '레인보우 칩: 배치할 받침대를 클릭하세요'
+                    ? '배치할 받침대 선택'
                     : isHumanPlacementTurn
-                      ? '놓았을 때 합계와 안전 여부를 확인하세요'
-                      : '받침대별 합계가 12 이하이면 안전합니다'}
+                      ? '합계·안전 여부 확인'
+                      : '12 이하 안전'}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
                 {PEDESTAL_COLORS.map((color) => {
                   const previewValue =
                     isHumanPlacementTurn &&
@@ -1423,8 +1424,13 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               </div>
             </section>
 
-            {/* Right: Placement Queue & Round Log */}
-            <aside className="obsidian-panel rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3">
+            {/* Right: Placement Queue & Round Log (collapsed on narrow mobile during submission so board + deck fit without scrolling) */}
+            <aside
+              className={[
+                'obsidian-panel rounded-2xl p-3 sm:p-5 flex-col justify-between gap-3',
+                phase === 'SUBMISSION' || phase === 'PASS_TO_HUMAN' ? 'hidden lg:flex' : 'flex',
+              ].join(' ')}
+            >
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
                   <h2 className="text-sm font-bold text-lounge-sky-300">
@@ -1517,13 +1523,13 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
 
           {/* Bottom Interactive Action Deck */}
           {phase === 'SUBMISSION' && currentSubmittingPlayer && (
-            <section className="obsidian-panel rounded-2xl p-4 sm:p-5 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-gold-200">
-                    {currentSubmittingPlayer.name} · 비공개 카드 및 칩 선택
+            <section className="obsidian-panel rounded-2xl p-2.5 sm:p-5 space-y-2.5 sm:space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+                <div className="flex items-center justify-between sm:block gap-2">
+                  <h3 className="text-xs sm:text-base font-bold text-gold-200 truncate">
+                    {currentSubmittingPlayer.name} · 카드 및 칩 선택
                   </h3>
-                  <p className="text-xs text-lounge-slate-400 mt-0.5">
+                  <p className="hidden sm:block text-xs text-lounge-slate-400 mt-0.5">
                     바위 카드 1장과 색깔 칩 1개를 선택한 뒤 제출하세요.
                   </p>
                 </div>
@@ -1531,19 +1537,19 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                   type="button"
                   disabled={selectedCard === null || selectedChip === null}
                   onClick={handleConfirmSubmission}
-                  className="px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 disabled:bg-lounge-slate-800 disabled:text-lounge-slate-500 text-gold-950 font-bold text-sm transition-colors cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
+                  className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 disabled:bg-lounge-slate-800 disabled:text-lounge-slate-500 text-gold-950 font-bold text-sm transition-colors cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
                 >
                   비공개 제출 확정
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-2.5 sm:gap-4">
                 {/* 7 Rock Cards (0..6) */}
-                <div className="space-y-1.5">
-                  <div className="text-xs font-semibold text-lounge-slate-400">
-                    바위 카드 ({currentSubmittingPlayer.cards.length} / 7장 남음)
+                <div className="space-y-1 sm:space-y-1.5">
+                  <div className="text-[11px] sm:text-xs font-semibold text-lounge-slate-400">
+                    바위 카드 ({currentSubmittingPlayer.cards.length}/7장)
                   </div>
-                  <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+                  <div className="grid grid-cols-7 gap-1 sm:gap-2">
                     {ROCK_NUMBERS.map((num) => (
                       <RockCardButton
                         key={num}
@@ -1560,11 +1566,11 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                 </div>
 
                 {/* 4 Chip Types */}
-                <div className="space-y-1.5">
-                  <div className="text-xs font-semibold text-lounge-slate-400">
+                <div className="space-y-1 sm:space-y-1.5">
+                  <div className="text-[11px] sm:text-xs font-semibold text-lounge-slate-400">
                     색깔 칩
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                     {(['red', 'green', 'blue', 'rainbow'] as ChipType[]).map((chip) => (
                       <ChipTokenButton
                         key={chip}
@@ -1584,33 +1590,31 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
           )}
 
           {phase === 'PASS_TO_HUMAN' && currentSubmittingPlayer && (
-            <section className="obsidian-sky-panel rounded-2xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+            <section className="obsidian-sky-panel rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
               <div className="space-y-1">
-                <h3 className="font-display text-xl font-bold text-gold-200">
+                <h3 className="font-display text-lg sm:text-xl font-bold text-gold-200">
                   {currentSubmittingPlayer.name} 차례 준비
                 </h3>
-                <p className="text-sm text-lounge-slate-300">
+                <p className="text-xs sm:text-sm text-lounge-slate-300">
                   이전 플레이어의 제출은 비공개 저장되었습니다. 화면을 <strong className="text-white">{currentSubmittingPlayer.name}</strong>에게 넘겨주세요.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setPhase('SUBMISSION')}
-                className="px-5 py-3 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
+                className="w-full sm:w-auto min-h-[44px] px-5 py-3 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
               >
                 선택 시작
               </button>
             </section>
           )}
 
-
-
           {phase === 'PLACEMENT_STEP' && activePlacementEntry && activePlacementPlayer && (
-            <section className="obsidian-panel rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+            <section className="obsidian-panel rounded-2xl p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
               {activePlacementPlayer.isHuman ? (
                 <>
                   <div className="space-y-1">
-                    <h3 className="text-base font-bold text-gold-200">
+                    <h3 className="text-sm sm:text-base font-bold text-gold-200">
                       {activePlacementPlayer.name}의 배치 차례 · {CHIP_META[activePlacementEntry.chip].labelKo} (바위 {activePlacementEntry.card})
                     </h3>
                     <p className="text-xs sm:text-sm text-lounge-slate-300">
@@ -1627,14 +1631,14 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
                     {humanCanPass && (
                       <button
                         type="button"
                         onClick={() => executePlacementAction('PASS')}
-                        className="px-4 py-2.5 rounded-xl border border-lounge-sky-400/60 bg-lounge-sky-900/50 hover:bg-lounge-sky-900 text-lounge-sky-200 font-semibold text-sm transition-colors cursor-pointer whitespace-nowrap"
+                        className="flex-1 sm:flex-none min-h-[44px] px-4 py-2.5 rounded-xl border border-lounge-sky-400/60 bg-lounge-sky-900/50 hover:bg-lounge-sky-900 text-lounge-sky-200 font-semibold text-xs sm:text-sm transition-colors cursor-pointer whitespace-nowrap"
                       >
-                        패스 (후순위로 미루기)
+                        패스 (후순위)
                       </button>
                     )}
 
@@ -1644,7 +1648,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                           key={c}
                           type="button"
                           onClick={() => executePlacementAction('PLACE', c)}
-                          className="px-4 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
+                          className="flex-1 sm:flex-none min-h-[44px] px-3.5 sm:px-4 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-xs sm:text-sm transition-colors cursor-pointer whitespace-nowrap"
                         >
                           {PEDESTAL_META[c].shortKo} 배치
                         </button>
@@ -1653,7 +1657,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                       <button
                         type="button"
                         onClick={() => executePlacementAction('PLACE', activePlacementEntry.chip as PedestalColor)}
-                        className="px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
+                        className="flex-1 sm:flex-none min-h-[44px] px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
                       >
                         {PEDESTAL_META[activePlacementEntry.chip].shortKo} 받침대에 배치
                       </button>
@@ -1770,12 +1774,12 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       {/* ================= GAME OVER MODAL ================= */}
       {shell === 'GAME_OVER' && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-black/85 p-4"
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/85 p-2.5 sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-label="무거운 13 최종 결과"
         >
-          <div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto obsidian-panel rounded-2xl p-5 sm:p-7 space-y-5">
+          <div className="w-full max-w-4xl max-h-[94vh] overflow-y-auto obsidian-panel rounded-2xl p-3.5 sm:p-7 space-y-4 sm:space-y-5">
             {(() => {
               const topWinners = finalRankings.filter((r) => r.rank === 1);
               const eliminationCount = players.length <= 5 ? 1 : 2;
@@ -1784,15 +1788,15 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                   ? `${topWinners.map((w) => w.player.name).join(', ')} 공동 우승`
                   : `${topWinners[0]?.player.name ?? ''} 최종 우승`;
               return (
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-xl bg-gold-400/15 border border-gold-400/50 text-gold-200 flex items-center justify-center shrink-0">
-                    <Trophy className="w-6 h-6" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gold-400/15 border border-gold-400/50 text-gold-200 flex items-center justify-center shrink-0">
+                    <Trophy className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <div>
-                    <h2 className="font-display text-2xl font-bold text-white">
+                  <div className="min-w-0">
+                    <h2 className="font-display text-xl sm:text-2xl font-bold text-white truncate">
                       {headline}
                     </h2>
-                    <p className="text-sm text-lounge-slate-300 mt-0.5">
+                    <p className="text-xs sm:text-sm text-lounge-slate-300 mt-0.5">
                       14라운드 종료 · 하위 {eliminationCount}명 탈락 (동점 시 최근 벌점자가 하위, 무벌점 동점은 공동 순위)
                     </p>
                   </div>
@@ -1808,12 +1812,12 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                 return (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between gap-3 px-4 py-3 text-sm"
+                    className="flex items-center justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                       <span
                         className={[
-                          'font-mono-tabular font-bold min-w-[54px] whitespace-nowrap',
+                          'font-mono-tabular font-bold min-w-[44px] sm:min-w-[54px] whitespace-nowrap',
                           isWinner
                             ? 'text-gold-300'
                             : isEliminated
@@ -1828,21 +1832,28 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                         {p.name}
                       </span>
                       {isEliminated && (
-                        <span className="text-xs font-bold text-rival-400 border border-rival-400/50 bg-rival-950/60 px-2 py-0.5 rounded whitespace-nowrap shrink-0">
+                        <span className="text-[10px] sm:text-xs font-bold text-rival-400 border border-rival-400/50 bg-rival-950/60 px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap shrink-0">
                           탈락
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs font-mono-tabular shrink-0">
+                    <div className="flex items-center gap-2.5 sm:gap-4 text-[11px] sm:text-xs font-mono-tabular shrink-0">
                       <span className="text-lounge-slate-400">
-                        {p.lastPenaltyRound !== null
-                          ? `최근 벌점 R${p.lastPenaltyRound}`
-                          : '벌점 기록 없음'}
+                        {p.lastPenaltyRound !== null ? (
+                          <>
+                            <span className="hidden sm:inline">최근 벌점 </span>R{p.lastPenaltyRound}
+                          </>
+                        ) : (
+                          <>
+                            <span className="hidden sm:inline">벌점 기록 없음</span>
+                            <span className="sm:hidden">무벌점</span>
+                          </>
+                        )}
                       </span>
                       <span
                         className={[
-                          'text-sm font-bold',
+                          'text-xs sm:text-sm font-bold',
                           isEliminated ? 'text-rival-400' : isWinner ? 'text-gold-200' : 'text-white',
                         ].join(' ')}
                       >
@@ -1854,8 +1865,14 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               })}
             </div>
 
+            {/* Broadcast-Style Round Penalty Board & Per-Player Stats */}
+            <Heavy13ResultBoard
+              finalRankings={finalRankings}
+              roundHistory={roundHistory}
+            />
+
             {/* Penalty Progression Line Chart */}
-            <div className="obsidian-subpanel rounded-xl p-4 space-y-2">
+            <div className="obsidian-subpanel rounded-xl p-3 sm:p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="text-xs sm:text-sm font-semibold text-lounge-slate-200">
                   라운드별 누적 벌점 추이 (1R–14R)
@@ -1915,12 +1932,12 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-end gap-3 pt-1">
+            <div className="flex flex-wrap items-center justify-end gap-2.5 sm:gap-3 pt-1">
               {onExitToHub && (
                 <button
                   type="button"
                   onClick={onExitToHub}
-                  className="px-4 py-2.5 rounded-xl border border-lounge-slate-700 text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                  className="min-h-[44px] px-4 py-2.5 rounded-xl border border-lounge-slate-700 text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
                 >
                   게임 목록
                 </button>
@@ -1928,14 +1945,14 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               <button
                 type="button"
                 onClick={() => setShell('TITLE_MENU')}
-                className="px-4 py-2.5 rounded-xl border border-lounge-slate-700 text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="min-h-[44px] px-4 py-2.5 rounded-xl border border-lounge-slate-700 text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
               >
                 타이틀로
               </button>
               <button
                 type="button"
                 onClick={startMatch}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
+                className="flex-1 sm:flex-none min-h-[44px] inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
                 다시 플레이
