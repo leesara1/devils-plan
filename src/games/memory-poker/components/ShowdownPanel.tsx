@@ -63,10 +63,10 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
             className={[
               'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border',
               cmp === 1
-                ? 'bg-[#e5c158]/15 border-[#e5c158]/50 text-[#f3e2a6]'
+                ? 'bg-gold-400/15 border-gold-400/50 text-gold-200'
                 : cmp === -1
-                  ? 'bg-rose-500/15 border-rose-400/50 text-rose-300'
-                  : 'bg-sky-500/15 border-sky-400/50 text-sky-300',
+                  ? 'bg-rival-400/15 border-rival-400/50 text-rival-400'
+                  : 'bg-lounge-sky-400/15 border-lounge-sky-400/50 text-lounge-sky-300',
             ].join(' ')}
           >
             <Trophy className="w-5 h-5" />
@@ -75,7 +75,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
             <h3 className="font-display text-lg sm:text-xl font-bold text-white leading-tight">
               {headline}
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 mt-0.5">{reason}</p>
+            <p className="text-xs sm:text-sm text-lounge-slate-300 mt-0.5">{reason}</p>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
           <button
             type="button"
             onClick={onToggleShowAllBoardCards}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-700/70 bg-[#0d0f15] text-xs font-medium text-slate-200 hover:border-[#d4af37]/60 hover:text-white transition-colors cursor-pointer whitespace-nowrap shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-xs font-medium text-lounge-slate-200 hover:border-lounge-sky-400/60 hover:text-white transition-colors cursor-pointer whitespace-nowrap shrink-0"
           >
             {showAllBoardCards ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
             {showAllBoardCards ? '선택 카드만 보기' : '전체 16장 확인'}
@@ -91,7 +91,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
           <button
             type="button"
             onClick={onNextAction}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#e5c158] text-[#141004] text-xs sm:text-sm font-bold hover:bg-[#f3d474] transition-colors cursor-pointer whitespace-nowrap shrink-0"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold-400 text-gold-950 text-xs sm:text-sm font-bold hover:bg-gold-300 transition-colors cursor-pointer whitespace-nowrap shrink-0"
           >
             {nextActionLabel}
             <ArrowRight className="w-4 h-4" />
@@ -106,15 +106,15 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
           className={[
             'rounded-xl p-3.5 border transition-colors',
             cmp === 1
-              ? 'bg-[#e5c158]/[0.07] border-[#e5c158]/50'
+              ? 'bg-gold-400/[0.07] border-gold-400/50'
               : 'obsidian-subpanel',
           ].join(' ')}
         >
           <div className="flex items-center justify-between gap-2 mb-2.5">
             <div className="flex items-center gap-2 text-sm">
-              <span className="font-bold text-[#f3e2a6]">플레이어 1</span>
-              <span className="text-slate-600" aria-hidden="true">·</span>
-              <span className="font-mono-tabular text-xs text-slate-400">
+              <span className="font-bold text-gold-200">플레이어 1</span>
+              <span className="text-lounge-slate-500" aria-hidden="true">·</span>
+              <span className="font-mono-tabular text-xs text-lounge-slate-400">
                 선택 {GRID_COORDS[p1Indices[0]]}, {GRID_COORDS[p1Indices[1]]}
               </span>
             </div>
@@ -138,7 +138,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
                       dimmed={!isScoring}
                     />
                   </div>
-                  <span className="text-[10px] font-mono-tabular text-slate-400">
+                  <span className="text-[10px] font-mono-tabular text-lounge-slate-400">
                     {isSelected ? GRID_COORDS[p1Indices[i]] : '공유'}
                   </span>
                 </div>
@@ -152,15 +152,15 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
           className={[
             'rounded-xl p-3.5 border transition-colors',
             cmp === -1
-              ? 'bg-rose-500/[0.08] border-rose-400/50'
+              ? 'bg-rival-400/[0.08] border-rival-400/50'
               : 'obsidian-subpanel',
           ].join(' ')}
         >
           <div className="flex items-center justify-between gap-2 mb-2.5">
             <div className="flex items-center gap-2 text-sm">
-              <span className="font-bold text-rose-300">{opponentLabel}</span>
-              <span className="text-slate-600" aria-hidden="true">·</span>
-              <span className="font-mono-tabular text-xs text-slate-400">
+              <span className="font-bold text-rival-400">{opponentLabel}</span>
+              <span className="text-lounge-slate-500" aria-hidden="true">·</span>
+              <span className="font-mono-tabular text-xs text-lounge-slate-400">
                 선택 {GRID_COORDS[p2Indices[0]]}, {GRID_COORDS[p2Indices[1]]}
               </span>
             </div>
@@ -184,7 +184,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
                       dimmed={!isScoring}
                     />
                   </div>
-                  <span className="text-[10px] font-mono-tabular text-slate-400">
+                  <span className="text-[10px] font-mono-tabular text-lounge-slate-400">
                     {isSelected ? GRID_COORDS[p2Indices[i]] : '공유'}
                   </span>
                 </div>
@@ -195,14 +195,14 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
       </div>
 
       {/* Optimal possible board hand */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-slate-300">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-lounge-slate-300">
         <div>
-          <span className="text-sky-300 font-semibold">보드 최강 조합:</span>{' '}
-          <span className="font-mono-tabular text-[#f3e2a6] font-semibold">{optCoords}</span>
-          <span className="mx-1.5 text-slate-600" aria-hidden="true">·</span>
+          <span className="text-lounge-sky-300 font-semibold">보드 최강 조합:</span>{' '}
+          <span className="font-mono-tabular text-gold-200 font-semibold">{optCoords}</span>
+          <span className="mx-1.5 text-lounge-slate-500" aria-hidden="true">·</span>
           <span className="text-white font-medium">{optimalSolution.evaluation.descriptionKo}</span>
         </div>
-        <span className="text-slate-400">
+        <span className="text-lounge-slate-400">
           {showAllBoardCards ? '보드 위 나머지 카드들이 앞면으로 표시 중입니다' : '선택된 카드만 앞면으로 공개되었습니다'}
         </span>
       </div>

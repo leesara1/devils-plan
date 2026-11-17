@@ -1,6 +1,6 @@
 import { GameEntry } from './types';
 import { MemoryPokerGame } from './memory-poker/MemoryPokerGame';
-import { SecondGameScreen } from './game-02/SecondGameScreen';
+import { Heavy13Game } from './heavy-13/Heavy13Game';
 
 export const GAMES_REGISTRY: GameEntry[] = [
   {
@@ -16,15 +16,15 @@ export const GAMES_REGISTRY: GameEntry[] = [
     component: MemoryPokerGame,
   },
   {
-    id: 'game-02',
+    id: 'heavy-13',
     indexLabel: '02',
-    titleKo: '두 번째 게임',
-    titleEn: 'Next Game Slot',
+    titleKo: '무거운 13',
+    titleEn: 'Heavy 13',
     description:
-      '새로운 두뇌·심리 게임을 추가할 수 있도록 독립 모듈로 준비된 두 번째 게임 슬롯입니다.',
-    playersLabel: '확장 예정',
-    durationLabel: '준비 중',
-    status: 'preparing',
-    component: SecondGameScreen,
+      '바위 카드(0~6)와 색깔 칩을 비공개로 제출해 3개의 받침대 합계가 13 이상이 되지 않도록 수 싸움을 벌이는 14라운드 전략 게임입니다.',
+    playersLabel: '3–4인 AI · 로컬 대전',
+    durationLabel: '14라운드',
+    status: 'playable',
+    component: Heavy13Game,
   },
 ];

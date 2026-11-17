@@ -64,7 +64,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
             : '카드 뒷면'
       }
       className={[
-        'group relative w-full h-full select-none card-perspective rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e5c158] focus-visible:ring-offset-2 focus-visible:ring-offset-[#090a0f]',
+        'group relative w-full h-full select-none card-perspective rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian-900',
         interactive ? 'cursor-pointer transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.98]' : '',
         dimmed ? 'opacity-40' : 'opacity-100',
       ].join(' ')}
@@ -75,11 +75,11 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
           className={[
             'card-face rounded-xl bg-[#faf7f0] border shadow-[0_8px_20px_rgba(0,0,0,0.48)] flex flex-col justify-between p-1.5 sm:p-2 overflow-hidden',
             isScoringHighlight
-              ? 'border-[#e5c158] ring-2 ring-[#e5c158]'
+              ? 'border-gold-400 ring-2 ring-gold-400'
               : hasToken
-                ? 'border-[#d4af37] ring-2 ring-[#d4af37]/80'
+                ? 'border-gold-500 ring-2 ring-gold-500/80'
                 : isOptimalHint
-                  ? 'border-sky-400 ring-2 ring-sky-400/80'
+                  ? 'border-lounge-sky-400 ring-2 ring-lounge-sky-400/80'
                   : 'border-[#ddd6c4]',
           ].join(' ')}
         >
@@ -115,14 +115,14 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
           )}
         </div>
 
-        {/* Card Back — Obsidian & Brushed Gold Geometric Inlay */}
+        {/* Card Back — Obsidian, Slate & Brushed Gold Geometric Inlay */}
         <div
           className={[
             'card-face card-face-back rounded-xl border shadow-[0_8px_20px_rgba(0,0,0,0.48)] overflow-hidden flex items-center justify-center',
-            'bg-[#10131c]',
+            'bg-obsidian-850',
             p1Token
-              ? 'border-[#e5c158] ring-2 ring-[#e5c158]'
-              : 'border-[#2b3040] group-hover:border-[#d4af37]/65',
+              ? 'border-gold-400 ring-2 ring-gold-400'
+              : 'border-lounge-slate-700 group-hover:border-lounge-sky-400/70',
           ].join(' ')}
         >
           <svg
@@ -133,23 +133,57 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
           >
             <defs>
               <pattern id={`obsidian-grid-${card.id}`} width="20" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 20 10 L 10 20 L 0 10 Z" fill="none" stroke="#d4af37" strokeWidth="0.7" strokeOpacity="0.28" />
-                <line x1="0" y1="10" x2="20" y2="10" stroke="#94a3b8" strokeWidth="0.35" strokeOpacity="0.16" />
+                <path
+                  d="M 10 0 L 20 10 L 10 20 L 0 10 Z"
+                  fill="none"
+                  stroke="var(--color-gold-500)"
+                  strokeWidth="0.7"
+                  strokeOpacity="0.28"
+                />
+                <line
+                  x1="0"
+                  y1="10"
+                  x2="20"
+                  y2="10"
+                  stroke="var(--color-lounge-sky-400)"
+                  strokeWidth="0.35"
+                  strokeOpacity="0.18"
+                />
               </pattern>
             </defs>
-            <rect x="2" y="2" width="96" height="136" rx="6" fill={`url(#obsidian-grid-${card.id})`} stroke="#d4af37" strokeWidth="1.2" strokeOpacity="0.45" />
-            <rect x="7" y="7" width="86" height="126" rx="4" fill="none" stroke="#d4af37" strokeWidth="0.6" strokeOpacity="0.3" />
+            <rect
+              x="2"
+              y="2"
+              width="96"
+              height="136"
+              rx="6"
+              fill={`url(#obsidian-grid-${card.id})`}
+              stroke="var(--color-gold-500)"
+              strokeWidth="1.2"
+              strokeOpacity="0.45"
+            />
+            <rect
+              x="7"
+              y="7"
+              width="86"
+              height="126"
+              rx="4"
+              fill="none"
+              stroke="var(--color-lounge-slate-400)"
+              strokeWidth="0.6"
+              strokeOpacity="0.25"
+            />
           </svg>
 
           {coord ? (
-            <div className="relative z-10 flex flex-col items-center justify-center px-2.5 py-1 rounded-md bg-[#090b10]/92 border border-[#d4af37]/40">
-              <span className="font-mono-tabular text-xs sm:text-sm font-bold text-[#f3e2a6] tracking-wider">
+            <div className="relative z-10 flex flex-col items-center justify-center px-2.5 py-1 rounded-md bg-obsidian-900/95 border border-gold-500/45">
+              <span className="font-mono-tabular text-xs sm:text-sm font-bold text-gold-200 tracking-wider">
                 {coord}
               </span>
             </div>
           ) : (
-            <div className="relative z-10 w-7 h-7 rotate-45 border border-[#d4af37]/50 bg-[#090b10]/90 flex items-center justify-center">
-              <span className="-rotate-45 text-[10px] text-[#e5c158]">♠</span>
+            <div className="relative z-10 w-7 h-7 rotate-45 border border-lounge-sky-400/50 bg-obsidian-900/90 flex items-center justify-center">
+              <span className="-rotate-45 text-[10px] text-gold-400">♠</span>
             </div>
           )}
         </div>
@@ -160,7 +194,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
         <div className="pointer-events-none absolute -top-2 -right-2 z-20 flex items-center gap-1">
           {p1Token && (
             <div
-              className="h-7 min-w-7 px-1.5 rounded-full bg-[#e5c158] text-[#141004] border-2 border-[#fff9e6] shadow-[0_3px_10px_rgba(0,0,0,0.65)] flex items-center justify-center font-mono-tabular text-[11px] font-bold tracking-tight"
+              className="h-7 min-w-7 px-1.5 rounded-full bg-gold-400 text-gold-950 border-2 border-gold-100 shadow-[0_3px_10px_rgba(0,0,0,0.65)] flex items-center justify-center font-mono-tabular text-[11px] font-bold tracking-tight"
               title="플레이어 1 선택 말"
             >
               P1
@@ -168,7 +202,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
           )}
           {p2Token && (
             <div
-              className="h-7 min-w-7 px-1.5 rounded-md bg-rose-600 text-white border-2 border-rose-100 shadow-[0_3px_10px_rgba(0,0,0,0.65)] flex items-center justify-center font-mono-tabular text-[11px] font-bold tracking-tight"
+              className="h-7 min-w-7 px-1.5 rounded-md bg-rival-500 text-white border-2 border-rose-100 shadow-[0_3px_10px_rgba(0,0,0,0.65)] flex items-center justify-center font-mono-tabular text-[11px] font-bold tracking-tight"
               title={`${p2Label} 선택 말`}
             >
               {p2Label}

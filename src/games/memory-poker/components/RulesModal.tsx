@@ -24,10 +24,10 @@ export const RulesModal: React.FC<RulesModalProps> = ({ open, onClose }) => {
       >
         <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/10">
           <div>
-            <h2 id="rules-modal-title" className="font-display text-2xl font-bold text-[#f3e2a6]">
+            <h2 id="rules-modal-title" className="font-display text-2xl font-bold text-gold-200">
               기억 포커 규칙 및 족보
             </h2>
-            <p className="mt-1 text-sm text-slate-300">
+            <p className="mt-1 text-sm text-lounge-slate-300">
               52장 중 무작위 16장을 20초간 암기하고, 공유 카드 3장과 합쳐 최고의 5장 조합을 만드세요.
             </p>
           </div>
@@ -35,7 +35,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ open, onClose }) => {
             type="button"
             onClick={onClose}
             aria-label="규칙 창 닫기"
-            className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-slate-700/70 text-slate-300 hover:text-white hover:border-[#d4af37]/60 transition-colors cursor-pointer"
+            className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-lounge-slate-700 text-lounge-slate-300 hover:text-white hover:border-gold-500/60 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -43,8 +43,8 @@ export const RulesModal: React.FC<RulesModalProps> = ({ open, onClose }) => {
 
         <div className="mt-5 space-y-5 text-sm leading-relaxed">
           <section className="space-y-2">
-            <h3 className="font-semibold text-[#e5c158] text-base">진행 순서</h3>
-            <ol className="list-decimal list-inside space-y-1.5 text-slate-200">
+            <h3 className="font-semibold text-gold-400 text-base">진행 순서</h3>
+            <ol className="list-decimal list-inside space-y-1.5 text-lounge-slate-200">
               <li>
                 <strong className="text-white">카드 암기 (20초)</strong>: 4×4 게임판에 놓인 16장의 카드를 20초 동안 기억합니다.
               </li>
@@ -62,8 +62,8 @@ export const RulesModal: React.FC<RulesModalProps> = ({ open, onClose }) => {
 
           <section className="space-y-2.5">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="font-semibold text-[#e5c158] text-base">홀덤 족보 (높은 순서)</h3>
-              <span className="text-xs text-slate-400">
+              <h3 className="font-semibold text-gold-400 text-base">홀덤 족보 (높은 순서)</h3>
+              <span className="text-xs text-lounge-sky-300">
                 동일 족보 시 높은 숫자 우선 · 문양 비교 없음
               </span>
             </div>
@@ -74,20 +74,20 @@ export const RulesModal: React.FC<RulesModalProps> = ({ open, onClose }) => {
                   className="flex items-center justify-between gap-4 px-4 py-2.5"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="font-mono-tabular text-xs font-semibold text-[#e5c158] w-5 shrink-0">
+                    <span className="font-mono-tabular text-xs font-semibold text-gold-400 w-5 shrink-0">
                       {idx + 1}.
                     </span>
                     <span className="font-semibold text-white whitespace-nowrap">
                       {item.nameKo}
                     </span>
                   </div>
-                  <span className="text-xs sm:text-sm text-slate-300 text-right">
+                  <span className="text-xs sm:text-sm text-lounge-slate-300 text-right">
                     {item.summaryKo}
                   </span>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-slate-400 pt-1">
+            <p className="text-xs text-lounge-slate-400 pt-1">
               같은 조합끼리는 조합을 이룬 숫자가 더 큰 쪽이 승리하며, 그 숫자까지 동일하면 조합 외 나머지 카드(키커)의 숫자가 더 큰 쪽이 승리합니다.
             </p>
           </section>
@@ -97,7 +97,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ open, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-lg bg-[#e5c158] text-[#141004] font-bold text-sm hover:bg-[#f3d474] transition-colors cursor-pointer"
+            className="px-5 py-2.5 rounded-lg bg-gold-400 text-gold-950 font-bold text-sm hover:bg-gold-300 transition-colors cursor-pointer"
           >
             확인
           </button>
