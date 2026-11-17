@@ -26,8 +26,11 @@ import { GameScreenProps } from '../types';
 import { heavy13Sound } from './audio/heavy13Sound';
 import { Heavy13HistoryPanel } from './components/Heavy13HistoryPanel';
 import {
+  ChipMiniEmblem,
   ChipTokenButton,
+  PedestalBurstEffect,
   PedestalStation,
+  RevealFlipCard,
   RockCardButton,
 } from './components/Heavy13Pieces';
 import { Heavy13RulesModal } from './components/Heavy13RulesModal';
@@ -127,7 +130,22 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   const [roundLastPenaltyPlayerId, setRoundLastPenaltyPlayerId] = useState<string | null>(null);
   const [highlightedPedestal, setHighlightedPedestal] = useState<PedestalColor | null>(null);
 
+  // Visual Presentation & Animation State (UI only; no rule changes)
+  const [revealedCardIds, setRevealedCardIds] = useState<string[]>([]);
+  const [newlyPlacedCubeId, setNewlyPlacedCubeId] = useState<string | null>(null);
+  const [pedestalBurst, setPedestalBurst] = useState<PedestalBurstEffect | null>(null);
+  const [showSet2Transition, setShowSet2Transition] = useState(false);
+
   const cubeCounterRef = useRef(0);
+  const cubeDropTimerRef = useRef<number | null>(null);
+  const burstTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (cubeDropTimerRef.current !== null) window.clearTimeout(cubeDropTimerRef.current);
+      if (burstTimerRef.current !== null) window.clearTimeout(burstTimerRef.current);
+    };
+  }, []);
 
   const toggleMute = useCallback(() => {
     setMuted((prev) => {
@@ -174,6 +192,9 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       setRoundPenalties({});
       setRoundLastPenaltyPlayerId(null);
       setHighlightedPedestal(null);
+      setRevealedCardIds([]);
+      setNewlyPlacedCubeId(null);
+      setPedestalBurst(null);
       setPhase('SUBMISSION');
     },
     []
@@ -195,6 +216,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     setFirstPlayerSeat(randomFirstSeat);
     setPenaltySeq(0);
     setRoundHistory([]);
+    setShowSet2Transition(false);
     setShell('PLAYING');
     startRound(1, initialPlayers, randomFirstSeat);
   }, [mode, playerCount, startingSeatChoice, startRound]);
@@ -276,7 +298,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
 
   // 3-minute submission timer
   useEffect(() => {
-    if (shell !== 'PLAYING' || phase !== 'SUBMISSION' || rulesOpen) return;
+    if (shell !== 'PLAYING' || phase !== 'SUBMISSION' || rulesOpen || showSet2Transition) return;
 
     let last = performance.now();
     let rafId = 0;
@@ -290,11 +312,11 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [shell, phase, rulesOpen]);
+  }, [shell, phase, rulesOpen, showSet2Transition]);
 
   // Auto-submit random remaining card & chip if 3-minute timer expires
   useEffect(() => {
-    if (shell !== 'PLAYING' || phase !== 'SUBMISSION') return;
+    if (shell !== 'PLAYING' || phase !== 'SUBMISSION' || showSet2Transition) return;
     if (submitTimeLeftMs > 0 || !currentSubmittingPlayer) return;
 
     const remainingCards = currentSubmittingPlayer.cards;
@@ -308,36 +330,60 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   }, [
     shell,
     phase,
+    showSet2Transition,
     submitTimeLeftMs,
     currentSubmittingPlayer,
     commitHumanSubmission,
   ]);
 
-  // Staged reveal: Chips (2.5s) -> Cards -> Placement Step
+  // Staged reveal: Chips (2.5s) -> Cards flip one by one -> Placement order showcase -> Placement Step
   useEffect(() => {
     if (shell !== 'PLAYING' || rulesOpen) return;
 
     if (phase === 'REVEAL_CHIPS') {
       const timer = window.setTimeout(() => {
-        heavy13Sound.playReveal();
+        setRevealedCardIds([]);
         setPhase('REVEAL_CARDS');
       }, 2500);
       return () => window.clearTimeout(timer);
     }
 
     if (phase === 'REVEAL_CARDS') {
-      const timer = window.setTimeout(() => {
+      const n = players.length;
+      const clockwisePlayers = Array.from({ length: n }, (_, offset) => {
+        const seat = (firstPlayerSeat + offset) % n;
+        return players.find((p) => p.seatIndex === seat);
+      }).filter((p): p is PlayerState => Boolean(p));
+
+      setRevealedCardIds([]);
+      const timers: number[] = [];
+
+      clockwisePlayers.forEach((p, idx) => {
+        const t = window.setTimeout(() => {
+          heavy13Sound.playCardFlip();
+          setRevealedCardIds((prev) => (prev.includes(p.id) ? prev : [...prev, p.id]));
+        }, 160 + idx * 240);
+        timers.push(t);
+      });
+
+      const finishMs = 160 + clockwisePlayers.length * 240 + 2100;
+      const advanceTimer = window.setTimeout(() => {
         const ordered = computePlacementOrder(submissions, players, firstPlayerSeat);
         setPlacementQueue(ordered);
         setDeferredPassStack([]);
         setPhase('PLACEMENT_STEP');
-      }, 1350);
-      return () => window.clearTimeout(timer);
+      }, finishMs);
+      timers.push(advanceTimer);
+
+      return () => {
+        timers.forEach((id) => window.clearTimeout(id));
+      };
     }
   }, [shell, phase, rulesOpen, submissions, players, firstPlayerSeat]);
 
   const startPlacementImmediately = useCallback(() => {
     if (phase !== 'REVEAL_CARDS') return;
+    setRevealedCardIds(players.map((p) => p.id));
     const ordered = computePlacementOrder(submissions, players, firstPlayerSeat);
     setPlacementQueue(ordered);
     setDeferredPassStack([]);
@@ -460,13 +506,16 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
         head.chip === 'rainbow' ? (targetColor ?? 'red') : head.chip;
 
       cubeCounterRef.current += 1;
-      const resolution = resolveCubePlacement(pedestals, resolvedColor, {
-        id: `cube-${roundNumber}-${cubeCounterRef.current}`,
+      const cubeId = `cube-${roundNumber}-${cubeCounterRef.current}`;
+      const preCubes = pedestals[resolvedColor];
+      const newCube = {
+        id: cubeId,
         value: head.card,
         ownerId: actor.id,
         ownerName: actor.name,
         roundPlaced: roundNumber,
-      });
+      };
+      const resolution = resolveCubePlacement(pedestals, resolvedColor, newCube);
 
       setPedestals(resolution.nextPedestals);
       setHighlightedPedestal(resolvedColor);
@@ -478,6 +527,20 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
 
       if (resolution.overflowed && resolution.penaltyAdded > 0) {
         heavy13Sound.playOverflowPenalty();
+        setNewlyPlacedCubeId(null);
+        if (burstTimerRef.current !== null) window.clearTimeout(burstTimerRef.current);
+        setPedestalBurst({
+          id: `burst-${roundNumber}-${cubeCounterRef.current}`,
+          color: resolvedColor,
+          actorName: actor.name.replace(' AI', ''),
+          penaltyAdded: resolution.penaltyAdded,
+          sumAfter: resolution.sumAfter,
+          cubes: [...preCubes, newCube],
+        });
+        burstTimerRef.current = window.setTimeout(() => {
+          setPedestalBurst(null);
+        }, 1100);
+
         nextPenaltySeq = penaltySeq + 1;
         setPenaltySeq(nextPenaltySeq);
 
@@ -503,6 +566,11 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
         setRoundLastPenaltyPlayerId(actor.id);
       } else {
         heavy13Sound.playStonePlace();
+        setNewlyPlacedCubeId(cubeId);
+        if (cubeDropTimerRef.current !== null) window.clearTimeout(cubeDropTimerRef.current);
+        cubeDropTimerRef.current = window.setTimeout(() => {
+          setNewlyPlacedCubeId(null);
+        }, 550);
       }
 
       const logEntry: PlacementEventLog = {
@@ -547,9 +615,9 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     ]
   );
 
-  // Automatic AI turn during PLACEMENT_STEP
+  // Automatic AI turn during PLACEMENT_STEP (waits cleanly if burst animation is playing)
   useEffect(() => {
-    if (shell !== 'PLAYING' || phase !== 'PLACEMENT_STEP' || rulesOpen) return;
+    if (shell !== 'PLAYING' || phase !== 'PLACEMENT_STEP' || rulesOpen || pedestalBurst) return;
     if (!activePlacementEntry || !activePlacementPlayer || activePlacementPlayer.isHuman) return;
 
     const timer = window.setTimeout(() => {
@@ -590,6 +658,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     shell,
     phase,
     rulesOpen,
+    pedestalBurst,
     activePlacementEntry,
     activePlacementPlayer,
     placementQueue,
@@ -607,14 +676,16 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     }
 
     // After Round 7 ends, replenish full card & chip sets while KEEPING pedestals intact!
-    const nextPlayers =
-      roundNumber === HALF_ROUND ? replenishPlayerHands(players) : players;
-
     if (roundNumber === HALF_ROUND) {
+      const nextPlayers = replenishPlayerHands(players);
       setPlayers(nextPlayers);
+      heavy13Sound.playSetTransition();
+      startRound(roundNumber + 1, nextPlayers, firstPlayerSeat);
+      setShowSet2Transition(true);
+      return;
     }
 
-    startRound(roundNumber + 1, nextPlayers, firstPlayerSeat);
+    startRound(roundNumber + 1, players, firstPlayerSeat);
   }, [roundNumber, players, firstPlayerSeat, startRound]);
 
   // Global keyboard shortcuts (Esc to pause, M to mute)
@@ -683,6 +754,22 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
         return `라운드 ${roundNumber} 종료`;
     }
   })();
+
+  const previewPlacementOrder = useMemo(() => {
+    if (
+      (phase !== 'REVEAL_CHIPS' && phase !== 'REVEAL_CARDS') ||
+      players.length === 0 ||
+      Object.keys(submissions).length < players.length
+    ) {
+      return [];
+    }
+    return computePlacementOrder(submissions, players, firstPlayerSeat);
+  }, [phase, players, submissions, firstPlayerSeat]);
+
+  const allCardsRevealed =
+    phase === 'REVEAL_CARDS' &&
+    players.length > 0 &&
+    revealedCardIds.length >= players.length;
 
   const isHumanPlacementTurn =
     phase === 'PLACEMENT_STEP' &&
@@ -1150,53 +1237,136 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                   phase === 'REVEAL_CARDS' ||
                   phase === 'PLACEMENT_STEP' ||
                   phase === 'ROUND_SUMMARY');
-              const showCard =
+              const isCardFlipped =
                 sub &&
-                (phase === 'REVEAL_CARDS' ||
-                  phase === 'PLACEMENT_STEP' ||
-                  phase === 'ROUND_SUMMARY');
+                (phase === 'PLACEMENT_STEP' ||
+                  phase === 'ROUND_SUMMARY' ||
+                  (phase === 'REVEAL_CARDS' && revealedCardIds.includes(p.id)));
               const hasPassed = passedThisRoundIds.includes(p.id);
 
               return (
                 <div
                   key={p.id}
                   className={[
-                    'rounded-xl border px-3.5 py-2.5 flex flex-col justify-between gap-2 transition-colors',
+                    'rounded-xl border px-3.5 py-2.5 flex items-center justify-between gap-2.5 transition-colors',
                     isTurn
                       ? 'bg-obsidian-800 border-gold-400 shadow-[0_0_16px_rgba(229,193,88,0.16)]'
                       : 'bg-obsidian-850/90 border-lounge-slate-700/80',
                   ].join(' ')}
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="font-mono-tabular text-[11px] text-lounge-slate-400">
-                        {p.seatIndex + 1}번
-                      </span>
-                      <span className="text-xs sm:text-sm font-bold text-white truncate">
-                        {p.name}
-                      </span>
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className="flex items-center justify-between gap-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="font-mono-tabular text-[11px] text-lounge-slate-400">
+                          {p.seatIndex + 1}번
+                        </span>
+                        <span className="text-xs sm:text-sm font-bold text-white truncate">
+                          {p.name}
+                        </span>
+                      </div>
+                      {isFirst && (
+                        <span className="text-[11px] font-bold text-gold-300 shrink-0">
+                          선
+                        </span>
+                      )}
                     </div>
-                    {isFirst && (
-                      <span className="text-[11px] font-bold text-gold-300 shrink-0">
-                        선 플레이어
+
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="font-mono-tabular text-rival-400 font-bold">
+                        벌점 {p.penaltyPoints}점
                       </span>
-                    )}
+                      <span className="text-lounge-slate-500" aria-hidden="true">·</span>
+                      {showChip ? (
+                        <span className="inline-flex items-center gap-1.5 font-mono-tabular text-lounge-slate-300">
+                          <ChipMiniEmblem chip={sub.chip} size="sm" />
+                          <span>{CHIP_META[sub.chip].shortKo}</span>
+                          {hasPassed && (
+                            <span className="text-lounge-sky-300 font-semibold">(패스)</span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="font-mono-tabular text-lounge-slate-400">
+                          카드 {p.cards.length}장
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 text-xs">
-                    <span className="font-mono-tabular text-rival-400 font-bold">
-                      벌점 {p.penaltyPoints}점
-                    </span>
-                    <span className="font-mono-tabular text-lounge-slate-400">
-                      {showChip
-                        ? `${CHIP_META[sub.chip].shortKo} · ${showCard ? `바위 ${sub.card}` : '?'}${hasPassed ? ' (패스)' : ''}`
-                        : `카드 ${p.cards.length}장`}
-                    </span>
-                  </div>
+                  {showChip && sub && (
+                    <RevealFlipCard
+                      value={sub.card}
+                      flipped={Boolean(isCardFlipped)}
+                      isHighlighted={isTurn}
+                    />
+                  )}
                 </div>
               );
             })}
           </section>
+
+          {/* Staged Reveal & Large Placement Order Showcase */}
+          {(phase === 'REVEAL_CHIPS' || phase === 'REVEAL_CARDS') && (
+            <section className="obsidian-sky-panel rounded-2xl p-4 sm:p-5 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <h2 className="font-display text-lg sm:text-xl font-bold text-gold-200">
+                    {phase === 'REVEAL_CHIPS'
+                      ? '1단계 · 색깔 칩 공개'
+                      : allCardsRevealed
+                        ? '이번 라운드 배치 순서 확정'
+                        : `2단계 · 바위 카드 공개 (${revealedCardIds.length}/${players.length})`}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-lounge-slate-300">
+                    {phase === 'REVEAL_CHIPS'
+                      ? '모든 플레이어의 색깔 칩이 공개되었습니다. 잠시 후 시계 방향으로 바위 카드가 한 장씩 뒤집힙니다.'
+                      : allCardsRevealed
+                        ? `레인보우 우선 · 높은 숫자 순 · 선(${players.find((pl) => pl.seatIndex === firstPlayerSeat)?.name ?? ''}) 기준 시계 방향`
+                        : '선 플레이어부터 시계 방향으로 제출한 바위 카드를 공개하고 있습니다...'}
+                  </p>
+                </div>
+
+                {phase === 'REVEAL_CARDS' && (
+                  <button
+                    type="button"
+                    onClick={startPlacementImmediately}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    <SkipForward className="w-4 h-4" />
+                    바로 배치 진행
+                  </button>
+                )}
+              </div>
+
+              {phase === 'REVEAL_CARDS' && allCardsRevealed && previewPlacementOrder.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 pt-1">
+                  {previewPlacementOrder.map((entry, idx) => {
+                    const p = players.find((pl) => pl.id === entry.playerId);
+                    if (!p) return null;
+                    return (
+                      <div
+                        key={`order-spotlight-${entry.playerId}`}
+                        className="animate-order-reveal rounded-xl border border-gold-400/50 bg-obsidian-900/95 px-3 py-3 flex flex-col justify-between gap-2 shadow-md"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono-tabular text-sm sm:text-base font-extrabold text-gold-300">
+                            {idx + 1}번
+                          </span>
+                          <ChipMiniEmblem chip={entry.chip} size="sm" />
+                        </div>
+                        <div className="text-xs sm:text-sm font-bold text-white truncate">
+                          {p.name}
+                        </div>
+                        <div className="flex items-center justify-between gap-1 text-[11px] font-mono-tabular text-lounge-slate-300 pt-1 border-t border-white/10">
+                          <span>{CHIP_META[entry.chip].shortKo}</span>
+                          <span className="font-bold text-gold-200">바위 {entry.card}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          )}
 
           {/* Center Stage: 3 Bearer Pedestals + Live Placement Queue/Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-4 items-stretch">
@@ -1209,7 +1379,9 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                 <span className="text-xs text-lounge-slate-400">
                   {isRainbowSelectionActive
                     ? '레인보우 칩: 배치할 받침대를 클릭하세요'
-                    : '받침대별 합계가 12 이하이면 안전합니다'}
+                    : isHumanPlacementTurn
+                      ? '놓았을 때 합계와 안전 여부를 확인하세요'
+                      : '받침대별 합계가 12 이하이면 안전합니다'}
                 </span>
               </div>
 
@@ -1222,7 +1394,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                       ? activePlacementEntry.card
                       : phase === 'SUBMISSION' &&
                           selectedCard !== null &&
-                          selectedChip === color
+                          (selectedChip === color || selectedChip === 'rainbow')
                         ? selectedCard
                         : null;
 
@@ -1237,6 +1409,9 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
                       }
                       isSelectableTarget={isRainbowSelectionActive}
                       previewAddValue={previewValue}
+                      isMyTurnPreview={isHumanPlacementTurn}
+                      newlyPlacedCubeId={newlyPlacedCubeId}
+                      burstEffect={pedestalBurst}
                       onSelectTarget={
                         isRainbowSelectionActive
                           ? () => executePlacementAction('PLACE', color)
@@ -1428,27 +1603,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
             </section>
           )}
 
-          {(phase === 'REVEAL_CHIPS' || phase === 'REVEAL_CARDS') && (
-            <section className="obsidian-sky-panel rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
-              <div className="space-y-1">
-                <h3 className="text-base font-bold text-lounge-sky-200">
-                  {phase === 'REVEAL_CHIPS'
-                    ? '모든 플레이어의 색깔 칩을 공개하고 있습니다...'
-                    : '바위 카드가 공개되었습니다! 레인보우 우선 · 높은 숫자 순 · 시계 방향으로 배치합니다.'}
-                </h3>
-              </div>
-              {phase === 'REVEAL_CARDS' && (
-                <button
-                  type="button"
-                  onClick={startPlacementImmediately}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
-                >
-                  <SkipForward className="w-4 h-4" />
-                  바로 배치 진행
-                </button>
-              )}
-            </section>
-          )}
+
 
           {phase === 'PLACEMENT_STEP' && activePlacementEntry && activePlacementPlayer && (
             <section className="obsidian-panel rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
@@ -1784,6 +1939,107 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
               >
                 <RotateCcw className="w-4 h-4" />
                 다시 플레이
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= SET 2 REPLENISHMENT TRANSITION SCREEN ================= */}
+      {shell === 'PLAYING' && showSet2Transition && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/85 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="2세트 시작 및 카드 재지급 안내"
+        >
+          <div className="w-full max-w-xl obsidian-panel rounded-2xl p-6 sm:p-8 space-y-6 animate-order-reveal">
+            <div className="space-y-2 text-center">
+              <div className="font-mono-tabular text-xs font-bold tracking-widest text-lounge-sky-300">
+                SET 2 · 라운드 8–14
+              </div>
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-gold-200">
+                2세트 시작 · 카드 재지급
+              </h2>
+              <p className="text-sm text-lounge-slate-300 leading-relaxed">
+                7라운드가 종료되어 모든 플레이어에게 바위 카드와 색깔 칩 한 세트가 새로 지급되었습니다.
+                <br />
+                <strong className="text-white">기존 받침대 위의 바위 큐브는 초기화되지 않고 그대로 이어집니다.</strong>
+              </p>
+            </div>
+
+            {/* Replenished Kit Preview */}
+            <div className="obsidian-subpanel rounded-xl p-4 space-y-3">
+              <div className="text-xs font-semibold text-lounge-slate-400">
+                전원 재지급 세트 구성
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {ROCK_NUMBERS.map((num) => (
+                  <div
+                    key={`set2-card-${num}`}
+                    className="w-9 h-11 rounded-lg bg-obsidian-800 border border-gold-400/60 flex items-center justify-center font-mono-tabular text-base font-bold text-gold-100"
+                  >
+                    {num}
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-4 pt-1 text-xs text-lounge-slate-300 font-mono-tabular">
+                <span className="inline-flex items-center gap-1.5">
+                  <ChipMiniEmblem chip="red" size="sm" />
+                  빨강 ×2
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <ChipMiniEmblem chip="green" size="sm" />
+                  초록 ×2
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <ChipMiniEmblem chip="blue" size="sm" />
+                  파랑 ×2
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <ChipMiniEmblem chip="rainbow" size="sm" />
+                  레인보우 ×1
+                </span>
+              </div>
+            </div>
+
+            {/* Preserved Pedestal Snapshot */}
+            <div className="grid grid-cols-3 gap-2.5">
+              {PEDESTAL_COLORS.map((color) => {
+                const curSum = getPedestalSum(pedestals[color]);
+                return (
+                  <div
+                    key={`set2-ped-${color}`}
+                    className="obsidian-subpanel rounded-xl p-3 text-center space-y-1"
+                  >
+                    <div className="text-xs font-bold text-lounge-slate-300">
+                      {PEDESTAL_META[color].shortKo} 받침대
+                    </div>
+                    <div className="font-mono-tabular text-xl font-extrabold text-white">
+                      {curSum}
+                      <span className="text-xs font-normal text-lounge-slate-400"> / 13</span>
+                    </div>
+                    <div className="font-mono-tabular text-[11px] text-lounge-slate-400">
+                      큐브 {pedestals[color].length}개 유지
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+              <span className="text-xs text-lounge-slate-300">
+                8라운드 선 플레이어:{' '}
+                <strong className="text-gold-200">
+                  {players.find((p) => p.seatIndex === firstPlayerSeat)?.name ?? ''}
+                </strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowSet2Transition(false)}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
+              >
+                라운드 8 시작하기
               </button>
             </div>
           </div>

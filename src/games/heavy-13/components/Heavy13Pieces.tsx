@@ -164,12 +164,111 @@ export const ChipTokenButton: React.FC<ChipTokenButtonProps> = ({
   );
 };
 
+export interface PedestalBurstEffect {
+  id: string;
+  color: PedestalColor;
+  actorName: string;
+  penaltyAdded: number;
+  sumAfter: number;
+  cubes: RockCube[];
+}
+
+export const ChipMiniEmblem: React.FC<{ chip: ChipType; size?: 'sm' | 'md' }> = ({
+  chip,
+  size = 'sm',
+}) => {
+  const style = CHIP_STYLE[chip];
+  const boxClass = size === 'md' ? 'w-7 h-7' : 'w-5 h-5';
+  const dotClass = size === 'md' ? 'w-3 h-3' : 'w-2.5 h-2.5';
+
+  return (
+    <span
+      className={[
+        boxClass,
+        'rounded-full border-2 flex items-center justify-center shrink-0 bg-obsidian-950',
+        style.ring,
+      ].join(' ')}
+      aria-hidden="true"
+    >
+      {chip === 'rainbow' ? (
+        <svg viewBox="0 0 24 24" className={size === 'md' ? 'w-3.5 h-3.5' : 'w-2.5 h-2.5'}>
+          <polygon points="12,2 22,12 12,22 2,12" fill="url(#rainbowPrismMini)" />
+          <defs>
+            <linearGradient id="rainbowPrismMini" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#fb7185" />
+              <stop offset="50%" stopColor="#34d399" />
+              <stop offset="100%" stopColor="#38bdf8" />
+            </linearGradient>
+          </defs>
+        </svg>
+      ) : (
+        <span
+          className={`${dotClass} rounded-full`}
+          style={{ backgroundColor: style.emblemFill }}
+        />
+      )}
+    </span>
+  );
+};
+
+interface RevealFlipCardProps {
+  value?: RockNumber;
+  flipped: boolean;
+  isHighlighted?: boolean;
+}
+
+export const RevealFlipCard: React.FC<RevealFlipCardProps> = ({
+  value,
+  flipped,
+  isHighlighted,
+}) => {
+  return (
+    <div className="card-perspective w-11 h-14 shrink-0" aria-label={flipped && value !== undefined ? `공개된 바위 카드 ${value}` : '비공개 바위 카드'}>
+      <div className={`card-inner ${flipped ? 'is-flipped' : ''}`}>
+        {/* Front (Hidden) */}
+        <div className="card-face rounded-lg border border-lounge-slate-700 bg-obsidian-950 flex flex-col items-center justify-center shadow-inner">
+          <div className="w-5 h-5 rounded border border-gold-500/35 rotate-45 flex items-center justify-center">
+            <span className="-rotate-45 font-mono-tabular text-[11px] font-bold text-gold-300/80">
+              ?
+            </span>
+          </div>
+        </div>
+
+        {/* Back (Revealed) */}
+        <div
+          className={[
+            'card-face card-face-back rounded-lg border flex flex-col items-center justify-center shadow-md',
+            isHighlighted
+              ? 'bg-gold-400 border-gold-200 text-gold-950'
+              : 'bg-obsidian-800 border-gold-400/75 text-gold-100',
+          ].join(' ')}
+        >
+          <span
+            className={[
+              'text-[8px] font-semibold leading-none',
+              isHighlighted ? 'text-gold-950/75' : 'text-lounge-slate-400',
+            ].join(' ')}
+          >
+            바위
+          </span>
+          <span className="font-mono-tabular text-lg font-extrabold leading-tight mt-0.5">
+            {value ?? '?'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 interface PedestalStationProps {
   color: PedestalColor;
   cubes: RockCube[];
   isHighlightedTarget?: boolean;
   isSelectableTarget?: boolean;
   previewAddValue?: number | null;
+  isMyTurnPreview?: boolean;
+  newlyPlacedCubeId?: string | null;
+  burstEffect?: PedestalBurstEffect | null;
   onSelectTarget?: () => void;
 }
 
@@ -197,14 +296,21 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
   isHighlightedTarget,
   isSelectableTarget,
   previewAddValue,
+  isMyTurnPreview,
+  newlyPlacedCubeId,
+  burstEffect,
   onSelectTarget,
 }) => {
   const sum = getPedestalSum(cubes);
   const meta = PEDESTAL_META[color];
   const fillPercent = Math.min(100, (sum / OVERFLOW_THRESHOLD) * 100);
-  const projectedSum = previewAddValue !== null && previewAddValue !== undefined ? sum + previewAddValue : null;
+  const projectedSum =
+    previewAddValue !== null && previewAddValue !== undefined
+      ? sum + previewAddValue
+      : null;
   const wouldOverflow = projectedSum !== null && projectedSum >= OVERFLOW_THRESHOLD;
   const isDangerZone = sum >= 9;
+  const isBursting = burstEffect !== null && burstEffect !== undefined && burstEffect.color === color;
 
   const WrapperTag = isSelectableTarget ? 'button' : 'div';
 
@@ -217,16 +323,57 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           }
         : {})}
       className={[
-        'relative rounded-2xl border p-4 flex flex-col justify-between gap-3.5 text-left transition-all duration-150',
+        'relative rounded-2xl border p-4 flex flex-col justify-between gap-3 text-left transition-all duration-150',
         'bg-obsidian-850/95',
-        isSelectableTarget
+        isBursting ? 'animate-pedestal-shake border-rival-400 shadow-[0_0_30px_rgba(251,113,133,0.35)]' : '',
+        !isBursting && isSelectableTarget
           ? 'cursor-pointer hover:-translate-y-0.5 hover:border-gold-300 ring-1 ring-gold-400/50'
           : '',
-        isHighlightedTarget
+        !isBursting && isHighlightedTarget
           ? 'border-gold-400 shadow-[0_0_24px_rgba(229,193,88,0.2)]'
-          : PEDESTAL_BORDER_CLASS[color],
+          : !isBursting
+            ? PEDESTAL_BORDER_CLASS[color]
+            : '',
       ].join(' ')}
     >
+      {/* Overflow Penalty Floating Popup */}
+      {isBursting && burstEffect && (
+        <div
+          key={burstEffect.id}
+          className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 z-30 animate-penalty-popup"
+        >
+          <div className="px-3.5 py-1.5 rounded-xl bg-rival-950 border-2 border-rival-400 shadow-[0_10px_28px_rgba(225,29,72,0.5)] whitespace-nowrap flex items-center gap-2">
+            <span className="text-xs sm:text-sm font-extrabold text-white">
+              {burstEffect.actorName}
+            </span>
+            <span className="font-mono-tabular text-xs sm:text-sm font-extrabold text-rival-400">
+              벌점 +{burstEffect.penaltyAdded}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Prominent Turn / Selection Forecast Banner on Top of Pedestal */}
+      {projectedSum !== null && (
+        <div
+          className={[
+            'rounded-xl border px-3 py-2 flex items-center justify-between gap-2 text-xs font-bold',
+            wouldOverflow
+              ? 'bg-rival-950/85 border-rival-400/75 text-rival-400'
+              : isMyTurnPreview
+                ? 'bg-emerald-950/75 border-emerald-400/70 text-emerald-300'
+                : 'bg-gold-950/80 border-gold-400/60 text-gold-200',
+          ].join(' ')}
+        >
+          <span className="font-mono-tabular">
+            놓으면 합계 {projectedSum}
+          </span>
+          <span className="whitespace-nowrap">
+            → {wouldOverflow ? `폭발 (벌점 +${cubes.length})` : '안전'}
+          </span>
+        </div>
+      )}
+
       {/* Top Color Strip */}
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
@@ -255,19 +402,15 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           <span
             className={[
               'text-xs font-semibold font-mono-tabular',
-              projectedSum !== null
-                ? wouldOverflow
-                  ? 'text-rival-400'
-                  : 'text-gold-200'
+              isBursting
+                ? 'text-rival-400'
                 : isDangerZone
                   ? 'text-rival-400'
                   : 'text-lounge-slate-400',
             ].join(' ')}
           >
-            {projectedSum !== null
-              ? wouldOverflow
-                ? `예상 ${projectedSum} · 폭발 (+${cubes.length}벌점)`
-                : `예상 ${projectedSum} · 안전`
+            {isBursting
+              ? `합계 ${burstEffect?.sumAfter} · 수거 완료`
               : isDangerZone
                 ? `폭발 주의 (여유 ${OVERFLOW_THRESHOLD - 1 - sum})`
                 : `여유 ${OVERFLOW_THRESHOLD - 1 - sum}`}
@@ -285,27 +428,49 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
         </div>
       </div>
 
-      {/* Stacked Rock Cubes */}
-      <div className="min-h-[82px] rounded-xl bg-obsidian-950/75 border border-lounge-slate-800 p-2.5 flex flex-wrap content-start gap-2">
-        {cubes.length === 0 ? (
+      {/* Stacked Rock Cubes (with Drop & Burst Fly-Away Staging) */}
+      <div className="relative min-h-[84px] rounded-xl bg-obsidian-950/75 border border-lounge-slate-800 p-2.5 flex flex-wrap content-start gap-2 overflow-visible">
+        {isBursting && burstEffect ? (
+          burstEffect.cubes.map((cube, idx) => (
+            <div
+              key={`${burstEffect.id}-${cube.id}`}
+              className={`w-10 h-11 rounded-lg bg-rival-950 border border-rival-400/80 flex flex-col items-center justify-center shadow-md animate-cube-burst-${idx % 4}`}
+            >
+              <span className="font-mono-tabular text-base font-bold text-rival-400 leading-none">
+                {cube.value}
+              </span>
+              <span className="text-[9px] text-rival-400/80 truncate max-w-[34px] mt-0.5">
+                수거
+              </span>
+            </div>
+          ))
+        ) : cubes.length === 0 ? (
           <div className="w-full h-[60px] flex items-center justify-center text-xs text-lounge-slate-500">
             놓인 바위 큐브 없음
           </div>
         ) : (
-          cubes.map((cube) => (
-            <div
-              key={cube.id}
-              title={`${cube.ownerName} · R${cube.roundPlaced}`}
-              className="w-10 h-11 rounded-lg bg-obsidian-800 border border-gold-500/40 flex flex-col items-center justify-center shadow-sm"
-            >
-              <span className="font-mono-tabular text-base font-bold text-gold-100 leading-none">
-                {cube.value}
-              </span>
-              <span className="text-[9px] text-lounge-slate-400 truncate max-w-[34px] mt-0.5">
-                {cube.ownerName.replace(' AI', '').replace('플레이어 ', 'P').replace('나 (P1)', 'P1')}
-              </span>
-            </div>
-          ))
+          cubes.map((cube) => {
+            const isJustDropped = newlyPlacedCubeId === cube.id;
+            return (
+              <div
+                key={cube.id}
+                title={`${cube.ownerName} · R${cube.roundPlaced}`}
+                className={[
+                  'w-10 h-11 rounded-lg flex flex-col items-center justify-center shadow-sm',
+                  isJustDropped
+                    ? 'bg-obsidian-800 border-2 border-gold-300 shadow-[0_0_14px_rgba(229,193,88,0.35)] animate-cube-drop'
+                    : 'bg-obsidian-800 border border-gold-500/40',
+                ].join(' ')}
+              >
+                <span className="font-mono-tabular text-base font-bold text-gold-100 leading-none">
+                  {cube.value}
+                </span>
+                <span className="text-[9px] text-lounge-slate-400 truncate max-w-[34px] mt-0.5">
+                  {cube.ownerName.replace(' AI', '').replace('플레이어 ', 'P').replace('나 (P1)', 'P1')}
+                </span>
+              </div>
+            );
+          })
         )}
       </div>
 
