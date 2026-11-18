@@ -120,7 +120,7 @@ export default function App() {
                 fontFamily="Plus Jakarta Sans, sans-serif"
                 letterSpacing="0.24em"
               >
-                PSYCHOLOGICAL &amp; MEMORY MATCHES
+                MEMORY &amp; STRATEGY MATCHES
               </text>
             </svg>
 

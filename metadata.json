@@ -1,6 +1,6 @@
 {
-  "name": "기억 포커 · Memory Poker",
-  "description": "16장의 카드를 20초 동안 암기한 뒤 공유 카드 3장과 조합해 가장 높은 홀덤 족보를 완성하는 기억력 포커 게임",
+  "name": "데블스 플랜: 데드 어게인 · The Devil's Plan: Dead Again",
+  "description": "기억 포커, 무거운 13 등 기억력·추리·수 싸움으로 승부하는 두뇌 게임 아카이브. AI 또는 로컬 대전으로 플레이하세요.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

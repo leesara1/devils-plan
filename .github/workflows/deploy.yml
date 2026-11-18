@@ -1,4 +1,4 @@
-name: Deploy Memory Poker to GitHub Pages
+name: Deploy Devil's Plan to GitHub Pages
 
 on:
   push:
