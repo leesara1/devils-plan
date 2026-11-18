@@ -15,7 +15,6 @@ import {
   PlayerCount,
   PlayerState,
   RockNumber,
-  SUBMISSION_SECONDS,
   TOTAL_ROUNDS,
   chooseAIRainbowDecision,
   computeFinalRankings,
@@ -28,6 +27,13 @@ import {
   createInitialMatchState,
   heavy13Reducer,
 } from './engine/heavy13Reducer';
+import {
+  SubmissionDeadline,
+  buildSubmissionTurnKey,
+  getSubmissionRemainingMs,
+  isSubmissionDeadlineExpired,
+  syncSubmissionDeadline,
+} from './engine/submissionDeadline';
 
 export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   // Title Configuration & UI Preferences
@@ -46,9 +52,11 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   const [state, dispatch] = useReducer(heavy13Reducer, undefined, createInitialMatchState);
 
   // Transient UI Input & Presentation State
+  const [matchSeq, setMatchSeq] = useState(1);
   const [selectedCard, setSelectedCard] = useState<RockNumber | null>(null);
   const [selectedChip, setSelectedChip] = useState<ChipType | null>(null);
-  const [submitTimeLeftMs, setSubmitTimeLeftMs] = useState(SUBMISSION_SECONDS * 1000);
+  const [submissionDeadline, setSubmissionDeadline] = useState<SubmissionDeadline | null>(null);
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const [revealedCardIds, setRevealedCardIds] = useState<string[]>([]);
   const [newlyPlacedCubeId, setNewlyPlacedCubeId] = useState<string | null>(null);
   const [pedestalBurst, setPedestalBurst] = useState<PedestalBurstEffect | null>(null);
@@ -58,6 +66,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   const lastEffectSeqRef = useRef<number>(0);
   const prevPhaseRef = useRef(state.phase);
   const prevSet2Ref = useRef(state.showSet2Transition);
+  const autoSubmittedTurnKeysRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     return () => {
@@ -80,6 +89,24 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       ? state.players.find((p) => p.seatIndex === currentSubmittingSeat) ?? null
       : null;
 
+  const currentTurnKey =
+    state.phase === 'SUBMISSION' && currentSubmittingPlayer
+      ? buildSubmissionTurnKey(matchSeq, state.roundNumber, currentSubmittingPlayer.id)
+      : null;
+
+  const isSubmissionTimerActive =
+    state.shell === 'PLAYING' &&
+    state.phase === 'SUBMISSION' &&
+    !rulesOpen &&
+    !state.showSet2Transition &&
+    currentSubmittingPlayer !== null;
+
+  const submitTimeLeftMs = getSubmissionRemainingMs(
+    submissionDeadline,
+    currentTurnKey,
+    nowMs
+  );
+
   const activePlacementEntry = state.placementQueue[0] ?? null;
   const activePlacementPlayer = activePlacementEntry
     ? state.players.find((p) => p.id === activePlacementEntry.playerId) ?? null
@@ -99,9 +126,12 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   const startMatch = useCallback(() => {
     clearPresentationTimers();
     lastEffectSeqRef.current = 0;
+    autoSubmittedTurnKeysRef.current.clear();
+    setMatchSeq((seq) => seq + 1);
     setSelectedCard(null);
     setSelectedChip(null);
-    setSubmitTimeLeftMs(SUBMISSION_SECONDS * 1000);
+    setSubmissionDeadline(null);
+    setNowMs(Date.now());
     setRevealedCardIds([]);
     setNewlyPlacedCubeId(null);
     setPedestalBurst(null);
@@ -114,14 +144,28 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     });
   }, [mode, playerCount, startingSeatChoice, aiDifficulty, clearPresentationTimers]);
 
-  // Reset UI selection & timer whenever entering a fresh SUBMISSION step
+  // Reset UI selection when entering a new SUBMISSION step
   useEffect(() => {
     if (state.phase === 'SUBMISSION') {
       setSelectedCard(null);
       setSelectedChip(null);
-      setSubmitTimeLeftMs(SUBMISSION_SECONDS * 1000);
     }
-  }, [state.phase, state.roundNumber, state.humanSubmitQueue.length]);
+  }, [currentTurnKey, state.phase]);
+
+  // Issue a fresh deadline per (matchSeq, roundNumber, playerId) and pause/resume accurately
+  useEffect(() => {
+    const now = Date.now();
+    setNowMs(now);
+    setSubmissionDeadline((prev) =>
+      syncSubmissionDeadline(prev, {
+        turnKey: currentTurnKey,
+        roundNumber: state.roundNumber,
+        playerId: currentSubmittingPlayer?.id ?? null,
+        isTimerActive: isSubmissionTimerActive,
+        now,
+      })
+    );
+  }, [currentTurnKey, state.roundNumber, currentSubmittingPlayer?.id, isSubmissionTimerActive]);
 
   // Sound cues for REVEAL_CHIPS, ROUND_SUMMARY (14R match end), and Set 2 Transition
   useEffect(() => {
@@ -195,6 +239,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       heavy13Sound.playSubmit();
       setSelectedCard(null);
       setSelectedChip(null);
+      setSubmissionDeadline(null);
       dispatch({
         type: 'COMMIT_SUBMISSION',
         playerId: player.id,
@@ -219,60 +264,81 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     commitHumanSubmission,
   ]);
 
-  // 3-minute submission countdown timer
+  // 3-minute submission deadline display tick & auto-submit strictly scoped to current turn's deadline
   useEffect(() => {
     if (
-      state.shell !== 'PLAYING' ||
-      state.phase !== 'SUBMISSION' ||
-      rulesOpen ||
-      state.showSet2Transition
+      !isSubmissionTimerActive ||
+      !currentTurnKey ||
+      !currentSubmittingPlayer ||
+      !submissionDeadline ||
+      submissionDeadline.turnKey !== currentTurnKey ||
+      submissionDeadline.playerId !== currentSubmittingPlayer.id ||
+      submissionDeadline.deadlineAt === null
     ) {
       return;
     }
 
-    let last = performance.now();
-    let rafId = 0;
+    const deadlineAt = submissionDeadline.deadlineAt;
+    if (deadlineAt === null) return;
+    const capturedDeadline = submissionDeadline;
+    const capturedTurnKey = currentTurnKey;
+    const capturedPlayer = currentSubmittingPlayer;
 
-    const tick = (now: number) => {
-      const dt = Math.min(now - last, 120);
-      last = now;
-      setSubmitTimeLeftMs((prev) => Math.max(0, prev - dt));
-      rafId = requestAnimationFrame(tick);
+    const tickInterval = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 200);
+
+    let expireTimeout = 0;
+    const scheduleExpirationCheck = () => {
+      const delayMs = Math.max(0, deadlineAt - Date.now());
+      expireTimeout = window.setTimeout(() => {
+        const now = Date.now();
+        setNowMs(now);
+
+        if (now < deadlineAt) {
+          scheduleExpirationCheck();
+          return;
+        }
+
+        if (
+          !isSubmissionDeadlineExpired(
+            capturedDeadline,
+            capturedTurnKey,
+            capturedPlayer.id,
+            now
+          )
+        ) {
+          return;
+        }
+
+        if (autoSubmittedTurnKeysRef.current.has(capturedTurnKey)) {
+          return;
+        }
+        autoSubmittedTurnKeysRef.current.add(capturedTurnKey);
+
+        const remainingCards = capturedPlayer.cards;
+        const availableChips = getAvailableChipTypes(capturedPlayer.chips);
+        if (remainingCards.length > 0 && availableChips.length > 0) {
+          const randomCard =
+            remainingCards[Math.floor(Math.random() * remainingCards.length)];
+          const randomChip =
+            availableChips[Math.floor(Math.random() * availableChips.length)];
+          commitHumanSubmission(capturedPlayer, randomCard, randomChip);
+        }
+      }, delayMs);
     };
 
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, [state.shell, state.phase, rulesOpen, state.showSet2Transition]);
+    scheduleExpirationCheck();
 
-  // Auto-submit random remaining card & chip if 3-minute timer expires
-  useEffect(() => {
-    if (
-      state.shell !== 'PLAYING' ||
-      state.phase !== 'SUBMISSION' ||
-      rulesOpen ||
-      state.showSet2Transition
-    ) {
-      return;
-    }
-    if (submitTimeLeftMs > 0 || !currentSubmittingPlayer) return;
-
-    const remainingCards = currentSubmittingPlayer.cards;
-    const availableChips = getAvailableChipTypes(currentSubmittingPlayer.chips);
-
-    if (remainingCards.length > 0 && availableChips.length > 0) {
-      const randomCard =
-        remainingCards[Math.floor(Math.random() * remainingCards.length)];
-      const randomChip =
-        availableChips[Math.floor(Math.random() * availableChips.length)];
-      commitHumanSubmission(currentSubmittingPlayer, randomCard, randomChip);
-    }
+    return () => {
+      window.clearInterval(tickInterval);
+      window.clearTimeout(expireTimeout);
+    };
   }, [
-    state.shell,
-    state.phase,
-    rulesOpen,
-    state.showSet2Transition,
-    submitTimeLeftMs,
+    isSubmissionTimerActive,
+    currentTurnKey,
     currentSubmittingPlayer,
+    submissionDeadline,
     commitHumanSubmission,
   ]);
 
