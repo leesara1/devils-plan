@@ -11,7 +11,7 @@ export const MemoryPokerPreviewDiagram: React.FC = () => {
   return (
     <div
       aria-hidden="true"
-      className="w-full aspect-[16/9] bg-[#101218] border-b border-white/[0.07] p-5 sm:p-6 flex items-center justify-center gap-6 sm:gap-8 select-none overflow-hidden"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 sm:p-6 flex items-center justify-center gap-6 sm:gap-8 select-none overflow-hidden"
     >
       {/* Left: Clean 4x4 Mini Card Grid */}
       <div className="grid grid-cols-4 gap-1.5 sm:gap-2 w-[148px] sm:w-[172px] shrink-0">
@@ -25,9 +25,9 @@ export const MemoryPokerPreviewDiagram: React.FC = () => {
               className={[
                 'relative aspect-[5/7] rounded border flex items-center justify-center font-mono-tabular text-[9px] font-semibold',
                 isFaceUp
-                  ? 'bg-[#faf9f6] border-[#d6d3cb] text-[#111827]'
-                  : 'bg-[#1a1e28] border-white/10 text-slate-400',
-                isP1 ? 'ring-1 ring-[#eab308]' : isP2 ? 'ring-1 ring-[#fb7185]' : '',
+                  ? 'bg-[#ffffff] dark:bg-[#faf9f6] border-slate-300 dark:border-[#d6d3cb] text-[#111827] shadow-2xs'
+                  : 'bg-[#e2e7ef] dark:bg-[#232938] border-slate-300/80 dark:border-white/10 text-slate-600 dark:text-slate-300',
+                isP1 ? 'ring-1 ring-[#ca8a04] dark:ring-[#eab308]' : isP2 ? 'ring-1 ring-[#e11d48] dark:ring-[#fb7185]' : '',
               ].join(' ')}
             >
               {idx === 1 ? (
@@ -54,7 +54,7 @@ export const MemoryPokerPreviewDiagram: React.FC = () => {
 
       {/* Right: 3 Community Cards + Hand Rank Preview */}
       <div className="flex flex-col gap-3 min-w-0">
-        <div className="text-[10px] font-mono-tabular text-slate-400 tracking-wide">
+        <div className="text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400 tracking-wide">
           COMMUNITY CARDS
         </div>
         <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ export const MemoryPokerPreviewDiagram: React.FC = () => {
           ].map((c) => (
             <div
               key={`${c.rank}${c.suit}`}
-              className="w-10 sm:w-12 aspect-[5/7] rounded-md bg-[#faf9f6] border border-[#d6d3cb] flex flex-col items-center justify-center font-mono-tabular"
+              className="w-10 sm:w-12 aspect-[5/7] rounded-md bg-white dark:bg-[#faf9f6] border border-slate-300 dark:border-[#d6d3cb] shadow-2xs flex flex-col items-center justify-center font-mono-tabular"
             >
               <span
                 className={`text-xs sm:text-sm font-bold leading-none ${
@@ -84,9 +84,9 @@ export const MemoryPokerPreviewDiagram: React.FC = () => {
             </div>
           ))}
         </div>
-        <div className="flex items-center gap-2 text-[11px] font-mono-tabular text-slate-300">
-          <span className="text-[#eab308] font-semibold">20s</span>
-          <span className="text-slate-600">·</span>
+        <div className="flex items-center gap-2 text-[11px] font-mono-tabular text-slate-700 dark:text-slate-300">
+          <span className="text-[#a16207] dark:text-[#eab308] font-semibold">20s</span>
+          <span className="text-slate-400 dark:text-slate-600">·</span>
           <span>5-Card Hold&apos;em</span>
         </div>
       </div>
@@ -96,39 +96,50 @@ export const MemoryPokerPreviewDiagram: React.FC = () => {
 
 export const Heavy13PreviewDiagram: React.FC = () => {
   const pedestals = [
-    { label: '빨강', sum: 10, accent: '#fb7185', cubes: [4, 3, 3], danger: true },
-    { label: '초록', sum: 7, accent: '#34d399', cubes: [5, 2], danger: false },
-    { label: '파랑', sum: 4, accent: '#38bdf8', cubes: [4], danger: false },
+    { label: '빨강', sum: 10, accentLight: '#e11d48', accentDark: '#fb7185', cubes: [4, 3, 3], danger: true },
+    { label: '초록', sum: 7, accentLight: '#059669', accentDark: '#34d399', cubes: [5, 2], danger: false },
+    { label: '파랑', sum: 4, accentLight: '#0284c7', accentDark: '#38bdf8', cubes: [4], danger: false },
   ];
 
   return (
     <div
       aria-hidden="true"
-      className="w-full aspect-[16/9] bg-[#101218] border-b border-white/[0.07] p-5 sm:p-6 flex flex-col justify-center gap-4 select-none overflow-hidden"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 sm:p-6 flex flex-col justify-center gap-4 select-none overflow-hidden"
     >
       {/* 3 Minimal Pedestals */}
       <div className="grid grid-cols-3 gap-2.5 sm:gap-3 w-full max-w-[360px] mx-auto">
         {pedestals.map((ped) => (
           <div
             key={ped.label}
-            className="rounded-lg bg-[#161922] border border-white/10 p-2.5 flex flex-col gap-2"
+            className="rounded-lg bg-white dark:bg-[#232938] border border-slate-200 dark:border-white/10 p-2.5 flex flex-col gap-2"
           >
             <div className="flex items-center justify-between text-[10px]">
-              <span className="font-semibold text-slate-200">{ped.label}</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">{ped.label}</span>
               <span
-                className="font-mono-tabular font-bold"
-                style={{ color: ped.danger ? '#fb7185' : '#cbd5e1' }}
+                className={[
+                  'font-mono-tabular font-bold',
+                  ped.danger
+                    ? 'text-[#be123c] dark:text-[#fb7185]'
+                    : 'text-slate-600 dark:text-slate-300',
+                ].join(' ')}
               >
                 {ped.sum}/13
               </span>
             </div>
 
-            <div className="w-full h-1 rounded-full bg-[#0a0b0f] overflow-hidden">
+            <div className="w-full h-1 rounded-full bg-slate-200 dark:bg-[#14171f] overflow-hidden">
               <div
-                className="h-full rounded-full"
+                className="h-full rounded-full dark:hidden"
                 style={{
                   width: `${Math.min(100, (ped.sum / 13) * 100)}%`,
-                  backgroundColor: ped.accent,
+                  backgroundColor: ped.accentLight,
+                }}
+              />
+              <div
+                className="h-full rounded-full hidden dark:block"
+                style={{
+                  width: `${Math.min(100, (ped.sum / 13) * 100)}%`,
+                  backgroundColor: ped.accentDark,
                 }}
               />
             </div>
@@ -137,7 +148,7 @@ export const Heavy13PreviewDiagram: React.FC = () => {
               {ped.cubes.map((val, idx) => (
                 <div
                   key={`${ped.label}-${idx}`}
-                  className="w-6 h-6 rounded bg-[#0e1015] border border-white/15 flex items-center justify-center font-mono-tabular text-[10px] font-bold text-slate-100"
+                  className="w-6 h-6 rounded bg-slate-100 dark:bg-[#181c24] border border-slate-300/80 dark:border-white/15 flex items-center justify-center font-mono-tabular text-[10px] font-bold text-slate-900 dark:text-slate-100"
                 >
                   {val}
                 </div>
@@ -155,10 +166,10 @@ export const Heavy13PreviewDiagram: React.FC = () => {
             className={[
               'w-6 h-8 rounded border flex items-center justify-center font-mono-tabular text-[11px] font-bold',
               num === 3
-                ? 'bg-[#eab308] border-[#eab308] text-[#1c1503]'
+                ? 'bg-[#eab308] border-[#ca8a04] dark:border-[#eab308] text-[#1c1503]'
                 : num === 6
-                  ? 'bg-[#0e1015] border-white/5 text-slate-600'
-                  : 'bg-[#161922] border-white/15 text-slate-200',
+                  ? 'bg-slate-200/70 dark:bg-[#14171f] border-slate-300/60 dark:border-white/5 text-slate-400 dark:text-slate-600'
+                  : 'bg-white dark:bg-[#232938] border-slate-300 dark:border-white/15 text-slate-800 dark:text-slate-200',
             ].join(' ')}
           >
             {num}

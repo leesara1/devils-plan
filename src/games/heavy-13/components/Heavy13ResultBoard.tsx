@@ -71,21 +71,21 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
         className="obsidian-subpanel rounded-xl p-3 sm:p-4 space-y-2.5"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-xs sm:text-sm font-bold text-gold-200">
+          <h3 className="text-xs sm:text-sm font-bold theme-text-gold-strong">
             라운드별 벌점 현황표 (1R–14R)
           </h3>
-          <span className="font-mono-tabular text-[11px] text-lounge-slate-400">
+          <span className="font-mono-tabular text-[11px] theme-text-muted">
             1세트(1–7R) · 2세트(8–14R)
           </span>
         </div>
 
-        <div className="overflow-x-auto rounded-lg border border-white/10 bg-obsidian-950/75">
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-white/10 dark:bg-obsidian-950/75">
           <table className="w-full min-w-[660px] border-collapse text-center font-mono-tabular text-[11px] sm:text-xs">
             <thead>
-              <tr className="border-b border-white/10 text-lounge-slate-400 bg-obsidian-900/90">
+              <tr className="border-b border-slate-200 dark:border-white/10 theme-text-muted bg-slate-100 dark:bg-obsidian-900/90">
                 <th
                   scope="col"
-                  className="sticky left-0 z-20 bg-obsidian-900 px-2.5 sm:px-3 py-2 text-left font-sans font-semibold text-lounge-slate-200 border-r border-white/10 whitespace-nowrap"
+                  className="sticky left-0 z-20 bg-slate-100 dark:bg-obsidian-900 px-2.5 sm:px-3 py-2 text-left font-sans font-semibold theme-text-secondary border-r border-slate-200 dark:border-white/10 whitespace-nowrap"
                 >
                   플레이어
                 </th>
@@ -95,8 +95,8 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
                     scope="col"
                     className={[
                       'px-1.5 py-2 font-semibold whitespace-nowrap min-w-[34px]',
-                      r === HALF_ROUND ? 'border-r border-gold-500/35' : '',
-                      r <= HALF_ROUND ? 'text-lounge-slate-300' : 'text-lounge-sky-300/90',
+                      r === HALF_ROUND ? 'border-r border-amber-400/50 dark:border-gold-500/35' : '',
+                      r <= HALF_ROUND ? 'theme-text-secondary' : 'theme-text-sky',
                     ].join(' ')}
                   >
                     {r}R
@@ -104,39 +104,39 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
                 ))}
                 <th
                   scope="col"
-                  className="px-2.5 py-2 font-bold text-gold-200 border-l border-white/10 whitespace-nowrap"
+                  className="px-2.5 py-2 font-bold theme-text-gold-strong border-l border-slate-200 dark:border-white/10 whitespace-nowrap"
                 >
                   총점
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-200 dark:divide-white/5">
               {finalRankings.map(({ player: p, rank, isEliminated }) => {
                 const isWinner = rank === 1;
                 return (
-                  <tr key={`row-${p.id}`} className="hover:bg-white/[0.02]">
+                  <tr key={`row-${p.id}`} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
                     <th
                       scope="row"
-                      className="sticky left-0 z-10 bg-obsidian-900/95 px-2.5 sm:px-3 py-2 text-left font-sans font-semibold border-r border-white/10 whitespace-nowrap"
+                      className="sticky left-0 z-10 bg-slate-100 dark:bg-obsidian-900/95 px-2.5 sm:px-3 py-2 text-left font-sans font-semibold border-r border-slate-200 dark:border-white/10 whitespace-nowrap"
                     >
                       <div className="flex items-center gap-1.5">
                         <span
                           className={[
                             'font-mono-tabular text-[11px] font-bold w-6 shrink-0',
                             isWinner
-                              ? 'text-gold-300'
+                              ? 'theme-text-gold'
                               : isEliminated
-                                ? 'text-rival-400'
-                                : 'text-lounge-slate-400',
+                                ? 'theme-text-rival'
+                                : 'theme-text-muted',
                           ].join(' ')}
                         >
                           {rank}위
                         </span>
-                        <span className="text-xs text-white truncate max-w-[92px] sm:max-w-[120px]">
+                        <span className="text-xs theme-text-primary truncate max-w-[92px] sm:max-w-[120px]">
                           {p.name}
                         </span>
                         {isEliminated && (
-                          <span className="text-[10px] font-bold text-rival-400 shrink-0">
+                          <span className="text-[10px] font-bold theme-text-rival shrink-0">
                             탈락
                           </span>
                         )}
@@ -158,10 +158,10 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
                           title={tooltip}
                           className={[
                             'px-1 py-2 whitespace-nowrap',
-                            r === HALF_ROUND ? 'border-r border-gold-500/35' : '',
+                            r === HALF_ROUND ? 'border-r border-amber-400/50 dark:border-gold-500/35' : '',
                             pen > 0
-                              ? 'bg-rival-950/70 text-rival-400 font-extrabold'
-                              : 'text-lounge-slate-500/70',
+                              ? 'bg-rose-50 text-rose-700 dark:bg-rival-950/70 dark:text-rival-400 font-extrabold'
+                              : 'theme-text-faint',
                           ].join(' ')}
                         >
                           {pen > 0 ? `+${pen}` : '0'}
@@ -171,12 +171,12 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
 
                     <td
                       className={[
-                        'px-2.5 py-2 font-extrabold border-l border-white/10 whitespace-nowrap',
+                        'px-2.5 py-2 font-extrabold border-l border-slate-200 dark:border-white/10 whitespace-nowrap',
                         isEliminated
-                          ? 'text-rival-400'
+                          ? 'theme-text-rival'
                           : isWinner
-                            ? 'text-gold-200'
-                            : 'text-white',
+                            ? 'theme-text-gold-strong'
+                            : 'theme-text-primary',
                       ].join(' ')}
                     >
                       {p.penaltyPoints}
@@ -195,18 +195,18 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
         className="obsidian-subpanel rounded-xl p-3 sm:p-4 space-y-2.5"
       >
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-xs sm:text-sm font-bold text-lounge-sky-300">
+          <h3 className="text-xs sm:text-sm font-bold theme-text-sky">
             플레이어별 경기 통계
           </h3>
-          <span className="text-[11px] text-lounge-slate-400">
+          <span className="text-[11px] theme-text-muted">
             패스 · 폭발 · 최대 단일 벌점
           </span>
         </div>
 
-        <div className="rounded-lg border border-white/10 bg-obsidian-950/75 overflow-hidden">
+        <div className="rounded-lg border border-slate-200 bg-white dark:border-white/10 dark:bg-obsidian-950/75 overflow-hidden">
           <table className="w-full border-collapse text-xs">
             <thead>
-              <tr className="border-b border-white/10 text-lounge-slate-400 bg-obsidian-900/80">
+              <tr className="border-b border-slate-200 dark:border-white/10 theme-text-muted bg-slate-100 dark:bg-obsidian-900/80">
                 <th scope="col" className="px-2.5 sm:px-3 py-2 text-left font-semibold">
                   플레이어
                 </th>
@@ -224,7 +224,7 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 font-mono-tabular">
+            <tbody className="divide-y divide-slate-200 dark:divide-white/5 font-mono-tabular">
               {finalRankings.map(({ player: p, rank, isEliminated }) => {
                 const stat = statsByPlayer[p.id] ?? {
                   passCount: 0,
@@ -233,17 +233,17 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
                 };
                 const isWinner = rank === 1;
                 return (
-                  <tr key={`stat-${p.id}`} className="hover:bg-white/[0.02]">
-                    <td className="px-2.5 sm:px-3 py-2 font-sans font-semibold text-white truncate max-w-[116px] sm:max-w-none">
+                  <tr key={`stat-${p.id}`} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                    <td className="px-2.5 sm:px-3 py-2 font-sans font-semibold theme-text-primary truncate max-w-[116px] sm:max-w-none">
                       {p.name}
                     </td>
-                    <td className="px-2 py-2 text-right text-lounge-sky-300 whitespace-nowrap">
+                    <td className="px-2 py-2 text-right theme-text-sky whitespace-nowrap">
                       {stat.passCount}회
                     </td>
                     <td
                       className={[
                         'px-2 py-2 text-right whitespace-nowrap',
-                        stat.burstCount > 0 ? 'text-rival-400 font-semibold' : 'text-lounge-slate-400',
+                        stat.burstCount > 0 ? 'theme-text-rival font-semibold' : 'theme-text-muted',
                       ].join(' ')}
                     >
                       {stat.burstCount}회
@@ -252,8 +252,8 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
                       className={[
                         'px-2 py-2 text-right whitespace-nowrap',
                         stat.maxSinglePenalty > 0
-                          ? 'text-gold-200 font-semibold'
-                          : 'text-lounge-slate-500',
+                          ? 'theme-text-gold-strong font-semibold'
+                          : 'theme-text-faint',
                       ].join(' ')}
                     >
                       {stat.maxSinglePenalty > 0 ? `+${stat.maxSinglePenalty}점` : '0점'}
@@ -262,10 +262,10 @@ export const Heavy13ResultBoard: React.FC<Heavy13ResultBoardProps> = ({
                       className={[
                         'px-2.5 sm:px-3 py-2 text-right font-bold whitespace-nowrap',
                         isEliminated
-                          ? 'text-rival-400'
+                          ? 'theme-text-rival'
                           : isWinner
-                            ? 'text-gold-200'
-                            : 'text-white',
+                            ? 'theme-text-gold-strong'
+                            : 'theme-text-primary',
                       ].join(' ')}
                     >
                       {p.penaltyPoints}점

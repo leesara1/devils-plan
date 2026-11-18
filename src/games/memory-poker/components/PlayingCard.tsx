@@ -64,23 +64,23 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
             : '카드 뒷면'
       }
       className={[
-        'group relative w-full h-full select-none card-perspective rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian-900',
+        'group relative w-full h-full select-none card-perspective rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4f5f8] dark:focus-visible:ring-offset-obsidian-900',
         interactive ? 'cursor-pointer transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.98]' : '',
         dimmed ? 'opacity-40' : 'opacity-100',
       ].join(' ')}
     >
       <div className={`card-inner rounded-lg ${faceUp ? '' : 'is-flipped'}`}>
-        {/* Card Front — Clean Crisp Off-White */}
+        {/* Card Front — Clean Crisp White / Off-White */}
         <div
           className={[
-            'card-face rounded-lg bg-[#faf9f6] border flex flex-col justify-between p-1.5 sm:p-2 overflow-hidden',
+            'card-face rounded-lg bg-white dark:bg-[#faf9f6] border flex flex-col justify-between p-1.5 sm:p-2 overflow-hidden shadow-2xs',
             isScoringHighlight
-              ? 'border-gold-400 ring-2 ring-gold-400'
+              ? 'border-gold-500 dark:border-gold-400 ring-2 ring-gold-400'
               : hasToken
-                ? 'border-gold-400 ring-2 ring-gold-400/80'
+                ? 'border-gold-500 dark:border-gold-400 ring-2 ring-gold-400/80'
                 : isOptimalHint
-                  ? 'border-lounge-sky-400 ring-2 ring-lounge-sky-400/80'
-                  : 'border-[#d6d3cb]',
+                  ? 'border-sky-500 dark:border-lounge-sky-400 ring-2 ring-sky-400/80'
+                  : 'border-slate-300 dark:border-[#d6d3cb]',
           ].join(' ')}
         >
           {/* Top-left rank & suit */}
@@ -120,21 +120,22 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
           )}
         </div>
 
-        {/* Card Back — Flat Minimalist Slate */}
+        {/* Card Back — Flat Minimalist Slate (Light & Dark) */}
         <div
           className={[
-            'card-face card-face-back rounded-lg border bg-[#1a1e28] flex items-center justify-center',
+            'card-face card-face-back rounded-lg border flex items-center justify-center transition-colors',
+            'bg-slate-200 dark:bg-[#232938]',
             p1Token
-              ? 'border-gold-400 ring-2 ring-gold-400'
-              : 'border-white/12 group-hover:border-white/30',
+              ? 'border-gold-500 dark:border-gold-400 ring-2 ring-gold-400'
+              : 'border-slate-300 group-hover:border-slate-400 dark:border-white/12 dark:group-hover:border-white/30',
           ].join(' ')}
         >
           {coord ? (
-            <span className="font-mono-tabular text-xs sm:text-sm font-semibold text-lounge-slate-300 tracking-wide">
+            <span className="font-mono-tabular text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 tracking-wide">
               {coord}
             </span>
           ) : (
-            <span className="text-xs text-lounge-slate-500">♠</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">♠</span>
           )}
         </div>
       </div>
@@ -144,7 +145,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
         <div className="pointer-events-none absolute -top-1.5 -right-1.5 z-20 flex items-center gap-1">
           {p1Token && (
             <div
-              className="h-6 min-w-6 px-1.5 rounded-full bg-gold-400 text-gold-950 border border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold"
+              className="h-6 min-w-6 px-1.5 rounded-full bg-gold-400 text-gold-950 border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold"
               title="플레이어 1 선택 말"
             >
               P1
@@ -152,7 +153,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
           )}
           {p2Token && (
             <div
-              className="h-6 min-w-6 px-1.5 rounded bg-rival-500 text-white border border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold"
+              className="h-6 min-w-6 px-1.5 rounded bg-rival-500 text-white border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold"
               title={`${p2Label} 선택 말`}
             >
               {p2Label}

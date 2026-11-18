@@ -51,28 +51,28 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/85 p-2.5 sm:p-4"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/55 dark:bg-black/80 p-2.5 sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label="무거운 13 최종 결과"
     >
       <div className="w-full max-w-4xl max-h-[94vh] overflow-y-auto obsidian-panel rounded-xl p-3.5 sm:p-7 space-y-4 sm:space-y-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gold-400/15 border border-gold-400/50 text-gold-300 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-100 border border-amber-300 theme-text-gold dark:bg-gold-400/15 dark:border-gold-400/50 flex items-center justify-center shrink-0">
             <Trophy className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div className="min-w-0">
-            <h2 className="font-display text-xl sm:text-2xl font-bold text-white truncate">
+            <h2 className="font-display text-xl sm:text-2xl font-bold theme-text-primary truncate">
               {headline}
             </h2>
-            <p className="text-xs sm:text-sm text-lounge-slate-300 mt-0.5">
+            <p className="text-xs sm:text-sm theme-text-secondary mt-0.5">
               14라운드 종료 · 하위 {eliminationCount}명 탈락 (동점 시 최근 벌점자가 하위, 무벌점 동점은 공동 순위)
             </p>
           </div>
         </div>
 
         {/* Standings Table */}
-        <div className="obsidian-subpanel rounded-xl divide-y divide-white/10">
+        <div className="obsidian-subpanel rounded-xl divide-y divide-slate-200 dark:divide-white/10">
           {finalRankings.map((item) => {
             const { player: p, rank, isTied, isEliminated } = item;
             const isWinner = rank === 1;
@@ -86,27 +86,27 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
                     className={[
                       'font-mono-tabular font-bold min-w-[44px] sm:min-w-[54px] whitespace-nowrap',
                       isWinner
-                        ? 'text-gold-300'
+                        ? 'theme-text-gold'
                         : isEliminated
-                          ? 'text-rival-400'
-                          : 'text-lounge-slate-300',
+                          ? 'theme-text-rival'
+                          : 'theme-text-secondary',
                     ].join(' ')}
                   >
                     {isTied ? `공동 ${rank}위` : `${rank}위`}
                   </span>
-                  <span className="font-semibold text-white truncate flex items-center gap-1.5">
-                    {isWinner && <Crown className="w-4 h-4 text-gold-400 shrink-0" />}
+                  <span className="font-semibold theme-text-primary truncate flex items-center gap-1.5">
+                    {isWinner && <Crown className="w-4 h-4 theme-text-gold shrink-0" />}
                     {p.name}
                   </span>
                   {isEliminated && (
-                    <span className="text-[10px] sm:text-xs font-bold text-rival-400 border border-rival-400/50 bg-rival-950/60 px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap shrink-0">
+                    <span className="text-[10px] sm:text-xs font-bold theme-text-rival border border-rose-300 bg-rose-50 dark:border-rival-400/50 dark:bg-rival-950/60 px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap shrink-0">
                       탈락
                     </span>
                   )}
                 </div>
 
                 <div className="flex items-center gap-2.5 sm:gap-4 text-[11px] sm:text-xs font-mono-tabular shrink-0">
-                  <span className="text-lounge-slate-400">
+                  <span className="theme-text-muted">
                     {p.lastPenaltyRound !== null ? (
                       <>
                         <span className="hidden sm:inline">최근 벌점 </span>R{p.lastPenaltyRound}
@@ -121,7 +121,11 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
                   <span
                     className={[
                       'text-xs sm:text-sm font-bold',
-                      isEliminated ? 'text-rival-400' : isWinner ? 'text-gold-200' : 'text-white',
+                      isEliminated
+                        ? 'theme-text-rival'
+                        : isWinner
+                          ? 'theme-text-gold-strong'
+                          : 'theme-text-primary',
                     ].join(' ')}
                   >
                     {p.penaltyPoints}점
@@ -138,10 +142,10 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
         {/* Penalty Progression Line Chart */}
         <div className="obsidian-subpanel rounded-xl p-3 sm:p-4 space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-xs sm:text-sm font-semibold text-lounge-slate-200">
+            <h3 className="text-xs sm:text-sm font-semibold theme-text-secondary">
               라운드별 누적 벌점 추이 (1R–14R)
             </h3>
-            <span className="font-mono-tabular text-xs text-lounge-sky-300">
+            <span className="font-mono-tabular text-xs theme-text-sky">
               낮을수록 유리
             </span>
           </div>
@@ -153,27 +157,28 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="rgba(148, 163, 184, 0.14)"
+                  stroke="var(--chart-grid)"
                   vertical={false}
                 />
                 <XAxis
                   dataKey="round"
-                  stroke="var(--color-lounge-slate-400)"
-                  tick={{ fill: 'var(--color-lounge-slate-300)', fontSize: 11 }}
-                  axisLine={{ stroke: 'rgba(148, 163, 184, 0.25)' }}
+                  stroke="var(--text-muted)"
+                  tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
+                  axisLine={{ stroke: 'var(--chart-axis)' }}
                   tickLine={false}
                 />
                 <YAxis
                   allowDecimals={false}
-                  stroke="var(--color-lounge-slate-400)"
-                  tick={{ fill: 'var(--color-lounge-slate-300)', fontSize: 11 }}
+                  stroke="var(--text-muted)"
+                  tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'var(--color-obsidian-850)',
-                    borderColor: 'var(--color-lounge-slate-700)',
+                    backgroundColor: 'var(--surface-panel)',
+                    borderColor: 'var(--border-subtle)',
+                    color: 'var(--text-primary)',
                     borderRadius: '0.5rem',
                     fontSize: '12px',
                   }}
@@ -201,7 +206,7 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
             <button
               type="button"
               onClick={onExitToHub}
-              className="min-h-[44px] px-4 py-2.5 rounded-lg border border-white/10 text-sm font-medium text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
+              className="min-h-[44px] px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:border-slate-400 hover:text-slate-900 dark:border-white/10 dark:bg-transparent dark:text-lounge-slate-200 dark:hover:border-white/25 dark:hover:text-white transition-colors cursor-pointer"
             >
               게임 목록
             </button>
@@ -209,7 +214,7 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
           <button
             type="button"
             onClick={onReturnToTitle}
-            className="min-h-[44px] px-4 py-2.5 rounded-lg border border-white/10 text-sm font-medium text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
+            className="min-h-[44px] px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:border-slate-400 hover:text-slate-900 dark:border-white/10 dark:bg-transparent dark:text-lounge-slate-200 dark:hover:border-white/25 dark:hover:text-white transition-colors cursor-pointer"
           >
             타이틀로
           </button>

@@ -366,23 +366,23 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-2.5 sm:p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/55 dark:bg-black/80 p-2.5 sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label="무거운 13 튜토리얼"
     >
       <div className="w-full max-w-3xl max-h-[94vh] overflow-y-auto obsidian-panel rounded-xl p-4 sm:p-6 space-y-4 sm:space-y-5">
         {/* Header */}
-        <div className="flex items-center justify-between gap-2 pb-3 border-b border-white/10">
+        <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200 dark:border-white/10">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-lg bg-lounge-sky-900/50 border border-lounge-sky-400/40 text-lounge-sky-300 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-sky-50 border border-sky-300 theme-text-sky dark:bg-lounge-sky-900/50 dark:border-lounge-sky-400/40 flex items-center justify-center shrink-0">
               <GraduationCap className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <h2 className="font-display text-lg sm:text-xl font-bold text-white truncate">
+              <h2 className="font-display text-lg sm:text-xl font-bold theme-text-primary truncate">
                 무거운 13 인터랙티브 튜토리얼
               </h2>
-              <p className="text-[11px] sm:text-xs text-lounge-slate-400">
+              <p className="text-[11px] sm:text-xs theme-text-muted">
                 핵심 규칙 4가지를 직접 눌러보며 익혀보세요.
               </p>
             </div>
@@ -391,7 +391,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="튜토리얼 닫기"
-            className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-300 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
+            className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-slate-300 bg-slate-50 text-slate-700 hover:border-slate-400 hover:text-slate-900 dark:border-white/10 dark:bg-obsidian-850 dark:text-lounge-slate-300 dark:hover:border-white/25 dark:hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -408,7 +408,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                 'py-2 px-2 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap',
                 step === idx
                   ? 'bg-gold-400 text-gold-950 font-bold'
-                  : 'text-lounge-slate-300 hover:text-white',
+                  : 'text-slate-600 hover:text-slate-900 dark:text-lounge-slate-300 dark:hover:text-white',
               ].join(' ')}
             >
               {label}
@@ -420,11 +420,11 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
         {step === 0 && (
           <div className="space-y-4">
             <div className="obsidian-subpanel rounded-xl p-3.5 sm:p-4 space-y-1.5">
-              <div className="text-xs sm:text-sm font-bold text-gold-200">
+              <div className="text-xs sm:text-sm font-bold theme-text-gold-strong">
                 미션: 이번 라운드 배치 순서(1번 → 4번)대로 플레이어를 클릭하세요!
               </div>
-              <p className="text-xs text-lounge-slate-300">
-                현재 선 플레이어는 <strong className="text-gold-300">민준 AI (2번 자리)</strong>입니다.
+              <p className="text-xs theme-text-secondary">
+                현재 선 플레이어는 <strong className="theme-text-gold">민준 AI (2번 자리)</strong>입니다.
                 규칙: <strong>레인보우 칩 우선 → 높은 바위 숫자 → 선 기준 시계 방향</strong>
               </p>
             </div>
@@ -442,27 +442,27 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                     className={[
                       'rounded-xl border p-3 text-left transition-all flex flex-col justify-between gap-2 min-h-[96px]',
                       isPicked
-                        ? 'bg-emerald-950/50 border-emerald-400/70 cursor-default'
-                        : 'bg-obsidian-850 border-lounge-slate-700 hover:border-gold-400 cursor-pointer',
+                        ? 'bg-emerald-50 border-emerald-400 dark:bg-emerald-950/50 dark:border-emerald-400/70 cursor-default'
+                        : 'bg-white border-slate-300 hover:border-gold-500 dark:bg-obsidian-850 dark:border-lounge-slate-700 dark:hover:border-gold-400 cursor-pointer',
                     ].join(' ')}
                   >
                     <div className="flex items-center justify-between gap-1">
-                      <span className="font-mono-tabular text-[11px] text-lounge-slate-400">
+                      <span className="font-mono-tabular text-[11px] theme-text-muted">
                         {idx + 1}번 자리 {c.isFirst ? '· 선' : ''}
                       </span>
                       {isPicked && (
-                        <span className="font-mono-tabular text-xs font-extrabold text-emerald-300">
+                        <span className="font-mono-tabular text-xs font-extrabold theme-text-emerald">
                           {pickedRank + 1}순위
                         </span>
                       )}
                     </div>
-                    <div className="text-sm font-bold text-white">{c.name}</div>
-                    <div className="flex items-center justify-between pt-1 border-t border-white/10 text-xs font-mono-tabular">
-                      <span className="inline-flex items-center gap-1.5 text-lounge-slate-200">
+                    <div className="text-sm font-bold theme-text-primary">{c.name}</div>
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-white/10 text-xs font-mono-tabular">
+                      <span className="inline-flex items-center gap-1.5 theme-text-secondary">
                         <ChipMiniEmblem chip={c.chip} size="sm" />
                         {CHIP_META[c.chip].shortKo}
                       </span>
-                      <span className="font-bold text-gold-200">바위 {c.card}</span>
+                      <span className="font-bold theme-text-gold-strong">바위 {c.card}</span>
                     </div>
                   </button>
                 );
@@ -474,12 +474,12 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                 className={[
                   'rounded-xl border px-3.5 py-2.5 text-xs sm:text-sm font-semibold flex items-center gap-2',
                   pickedOrder.length === EXPECTED_ORDER_IDS.length
-                    ? 'bg-emerald-950/60 border-emerald-400/60 text-emerald-200'
-                    : 'bg-obsidian-850 border-lounge-sky-400/50 text-lounge-sky-200',
+                    ? 'bg-emerald-50 border-emerald-300 text-emerald-800 dark:bg-emerald-950/60 dark:border-emerald-400/60 dark:text-emerald-200'
+                    : 'bg-sky-50 border-sky-300 text-sky-800 dark:bg-obsidian-850 dark:border-lounge-sky-400/50 dark:text-lounge-sky-200',
                 ].join(' ')}
               >
                 {pickedOrder.length === EXPECTED_ORDER_IDS.length && (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 theme-text-emerald shrink-0" />
                 )}
                 <span>{orderFeedback}</span>
               </div>
@@ -491,10 +491,10 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
         {step === 1 && (
           <div className="space-y-4">
             <div className="obsidian-subpanel rounded-xl p-3.5 sm:p-4 space-y-1">
-              <div className="text-xs sm:text-sm font-bold text-gold-200">
+              <div className="text-xs sm:text-sm font-bold theme-text-gold-strong">
                 미션: 빨강 받침대(합 10)에 바위 3을 올려 정확히 13 폭발 체험하기
               </div>
-              <p className="text-xs text-lounge-slate-300">{step2Msg}</p>
+              <p className="text-xs theme-text-secondary">{step2Msg}</p>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
@@ -525,7 +525,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                       '빨강 받침대(합 10, 큐브 3개)에 바위 3을 직접 놓아 13 폭발이 어떻게 일어나는지 체험해 보세요.'
                     );
                   }}
-                  className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-lounge-slate-700 text-xs sm:text-sm font-semibold text-lounge-slate-200 hover:text-white cursor-pointer"
+                  className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 bg-white text-slate-700 hover:text-slate-900 dark:border-lounge-slate-700 dark:bg-transparent dark:text-lounge-slate-200 dark:hover:text-white text-xs sm:text-sm font-semibold cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   다시 체험
@@ -549,12 +549,12 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
         {step === 2 && (
           <div className="space-y-4">
             <div className="obsidian-subpanel rounded-xl p-3.5 sm:p-4 space-y-1">
-              <div className="text-xs sm:text-sm font-bold text-gold-200">
+              <div className="text-xs sm:text-sm font-bold theme-text-gold-strong">
                 미션: 13 폭발 위기에서 &apos;패스 (후순위)&apos;로 벌점 회피하기
               </div>
-              <p className="text-xs text-lounge-slate-300">
-                내가 먼저 빨강(합 10)에 바위 4를 놓으면 폭발합니다. 하지만 뒤에 <strong className="text-white">서연 AI(빨강/3)</strong>가 기다리고 있습니다!
-                <span className="block text-lounge-slate-400 mt-0.5">
+              <p className="text-xs theme-text-secondary">
+                내가 먼저 빨강(합 10)에 바위 4를 놓으면 폭발합니다. 하지만 뒤에 <strong className="theme-text-primary">서연 AI(빨강/3)</strong>가 기다리고 있습니다!
+                <span className="block theme-text-muted mt-0.5">
                   ※ 여러 명이 패스하면 패스한 순서의 역순(LIFO)으로 놓으며, 패스하지 않은 마지막 사람은 패스 불가
                 </span>
               </p>
@@ -574,7 +574,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
               ))}
             </div>
 
-            <div className="obsidian-subpanel rounded-xl p-3 space-y-1 text-xs text-lounge-slate-200">
+            <div className="obsidian-subpanel rounded-xl p-3 space-y-1 text-xs theme-text-secondary">
               {step3Log.map((line, i) => (
                 <div key={i}>{line}</div>
               ))}
@@ -594,7 +594,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                       '대기 2번: 서연 AI — 빨강 칩 + 바위 3 (놓으면 10+3=13 폭발 예정!)',
                     ]);
                   }}
-                  className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-lounge-slate-700 text-xs sm:text-sm font-semibold text-lounge-slate-200 hover:text-white cursor-pointer"
+                  className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 bg-white text-slate-700 hover:text-slate-900 dark:border-lounge-slate-700 dark:bg-transparent dark:text-lounge-slate-200 dark:hover:text-white text-xs sm:text-sm font-semibold cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   다시 시도
@@ -606,7 +606,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                   <button
                     type="button"
                     onClick={handleStep3Pass}
-                    className="min-h-[44px] px-4 py-2.5 rounded-xl border border-lounge-sky-400/60 bg-lounge-sky-900/50 hover:bg-lounge-sky-900 text-lounge-sky-200 font-bold text-sm cursor-pointer"
+                    className="min-h-[44px] px-4 py-2.5 rounded-xl border border-sky-300 bg-sky-50 hover:bg-sky-100 text-sky-700 dark:border-lounge-sky-400/60 dark:bg-lounge-sky-900/50 dark:hover:bg-lounge-sky-900 dark:text-lounge-sky-200 font-bold text-sm cursor-pointer"
                   >
                     패스 (후순위)
                   </button>
@@ -627,10 +627,10 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
         {step === 3 && (
           <div className="space-y-4">
             <div className="obsidian-subpanel rounded-xl p-3.5 sm:p-4 space-y-1">
-              <div className="text-xs sm:text-sm font-bold text-gold-200">
+              <div className="text-xs sm:text-sm font-bold theme-text-gold-strong">
                 미션: 레인보우 칩 + 바위 2로 원하는 안전한 받침대 선택하기
               </div>
-              <p className="text-xs text-lounge-slate-300">{step4Msg}</p>
+              <p className="text-xs theme-text-secondary">{step4Msg}</p>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
@@ -651,8 +651,8 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
         )}
 
         {/* Footer Navigation */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10">
-          <div className="text-xs text-lounge-slate-400 font-mono-tabular">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-200 dark:border-white/10">
+          <div className="text-xs theme-text-muted font-mono-tabular">
             단계 {step + 1} / {STEP_TITLES.length}
           </div>
 
@@ -661,7 +661,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
               <button
                 type="button"
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
-                className="min-h-[44px] px-4 py-2 rounded-xl border border-lounge-slate-700 text-xs sm:text-sm font-semibold text-lounge-slate-200 hover:text-white cursor-pointer"
+                className="min-h-[44px] px-4 py-2 rounded-xl border border-slate-300 bg-white text-slate-700 hover:text-slate-900 dark:border-lounge-slate-700 dark:bg-transparent dark:text-lounge-slate-200 dark:hover:text-white text-xs sm:text-sm font-semibold cursor-pointer"
               >
                 이전
               </button>
@@ -675,7 +675,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                   'min-h-[44px] inline-flex items-center gap-1.5 px-5 py-2 rounded-xl font-bold text-xs sm:text-sm transition-colors cursor-pointer',
                   canGoNext
                     ? 'bg-gold-400 hover:bg-gold-300 text-gold-950'
-                    : 'border border-lounge-slate-600 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-400',
+                    : 'border border-slate-300 bg-slate-50 text-slate-700 hover:border-gold-500 dark:border-lounge-slate-600 dark:bg-obsidian-850 dark:text-lounge-slate-200 dark:hover:border-gold-400',
                 ].join(' ')}
               >
                 다음 단계

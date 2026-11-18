@@ -37,10 +37,10 @@ export const RockCardButton: React.FC<RockCardButtonProps> = ({
       className={[
         'relative flex flex-col items-center justify-center sm:justify-between rounded-lg border px-0.5 py-2 sm:p-2.5 min-h-[58px] sm:min-h-[76px] transition-all duration-150 select-none',
         !available
-          ? 'bg-obsidian-900 border-white/[0.05] text-lounge-slate-500/35 cursor-not-allowed'
+          ? 'bg-slate-100 border-slate-200 text-slate-400 dark:bg-obsidian-900 dark:border-white/[0.05] dark:text-lounge-slate-500/35 cursor-not-allowed'
           : selected
             ? 'bg-gold-400 text-gold-950 border-gold-300 -translate-y-0.5 cursor-pointer'
-            : 'bg-obsidian-800 border-white/10 text-white hover:border-white/30 hover:-translate-y-0.5 cursor-pointer',
+            : 'bg-white border-slate-300 text-slate-900 hover:border-slate-400 dark:bg-obsidian-800 dark:border-white/10 dark:text-white dark:hover:border-white/30 hover:-translate-y-0.5 cursor-pointer',
       ].join(' ')}
     >
       <span className="hidden sm:inline text-[10px] font-medium opacity-70">
@@ -55,8 +55,8 @@ export const RockCardButton: React.FC<RockCardButtonProps> = ({
           selected
             ? 'text-gold-950/80 font-semibold'
             : available
-              ? 'text-lounge-slate-400'
-              : 'text-lounge-slate-500/30',
+              ? 'theme-text-muted'
+              : 'text-slate-400/70 dark:text-lounge-slate-500/30',
         ].join(' ')}
       >
         {available ? (
@@ -88,24 +88,24 @@ const CHIP_STYLE: Record<
   { ring: string; emblemFill: string; labelColor: string }
 > = {
   red: {
-    ring: 'border-rival-400/75',
-    emblemFill: 'var(--color-rival-400)',
-    labelColor: 'text-rival-400',
+    ring: 'border-rose-600/80 dark:border-rival-400/75',
+    emblemFill: 'var(--color-rival-500)',
+    labelColor: 'theme-text-rival',
   },
   green: {
-    ring: 'border-emerald-400/75',
-    emblemFill: '#34d399',
-    labelColor: 'text-emerald-300',
+    ring: 'border-emerald-600/80 dark:border-emerald-400/75',
+    emblemFill: '#10b981',
+    labelColor: 'theme-text-emerald',
   },
   blue: {
-    ring: 'border-lounge-sky-400/75',
-    emblemFill: 'var(--color-lounge-sky-400)',
-    labelColor: 'text-lounge-sky-300',
+    ring: 'border-sky-600/80 dark:border-lounge-sky-400/75',
+    emblemFill: 'var(--color-lounge-sky-500)',
+    labelColor: 'theme-text-sky',
   },
   rainbow: {
-    ring: 'border-gold-400/85',
+    ring: 'border-amber-600/85 dark:border-gold-400/85',
     emblemFill: 'var(--color-gold-400)',
-    labelColor: 'text-gold-300',
+    labelColor: 'theme-text-gold',
   },
 };
 
@@ -131,16 +131,16 @@ export const ChipTokenButton: React.FC<ChipTokenButtonProps> = ({
       className={[
         'relative flex items-center justify-between gap-2 rounded-lg border px-2.5 sm:px-3 py-2 min-h-[48px] sm:min-h-[54px] transition-colors duration-150 select-none',
         !isAvailable
-          ? 'bg-obsidian-900 border-white/[0.05] opacity-35 cursor-not-allowed'
+          ? 'bg-slate-100 border-slate-200 dark:bg-obsidian-900 dark:border-white/[0.05] opacity-40 cursor-not-allowed'
           : selected
-            ? 'bg-obsidian-800 border-gold-400 ring-1 ring-gold-400 cursor-pointer'
-            : 'bg-obsidian-800/70 border-white/10 hover:border-white/25 cursor-pointer',
+            ? 'bg-amber-50/75 border-gold-500 ring-1 ring-gold-500 dark:bg-obsidian-800 dark:border-gold-400 dark:ring-gold-400 cursor-pointer'
+            : 'bg-white border-slate-300 hover:border-slate-400 dark:bg-obsidian-800/70 dark:border-white/10 dark:hover:border-white/25 cursor-pointer',
       ].join(' ')}
     >
       <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
         <span
           className={[
-            'w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 bg-obsidian-900',
+            'w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 bg-slate-100 dark:bg-obsidian-900',
             style.ring,
           ].join(' ')}
           aria-hidden="true"
@@ -167,13 +167,13 @@ export const ChipTokenButton: React.FC<ChipTokenButtonProps> = ({
           <div className={`text-xs sm:text-sm font-bold whitespace-nowrap ${style.labelColor}`}>
             {meta.labelKo}
           </div>
-          <div className="hidden sm:block text-[11px] text-lounge-slate-400">
+          <div className="hidden sm:block text-[11px] theme-text-muted">
             {chip === 'rainbow' ? '우선 배치 · 색 선택' : '해당 색 받침대'}
           </div>
         </div>
       </div>
 
-      <span className="font-mono-tabular text-xs font-bold text-white shrink-0">
+      <span className="font-mono-tabular text-xs font-bold theme-text-primary shrink-0">
         ×{count}
       </span>
     </button>
@@ -201,7 +201,7 @@ export const ChipMiniEmblem: React.FC<{ chip: ChipType; size?: 'sm' | 'md' }> = 
     <span
       className={[
         boxClass,
-        'rounded-full border-2 flex items-center justify-center shrink-0 bg-obsidian-950',
+        'rounded-full border-2 flex items-center justify-center shrink-0 bg-slate-100 dark:bg-obsidian-950',
         style.ring,
       ].join(' ')}
       aria-hidden="true"
@@ -245,8 +245,8 @@ export const RevealFlipCard: React.FC<RevealFlipCardProps> = ({
     >
       <div className={`card-inner ${flipped ? 'is-flipped' : ''}`}>
         {/* Front (Hidden) */}
-        <div className="card-face rounded-md border border-white/12 bg-obsidian-900 flex items-center justify-center">
-          <span className="font-mono-tabular text-[11px] font-semibold text-lounge-slate-400">
+        <div className="card-face rounded-md border border-slate-300 bg-slate-200 dark:border-white/12 dark:bg-obsidian-900 flex items-center justify-center">
+          <span className="font-mono-tabular text-[11px] font-semibold theme-text-muted">
             ?
           </span>
         </div>
@@ -257,13 +257,13 @@ export const RevealFlipCard: React.FC<RevealFlipCardProps> = ({
             'card-face card-face-back rounded-md border flex flex-col items-center justify-center',
             isHighlighted
               ? 'bg-gold-400 border-gold-300 text-gold-950'
-              : 'bg-obsidian-800 border-white/20 text-white',
+              : 'bg-white border-slate-300 text-slate-900 dark:bg-obsidian-800 dark:border-white/20 dark:text-white',
           ].join(' ')}
         >
           <span
             className={[
               'text-[7px] sm:text-[8px] font-medium leading-none',
-              isHighlighted ? 'text-gold-950/75' : 'text-lounge-slate-400',
+              isHighlighted ? 'text-gold-950/75' : 'theme-text-muted',
             ].join(' ')}
           >
             바위
@@ -290,21 +290,21 @@ interface PedestalStationProps {
 }
 
 const PEDESTAL_BORDER_CLASS: Record<PedestalColor, string> = {
-  red: 'border-white/10',
-  green: 'border-white/10',
-  blue: 'border-white/10',
+  red: 'border-slate-200 dark:border-white/10',
+  green: 'border-slate-200 dark:border-white/10',
+  blue: 'border-slate-200 dark:border-white/10',
 };
 
 const PEDESTAL_BAR_BG: Record<PedestalColor, string> = {
-  red: 'bg-rival-400',
-  green: 'bg-emerald-400',
-  blue: 'bg-lounge-sky-400',
+  red: 'bg-rose-500 dark:bg-rival-400',
+  green: 'bg-emerald-500 dark:bg-emerald-400',
+  blue: 'bg-sky-500 dark:bg-lounge-sky-400',
 };
 
 const PEDESTAL_TEXT_COLOR: Record<PedestalColor, string> = {
-  red: 'text-rival-400',
-  green: 'text-emerald-300',
-  blue: 'text-lounge-sky-300',
+  red: 'theme-text-rival',
+  green: 'theme-text-emerald',
+  blue: 'theme-text-sky',
 };
 
 export const PedestalStation: React.FC<PedestalStationProps> = ({
@@ -340,13 +340,13 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           }
         : {})}
       className={[
-        'relative rounded-xl border p-2.5 sm:p-4 flex flex-col justify-between gap-2.5 sm:gap-3 text-left transition-colors duration-150 overflow-visible bg-obsidian-900',
-        isBursting ? 'animate-pedestal-shake border-rival-400' : '',
+        'relative rounded-xl border p-2.5 sm:p-4 flex flex-col justify-between gap-2.5 sm:gap-3 text-left transition-colors duration-150 overflow-visible bg-slate-50/70 dark:bg-obsidian-900',
+        isBursting ? 'animate-pedestal-shake border-rose-500 dark:border-rival-400' : '',
         !isBursting && isSelectableTarget
-          ? 'cursor-pointer hover:border-gold-400 ring-1 ring-gold-400/40'
+          ? 'cursor-pointer hover:border-gold-500 dark:hover:border-gold-400 ring-1 ring-gold-500/40 dark:ring-gold-400/40'
           : '',
         !isBursting && isHighlightedTarget
-          ? 'border-gold-400'
+          ? 'border-gold-500 dark:border-gold-400'
           : !isBursting
             ? PEDESTAL_BORDER_CLASS[color]
             : '',
@@ -364,11 +364,11 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           key={burstEffect.id}
           className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 z-30 animate-penalty-popup"
         >
-          <div className="px-2.5 sm:px-3.5 py-1 rounded-lg bg-rival-950 border border-rival-400 whitespace-nowrap flex items-center gap-1.5">
-            <span className="text-[11px] sm:text-sm font-bold text-white max-w-[78px] sm:max-w-none truncate">
+          <div className="px-2.5 sm:px-3.5 py-1 rounded-lg bg-rose-50 border border-rose-400 dark:bg-rival-950 dark:border-rival-400 whitespace-nowrap flex items-center gap-1.5">
+            <span className="text-[11px] sm:text-sm font-bold theme-text-primary max-w-[78px] sm:max-w-none truncate">
               {burstEffect.actorName}
             </span>
-            <span className="font-mono-tabular text-[11px] sm:text-sm font-bold text-rival-400">
+            <span className="font-mono-tabular text-[11px] sm:text-sm font-bold theme-text-rival">
               +{burstEffect.penaltyAdded}
             </span>
           </div>
@@ -381,10 +381,10 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           className={[
             'rounded-lg border px-2 sm:px-2.5 py-1 sm:py-1.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 sm:gap-2 text-[10px] sm:text-xs font-semibold leading-tight',
             wouldOverflow
-              ? 'bg-rival-950/90 border-rival-400/60 text-rival-400'
+              ? 'bg-rose-50 border-rose-300 text-rose-700 dark:bg-rival-950/90 dark:border-rival-400/60 dark:text-rival-400'
               : isMyTurnPreview
-                ? 'bg-emerald-950/70 border-emerald-400/50 text-emerald-300'
-                : 'bg-obsidian-800 border-gold-400/50 text-gold-200',
+                ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/70 dark:border-emerald-400/50 dark:text-emerald-300'
+                : 'bg-amber-50 border-amber-300 text-amber-800 dark:bg-obsidian-800 dark:border-gold-400/50 dark:text-gold-200',
           ].join(' ')}
         >
           <span className="font-mono-tabular whitespace-nowrap">
@@ -410,23 +410,23 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
               <span className="sm:hidden">{meta.shortKo}</span>
             </span>
           </div>
-          <span className="font-mono-tabular text-[10px] sm:text-xs text-lounge-slate-400 whitespace-nowrap">
+          <span className="font-mono-tabular text-[10px] sm:text-xs theme-text-muted whitespace-nowrap">
             <span className="hidden sm:inline">큐브 </span>
             {cubes.length}개
           </span>
         </div>
 
         <div className="flex items-baseline justify-between gap-1">
-          <div className="font-mono-tabular text-2xl sm:text-3xl font-bold text-white leading-none">
+          <div className="font-mono-tabular text-2xl sm:text-3xl font-bold theme-text-primary leading-none">
             {sum}
-            <span className="text-[11px] sm:text-xs font-normal text-lounge-slate-500 ml-0.5 sm:ml-1">
+            <span className="text-[11px] sm:text-xs font-normal theme-text-faint ml-0.5 sm:ml-1">
               /{OVERFLOW_THRESHOLD}
             </span>
           </div>
           <span
             className={[
               'text-[10px] sm:text-xs font-semibold font-mono-tabular whitespace-nowrap',
-              isBursting || isDangerZone ? 'text-rival-400' : 'text-lounge-slate-400',
+              isBursting || isDangerZone ? 'theme-text-rival' : 'theme-text-muted',
             ].join(' ')}
           >
             {isBursting ? (
@@ -445,11 +445,11 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           </span>
         </div>
 
-        <div className="relative w-full h-1.5 rounded-full bg-obsidian-950 overflow-hidden">
+        <div className="relative w-full h-1.5 rounded-full bg-slate-200 dark:bg-obsidian-950 overflow-hidden">
           <div
             className={[
               'h-full transition-[width] duration-200',
-              sum >= 10 ? 'bg-rival-500' : PEDESTAL_BAR_BG[color],
+              sum >= 10 ? 'bg-rose-600 dark:bg-rival-500' : PEDESTAL_BAR_BG[color],
             ].join(' ')}
             style={{ width: `${fillPercent}%` }}
           />
@@ -457,23 +457,23 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
       </div>
 
       {/* Stacked Rock Cubes */}
-      <div className="relative min-h-[58px] sm:min-h-[86px] rounded-lg bg-obsidian-950/75 border border-white/[0.06] p-1.5 sm:p-2 flex flex-wrap content-start gap-1.5 overflow-visible">
+      <div className="relative min-h-[58px] sm:min-h-[86px] rounded-lg bg-slate-100/90 border border-slate-200 dark:bg-obsidian-950/75 dark:border-white/[0.06] p-1.5 sm:p-2 flex flex-wrap content-start gap-1.5 overflow-visible">
         {isBursting && burstEffect ? (
           burstEffect.cubes.map((cube, idx) => (
             <div
               key={`${burstEffect.id}-${cube.id}`}
-              className={`w-7 h-8 sm:w-9 sm:h-10 rounded bg-rival-950 border border-rival-400/75 flex flex-col items-center justify-center animate-cube-burst-${idx % 4}`}
+              className={`w-7 h-8 sm:w-9 sm:h-10 rounded bg-rose-50 border border-rose-400 dark:bg-rival-950 dark:border-rival-400/75 flex flex-col items-center justify-center animate-cube-burst-${idx % 4}`}
             >
-              <span className="font-mono-tabular text-xs sm:text-sm font-bold text-rival-400 leading-none">
+              <span className="font-mono-tabular text-xs sm:text-sm font-bold theme-text-rival leading-none">
                 {cube.value}
               </span>
-              <span className="text-[7px] sm:text-[9px] text-rival-400/80 truncate max-w-[26px] sm:max-w-[32px] mt-0.5">
+              <span className="text-[7px] sm:text-[9px] text-rose-600 dark:text-rival-400/80 truncate max-w-[26px] sm:max-w-[32px] mt-0.5">
                 수거
               </span>
             </div>
           ))
         ) : cubes.length === 0 ? (
-          <div className="w-full h-[44px] sm:h-[64px] flex items-center justify-center text-[10px] sm:text-xs text-lounge-slate-500 text-center">
+          <div className="w-full h-[44px] sm:h-[64px] flex items-center justify-center text-[10px] sm:text-xs theme-text-faint text-center">
             <span className="hidden sm:inline">놓인 바위 큐브 없음</span>
             <span className="sm:hidden">비어 있음</span>
           </div>
@@ -485,16 +485,16 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
                 key={cube.id}
                 title={`${cube.ownerName} · R${cube.roundPlaced}`}
                 className={[
-                  'relative w-7 h-8 sm:w-9 sm:h-10 rounded flex flex-col items-center justify-center bg-obsidian-800',
+                  'relative w-7 h-8 sm:w-9 sm:h-10 rounded flex flex-col items-center justify-center bg-white dark:bg-obsidian-800',
                   isJustDropped
-                    ? 'border-2 border-gold-400 animate-cube-drop'
-                    : 'border border-white/15',
+                    ? 'border-2 border-gold-500 dark:border-gold-400 animate-cube-drop'
+                    : 'border border-slate-300 dark:border-white/15',
                 ].join(' ')}
               >
-                <span className="font-mono-tabular text-xs sm:text-sm font-bold text-white leading-none">
+                <span className="font-mono-tabular text-xs sm:text-sm font-bold theme-text-primary leading-none">
                   {cube.value}
                 </span>
-                <span className="text-[7px] sm:text-[9px] text-lounge-slate-400 truncate max-w-[26px] sm:max-w-[32px] mt-0.5">
+                <span className="text-[7px] sm:text-[9px] theme-text-muted truncate max-w-[26px] sm:max-w-[32px] mt-0.5">
                   {cube.ownerName.replace(' AI', '').replace('플레이어 ', 'P').replace('나 (P1)', 'P1')}
                 </span>
               </div>
@@ -508,8 +508,8 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           className={[
             'text-center text-[11px] sm:text-xs font-bold py-1.5 px-1 rounded-lg border min-h-[36px] flex items-center justify-center',
             wouldOverflow
-              ? 'bg-rival-950/75 border-rival-400/60 text-rival-400'
-              : 'bg-gold-400/15 border-gold-400/60 text-gold-300',
+              ? 'bg-rose-50 border-rose-300 text-rose-700 dark:bg-rival-950/75 dark:border-rival-400/60 dark:text-rival-400'
+              : 'bg-amber-50 border-amber-400 text-amber-800 dark:bg-gold-400/15 dark:border-gold-400/60 dark:text-gold-300',
           ].join(' ')}
         >
           <span className="hidden sm:inline">

@@ -1,11 +1,12 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Matte Neutral Charcoal Canvas & Surfaces */
-  --color-obsidian-950: #0a0b0f;
-  --color-obsidian-900: #0e1015;
-  --color-obsidian-850: #14171f;
-  --color-obsidian-800: #1a1e28;
+  /* Refined Matte Charcoal Surfaces (Dark Mode base tokens) */
+  --color-obsidian-950: #13161e;
+  --color-obsidian-900: #181c24;
+  --color-obsidian-850: #212632;
+  --color-obsidian-800: #2a303f;
 
   /* Restrained Amber-Gold Accent (10% Accent Budget) */
   --color-gold-100: #fef9c3;
@@ -17,43 +18,97 @@
   --color-gold-950: #1c1503;
 
   /* Clean Slate Neutrals */
-  --color-lounge-slate-200: #e5e7eb;
+  --color-lounge-slate-200: #e2e8f0;
   --color-lounge-slate-300: #cbd5e1;
   --color-lounge-slate-400: #94a3b8;
   --color-lounge-slate-500: #64748b;
-  --color-lounge-slate-700: #282e3d;
-  --color-lounge-slate-800: #1e2330;
+  --color-lounge-slate-700: #333b4d;
+  --color-lounge-slate-800: #252b38;
 
   /* Sky Info & Blue Pedestal */
   --color-lounge-sky-200: #bae6fd;
   --color-lounge-sky-300: #7dd3fc;
   --color-lounge-sky-400: #38bdf8;
   --color-lounge-sky-500: #0ea5e9;
-  --color-lounge-sky-900: #0f2537;
+  --color-lounge-sky-900: #17283c;
 
   /* Crimson Rival & Red Pedestal */
   --color-rival-400: #fb7185;
   --color-rival-500: #e11d48;
-  --color-rival-950: #240b12;
+  --color-rival-950: #2a1219;
 }
 
 @layer base {
+  /* Light Mode Semantic Variables */
   :root {
     --font-display: 'Plus Jakarta Sans', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
     --font-sans: 'Plus Jakarta Sans', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
-    --theme-bg-canvas: var(--color-obsidian-900);
-    --theme-surface-panel: var(--color-obsidian-850);
-    --theme-surface-sub: var(--color-obsidian-800);
-    --theme-accent-gold: var(--color-gold-400);
-    --theme-accent-gold-soft: var(--color-gold-200);
-    --theme-accent-brass: var(--color-gold-500);
-    --theme-accent-slate: var(--color-lounge-slate-400);
-    --theme-border-slate: var(--color-lounge-slate-700);
-    --theme-accent-sky: var(--color-lounge-sky-400);
-    --theme-accent-sky-soft: var(--color-lounge-sky-300);
-    --theme-accent-rival: var(--color-rival-400);
+    --surface-canvas: #f4f5f8;
+    --surface-panel: #ffffff;
+    --surface-sub: #eef1f5;
+    --surface-inset: #e6eaf0;
+    --surface-control: #f8f9fb;
+    --surface-sky: #eff6ff;
+    --surface-rival: #fff1f2;
+    --surface-emerald: #ecfdf5;
+    --surface-overlay: rgba(15, 23, 42, 0.55);
+
+    --border-subtle: rgba(15, 23, 42, 0.1);
+    --border-strong: rgba(15, 23, 42, 0.2);
+    --border-sky: rgba(2, 132, 199, 0.28);
+    --border-rival: rgba(190, 18, 60, 0.35);
+    --border-emerald: rgba(4, 120, 87, 0.35);
+
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #475569;
+    --text-faint: #64748b;
+
+    --accent-gold-text: #a16207;
+    --accent-gold-strong: #854d0e;
+    --accent-sky-text: #0369a1;
+    --accent-sky-soft: #0284c7;
+    --accent-emerald-text: #047857;
+    --accent-rival-text: #be123c;
+
+    --chart-grid: rgba(15, 23, 42, 0.1);
+    --chart-axis: rgba(15, 23, 42, 0.2);
+  }
+
+  /* Refined Soft Dark Mode Semantic Variables */
+  .dark {
+    --surface-canvas: #181c24;
+    --surface-panel: #212632;
+    --surface-sub: #1a1e28;
+    --surface-inset: #13161e;
+    --surface-control: #272d3b;
+    --surface-sky: #172536;
+    --surface-rival: #2d141c;
+    --surface-emerald: #102a22;
+    --surface-overlay: rgba(8, 10, 15, 0.78);
+
+    --border-subtle: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.2);
+    --border-sky: rgba(56, 189, 248, 0.26);
+    --border-rival: rgba(251, 113, 133, 0.45);
+    --border-emerald: rgba(52, 211, 153, 0.4);
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-faint: #64748b;
+
+    --accent-gold-text: #fcd34d;
+    --accent-gold-strong: #fde68a;
+    --accent-sky-text: #7dd3fc;
+    --accent-sky-soft: #bae6fd;
+    --accent-emerald-text: #6ee7b7;
+    --accent-rival-text: #fb7185;
+
+    --chart-grid: rgba(148, 163, 184, 0.14);
+    --chart-axis: rgba(148, 163, 184, 0.25);
   }
 
   html {
@@ -65,7 +120,8 @@
   #root {
     height: 100%;
     font-family: var(--font-sans);
-    background-color: var(--theme-bg-canvas);
+    background-color: var(--surface-canvas);
+    color: var(--text-primary);
   }
 }
 
@@ -81,26 +137,81 @@
 
 /* Flat, clean single-elevation container */
 .obsidian-panel {
-  background-color: #14171f;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background-color: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
 }
 
 /* Quiet inset surface */
 .obsidian-subpanel {
-  background-color: #0e1015;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background-color: var(--surface-sub);
+  border: 1px solid var(--border-subtle);
 }
 
 /* Clean tactical callout surface */
 .obsidian-sky-panel {
-  background-color: #111b27;
-  border: 1px solid rgba(56, 189, 248, 0.24);
+  background-color: var(--surface-sky);
+  border: 1px solid var(--border-sky);
 }
 
 /* Subtle matte board surface for Memory Poker */
 .felt-table-surface {
-  background-color: #14171f;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background-color: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+}
+
+/* Semantic text & border helpers for crisp dual-theme legibility */
+.theme-canvas {
+  background-color: var(--surface-canvas);
+  color: var(--text-primary);
+}
+
+.theme-inset {
+  background-color: var(--surface-inset);
+}
+
+.theme-control {
+  background-color: var(--surface-control);
+  border: 1px solid var(--border-subtle);
+}
+
+.theme-border {
+  border-color: var(--border-subtle);
+}
+
+.theme-text-primary {
+  color: var(--text-primary);
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+
+.theme-text-muted {
+  color: var(--text-muted);
+}
+
+.theme-text-faint {
+  color: var(--text-faint);
+}
+
+.theme-text-gold {
+  color: var(--accent-gold-text);
+}
+
+.theme-text-gold-strong {
+  color: var(--accent-gold-strong);
+}
+
+.theme-text-sky {
+  color: var(--accent-sky-text);
+}
+
+.theme-text-emerald {
+  color: var(--accent-emerald-text);
+}
+
+.theme-text-rival {
+  color: var(--accent-rival-text);
 }
 
 /* 3D Card Flip (compositor-only transform & opacity) */

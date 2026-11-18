@@ -78,15 +78,15 @@ export const Heavy13Round1Hint: React.FC<Heavy13Round1HintProps> = ({
   return (
     <aside
       aria-label="1라운드 도움말"
-      className="relative rounded-xl border border-lounge-sky-400/55 bg-lounge-sky-900/35 px-3 sm:px-4 py-2.5 sm:py-3 flex items-start justify-between gap-2.5 shadow-[0_8px_20px_rgba(14,116,144,0.18)]"
+      className="relative obsidian-sky-panel rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-start justify-between gap-2.5"
     >
       <div className="flex items-start gap-2 sm:gap-2.5 min-w-0">
-        <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-lounge-sky-300 shrink-0 mt-0.5" />
+        <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 theme-text-sky shrink-0 mt-0.5" />
         <div className="min-w-0 space-y-0.5">
-          <div className="text-[11px] sm:text-xs font-bold text-lounge-sky-200">
+          <div className="text-[11px] sm:text-xs font-bold theme-text-sky">
             {copy.title}
           </div>
-          <p className="text-[11px] sm:text-xs text-lounge-slate-200 leading-relaxed">
+          <p className="text-[11px] sm:text-xs theme-text-secondary leading-relaxed">
             {copy.body}
           </p>
         </div>
@@ -95,7 +95,7 @@ export const Heavy13Round1Hint: React.FC<Heavy13Round1HintProps> = ({
       <button
         type="button"
         onClick={onDismiss}
-        className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] rounded-lg border border-lounge-sky-400/40 bg-obsidian-900/70 hover:bg-obsidian-800 text-[11px] font-semibold text-lounge-slate-200 hover:text-white transition-colors cursor-pointer whitespace-nowrap"
+        className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] rounded-lg border border-sky-300 bg-white hover:bg-sky-50 text-[11px] font-semibold text-slate-700 hover:text-slate-900 dark:border-lounge-sky-400/40 dark:bg-obsidian-900/70 dark:hover:bg-obsidian-800 dark:text-lounge-slate-200 dark:hover:text-white transition-colors cursor-pointer whitespace-nowrap"
       >
         <X className="w-3.5 h-3.5" />
         도움말 끄기

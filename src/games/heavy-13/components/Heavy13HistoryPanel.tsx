@@ -17,10 +17,10 @@ interface Heavy13HistoryPanelProps {
 }
 
 const CHIP_TEXT_COLOR: Record<ChipType, string> = {
-  red: 'text-rival-400',
-  green: 'text-emerald-300',
-  blue: 'text-lounge-sky-300',
-  rainbow: 'text-gold-300',
+  red: 'theme-text-rival',
+  green: 'theme-text-emerald',
+  blue: 'theme-text-sky',
+  rainbow: 'theme-text-gold',
 };
 
 export const Heavy13HistoryPanel: React.FC<Heavy13HistoryPanelProps> = ({
@@ -39,43 +39,43 @@ export const Heavy13HistoryPanel: React.FC<Heavy13HistoryPanelProps> = ({
       {/* Part 1: Round-by-Round History Table */}
       <div className="space-y-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm sm:text-base font-bold text-gold-200">
+          <h2 className="text-sm sm:text-base font-bold theme-text-gold-strong">
             지난 라운드 기록
           </h2>
-          <span className="font-mono-tabular text-xs text-lounge-slate-400">
+          <span className="font-mono-tabular text-xs theme-text-muted">
             칩 · 바위 카드 · 패스 여부 · 라운드 벌점
           </span>
         </div>
 
         {roundHistory.length === 0 ? (
-          <div className="obsidian-subpanel rounded-xl px-4 py-5 text-center text-xs sm:text-sm text-lounge-slate-400">
+          <div className="obsidian-subpanel rounded-xl px-4 py-5 text-center text-xs sm:text-sm theme-text-muted">
             1라운드가 종료되면 각 플레이어가 제출한 칩·카드, 패스 여부, 받은 벌점이 표로 표시됩니다.
           </div>
         ) : (
           <div className="obsidian-subpanel rounded-xl overflow-x-auto">
             <table className="w-full min-w-[540px] text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-white/10 text-lounge-slate-400">
-                  <th className="sticky left-0 z-10 bg-obsidian-850 px-3 py-2.5 font-semibold whitespace-nowrap">
+                <tr className="border-b border-slate-200 dark:border-white/10 theme-text-muted">
+                  <th className="sticky left-0 z-10 bg-slate-100 dark:bg-obsidian-850 px-3 py-2.5 font-semibold whitespace-nowrap">
                     라운드
                   </th>
                   {players.map((p) => (
                     <th
                       key={p.id}
-                      className="px-3 py-2.5 font-semibold text-lounge-slate-200 whitespace-nowrap"
+                      className="px-3 py-2.5 font-semibold theme-text-secondary whitespace-nowrap"
                     >
                       {p.seatIndex + 1}번 · {p.name}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-200 dark:divide-white/5">
                 {roundHistory.map((rec) => (
-                  <tr key={rec.roundNumber} className="hover:bg-white/[0.02]">
-                    <td className="sticky left-0 z-10 bg-obsidian-850 px-3 py-2.5 font-mono-tabular font-bold text-gold-400 whitespace-nowrap border-r border-white/5">
+                  <tr key={rec.roundNumber} className="hover:bg-slate-200/40 dark:hover:bg-white/[0.02]">
+                    <td className="sticky left-0 z-10 bg-slate-100 dark:bg-obsidian-850 px-3 py-2.5 font-mono-tabular font-bold theme-text-gold whitespace-nowrap border-r border-slate-200 dark:border-white/5">
                       R{rec.roundNumber}
                       {rec.roundNumber === HALF_ROUND && (
-                        <span className="ml-1 text-[10px] font-normal text-lounge-sky-300">
+                        <span className="ml-1 text-[10px] font-normal theme-text-sky">
                           (세트1 끝)
                         </span>
                       )}
@@ -94,7 +94,7 @@ export const Heavy13HistoryPanel: React.FC<Heavy13HistoryPanelProps> = ({
 
                       if (!sub) {
                         return (
-                          <td key={p.id} className="px-3 py-2.5 text-lounge-slate-500">
+                          <td key={p.id} className="px-3 py-2.5 theme-text-faint">
                             -
                           </td>
                         );
@@ -107,16 +107,16 @@ export const Heavy13HistoryPanel: React.FC<Heavy13HistoryPanelProps> = ({
                               {CHIP_META[sub.chip].shortKo}
                               {rainbowTarget ? `→${rainbowTarget}` : ''}
                             </span>
-                            <span className="text-lounge-slate-500">·</span>
-                            <span className="font-bold text-gold-100">{sub.card}</span>
+                            <span className="theme-text-faint">·</span>
+                            <span className="font-bold theme-text-primary">{sub.card}</span>
                             {passed && (
-                              <span className="text-[11px] font-semibold text-lounge-sky-300 ml-0.5">
+                              <span className="text-[11px] font-semibold theme-text-sky ml-0.5">
                                 패스
                               </span>
                             )}
                           </div>
                           {penalty > 0 && (
-                            <div className="font-mono-tabular text-[11px] font-bold text-rival-400 mt-0.5">
+                            <div className="font-mono-tabular text-[11px] font-bold theme-text-rival mt-0.5">
                               벌점 +{penalty}점
                             </div>
                           )}
@@ -134,10 +134,10 @@ export const Heavy13HistoryPanel: React.FC<Heavy13HistoryPanelProps> = ({
       {/* Part 2: Remaining Cards & Chips per Player in Current Set */}
       <div className="space-y-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-xs sm:text-sm font-bold text-lounge-sky-300">
+          <h3 className="text-xs sm:text-sm font-bold theme-text-sky">
             각 플레이어가 이번 세트에서 아직 안 낸 카드 · 칩 (세트 {activeSetNumber} · {setRangeLabel})
           </h3>
-          <span className="text-[11px] text-lounge-slate-400">
+          <span className="text-[11px] theme-text-muted">
             지난 라운드 기록 기준 계산
           </span>
         </div>
@@ -155,10 +155,10 @@ export const Heavy13HistoryPanel: React.FC<Heavy13HistoryPanelProps> = ({
                 className="obsidian-subpanel rounded-xl px-3.5 py-2.5 flex flex-col gap-2"
               >
                 <div className="flex items-center justify-between gap-2 text-xs">
-                  <span className="font-semibold text-white truncate">
+                  <span className="font-semibold theme-text-primary truncate">
                     {p.seatIndex + 1}번 · {p.name}
                   </span>
-                  <span className="font-mono-tabular text-lounge-slate-400 whitespace-nowrap">
+                  <span className="font-mono-tabular theme-text-muted whitespace-nowrap">
                     남은 카드 {remaining.cards.length}장
                   </span>
                 </div>
@@ -174,8 +174,8 @@ export const Heavy13HistoryPanel: React.FC<Heavy13HistoryPanelProps> = ({
                           className={[
                             'w-6 h-6 rounded border font-mono-tabular text-xs font-bold inline-flex items-center justify-center',
                             hasCard
-                              ? 'bg-obsidian-800 border-gold-500/45 text-gold-100'
-                              : 'bg-obsidian-950/60 border-lounge-slate-800/70 text-lounge-slate-500/35 line-through',
+                              ? 'bg-white border-amber-400/70 text-slate-900 dark:bg-obsidian-800 dark:border-gold-500/45 dark:text-gold-100'
+                              : 'bg-slate-200/70 border-slate-200 text-slate-400 dark:bg-obsidian-950/60 dark:border-lounge-slate-800/70 dark:text-lounge-slate-500/35 line-through',
                           ].join(' ')}
                         >
                           {num}
@@ -194,7 +194,7 @@ export const Heavy13HistoryPanel: React.FC<Heavy13HistoryPanelProps> = ({
                           className={
                             count > 0
                               ? `${CHIP_TEXT_COLOR[chip]} font-bold`
-                              : 'text-lounge-slate-500/35'
+                              : 'text-slate-400/70 dark:text-lounge-slate-500/35'
                           }
                         >
                           {CHIP_META[chip].shortKo}×{count}

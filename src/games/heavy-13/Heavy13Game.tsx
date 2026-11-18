@@ -579,7 +579,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     state.placementQueue.length > 1;
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden bg-obsidian-900 text-[#f3f4f6] flex flex-col">
+    <div className="relative min-h-screen w-full overflow-x-hidden theme-canvas transition-colors duration-150 flex flex-col">
 
       {state.shell === 'TITLE_MENU' && (
         <Heavy13TitleScreen
