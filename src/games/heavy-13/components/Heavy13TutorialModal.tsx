@@ -371,15 +371,15 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
       aria-modal="true"
       aria-label="무거운 13 튜토리얼"
     >
-      <div className="w-full max-w-3xl max-h-[94vh] overflow-y-auto obsidian-panel rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-5">
+      <div className="w-full max-w-3xl max-h-[94vh] overflow-y-auto obsidian-panel rounded-xl p-4 sm:p-6 space-y-4 sm:space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between gap-2 pb-3 border-b border-white/10">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-lounge-sky-900/60 border border-lounge-sky-400/50 text-lounge-sky-300 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-lounge-sky-900/50 border border-lounge-sky-400/40 text-lounge-sky-300 flex items-center justify-center shrink-0">
               <GraduationCap className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <h2 className="font-display text-lg sm:text-xl font-bold text-gold-200 truncate">
+              <h2 className="font-display text-lg sm:text-xl font-bold text-white truncate">
                 무거운 13 인터랙티브 튜토리얼
               </h2>
               <p className="text-[11px] sm:text-xs text-lounge-slate-400">
@@ -391,7 +391,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="튜토리얼 닫기"
-            className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-300 hover:text-white transition-colors cursor-pointer"
+            className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-300 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>

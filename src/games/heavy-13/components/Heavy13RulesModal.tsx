@@ -45,7 +45,7 @@ export const Heavy13RulesModal: React.FC<Heavy13RulesModalProps> = ({ open, onCl
         </div>
 
         <section className="space-y-2.5 text-sm leading-relaxed text-lounge-slate-300">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-gold-400">
+          <h3 className="text-sm font-semibold text-gold-400">
             1. 기본 구성 및 목표
           </h3>
           <ul className="space-y-1.5 list-disc list-inside">
@@ -65,7 +65,7 @@ export const Heavy13RulesModal: React.FC<Heavy13RulesModalProps> = ({ open, onCl
         </section>
 
         <section className="space-y-2.5 text-sm leading-relaxed text-lounge-slate-300">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-lounge-sky-300">
+          <h3 className="text-sm font-semibold text-lounge-sky-300">
             2. 공개 및 큐브 배치 순서
           </h3>
           <ol className="space-y-1.5 list-decimal list-inside">
@@ -82,7 +82,7 @@ export const Heavy13RulesModal: React.FC<Heavy13RulesModalProps> = ({ open, onCl
         </section>
 
         <section className="space-y-2.5 text-sm leading-relaxed text-lounge-slate-300">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-gold-400">
+          <h3 className="text-sm font-semibold text-gold-400">
             3. 패스(보류) 및 13 이상 벌점 규칙
           </h3>
           <ul className="space-y-1.5 list-disc list-inside">
@@ -102,7 +102,7 @@ export const Heavy13RulesModal: React.FC<Heavy13RulesModalProps> = ({ open, onCl
         </section>
 
         <section className="space-y-2 text-sm leading-relaxed text-lounge-slate-300">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-gold-400">
+          <h3 className="text-sm font-semibold text-gold-400">
             4. 7라운드 재지급 &amp; 14라운드 최종 순위
           </h3>
           <p>

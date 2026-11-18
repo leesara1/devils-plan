@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import arenaBackdrop from '../../assets/images/obsidian_brass_arena_1794918534030.jpg';
 import { GameScreenProps } from '../types';
 import { heavy13Sound } from './audio/heavy13Sound';
 import { PedestalBurstEffect } from './components/Heavy13Pieces';
@@ -46,7 +45,6 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   const [rulesOpen, setRulesOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [round1HintsEnabled, setRound1HintsEnabled] = useState(true);
-  const [bgFailed, setBgFailed] = useState(false);
 
   // Pure Reducer Match Engine
   const [state, dispatch] = useReducer(heavy13Reducer, undefined, createInitialMatchState);
@@ -581,26 +579,7 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     state.placementQueue.length > 1;
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden bg-obsidian-900 text-[#f3f1ec] flex flex-col">
-      {/* Studio Backdrop */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        {!bgFailed && (
-          <img
-            src={arenaBackdrop}
-            alt="옵시디언과 브러시드 골드 아레나 배경"
-            referrerPolicy="no-referrer"
-            onError={() => setBgFailed(true)}
-            className="w-full h-full object-cover opacity-35"
-          />
-        )}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at 50% 35%, rgba(22, 27, 42, 0.45) 0%, rgba(9, 10, 15, 0.9) 70%, rgba(7, 8, 12, 0.98) 100%)',
-          }}
-        />
-      </div>
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-obsidian-900 text-[#f3f4f6] flex flex-col">
 
       {state.shell === 'TITLE_MENU' && (
         <Heavy13TitleScreen

@@ -35,15 +35,17 @@ export const RockCardButton: React.FC<RockCardButtonProps> = ({
       aria-pressed={selected}
       aria-label={`바위 카드 ${value}`}
       className={[
-        'relative flex flex-col items-center justify-center sm:justify-between rounded-xl border px-0.5 py-2 sm:p-2.5 min-h-[58px] sm:min-h-[76px] transition-all duration-150 select-none',
+        'relative flex flex-col items-center justify-center sm:justify-between rounded-lg border px-0.5 py-2 sm:p-2.5 min-h-[58px] sm:min-h-[76px] transition-all duration-150 select-none',
         !available
-          ? 'bg-obsidian-950/60 border-lounge-slate-800/70 text-lounge-slate-500/45 cursor-not-allowed'
+          ? 'bg-obsidian-900 border-white/[0.05] text-lounge-slate-500/35 cursor-not-allowed'
           : selected
-            ? 'bg-gold-400 text-gold-950 border-gold-200 -translate-y-1 shadow-[0_8px_20px_rgba(229,193,88,0.28)] cursor-pointer'
-            : 'bg-obsidian-850 border-lounge-slate-700 text-gold-100 hover:border-gold-400/70 hover:-translate-y-0.5 cursor-pointer',
+            ? 'bg-gold-400 text-gold-950 border-gold-300 -translate-y-0.5 cursor-pointer'
+            : 'bg-obsidian-800 border-white/10 text-white hover:border-white/30 hover:-translate-y-0.5 cursor-pointer',
       ].join(' ')}
     >
-      <span className="hidden sm:inline text-[10px] font-semibold opacity-75">바위</span>
+      <span className="hidden sm:inline text-[10px] font-medium opacity-70">
+        바위
+      </span>
       <span className="font-mono-tabular text-xl sm:text-2xl font-bold leading-none">
         {value}
       </span>
@@ -51,10 +53,10 @@ export const RockCardButton: React.FC<RockCardButtonProps> = ({
         className={[
           'text-[9px] sm:text-[10px] font-mono-tabular whitespace-nowrap mt-1 sm:mt-0',
           selected
-            ? 'text-gold-950/80'
+            ? 'text-gold-950/80 font-semibold'
             : available
               ? 'text-lounge-slate-400'
-              : 'text-lounge-slate-500/40',
+              : 'text-lounge-slate-500/30',
         ].join(' ')}
       >
         {available ? (
@@ -103,7 +105,7 @@ const CHIP_STYLE: Record<
   rainbow: {
     ring: 'border-gold-400/85',
     emblemFill: 'var(--color-gold-400)',
-    labelColor: 'text-gold-200',
+    labelColor: 'text-gold-300',
   },
 };
 
@@ -127,24 +129,24 @@ export const ChipTokenButton: React.FC<ChipTokenButtonProps> = ({
       aria-pressed={selected}
       aria-label={`${meta.labelKo} 남은 개수 ${count}개`}
       className={[
-        'relative flex items-center justify-between gap-2 rounded-xl border px-2.5 sm:px-3 py-2 sm:py-2.5 min-h-[48px] sm:min-h-[54px] transition-all duration-150 select-none',
+        'relative flex items-center justify-between gap-2 rounded-lg border px-2.5 sm:px-3 py-2 min-h-[48px] sm:min-h-[54px] transition-colors duration-150 select-none',
         !isAvailable
-          ? 'bg-obsidian-950/60 border-lounge-slate-800/70 opacity-40 cursor-not-allowed'
+          ? 'bg-obsidian-900 border-white/[0.05] opacity-35 cursor-not-allowed'
           : selected
-            ? 'bg-obsidian-800 border-gold-300 ring-2 ring-gold-400/70 -translate-y-0.5 cursor-pointer'
-            : 'bg-obsidian-850 border-lounge-slate-700 hover:border-gold-500/70 cursor-pointer',
+            ? 'bg-obsidian-800 border-gold-400 ring-1 ring-gold-400 cursor-pointer'
+            : 'bg-obsidian-800/70 border-white/10 hover:border-white/25 cursor-pointer',
       ].join(' ')}
     >
       <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
         <span
           className={[
-            'w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center shrink-0 bg-obsidian-900',
+            'w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 bg-obsidian-900',
             style.ring,
           ].join(' ')}
           aria-hidden="true"
         >
           {chip === 'rainbow' ? (
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 sm:w-4 sm:h-4">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5">
               <polygon points="12,2 22,12 12,22 2,12" fill="url(#rainbowPrism)" />
               <defs>
                 <linearGradient id="rainbowPrism" x1="0" y1="0" x2="1" y2="1">
@@ -156,7 +158,7 @@ export const ChipTokenButton: React.FC<ChipTokenButtonProps> = ({
             </svg>
           ) : (
             <span
-              className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full"
+              className="w-3 h-3 rounded-full"
               style={{ backgroundColor: style.emblemFill }}
             />
           )}
@@ -171,7 +173,7 @@ export const ChipTokenButton: React.FC<ChipTokenButtonProps> = ({
         </div>
       </div>
 
-      <span className="font-mono-tabular text-xs font-bold text-gold-100 shrink-0">
+      <span className="font-mono-tabular text-xs font-bold text-white shrink-0">
         ×{count}
       </span>
     </button>
@@ -237,35 +239,36 @@ export const RevealFlipCard: React.FC<RevealFlipCardProps> = ({
   isHighlighted,
 }) => {
   return (
-    <div className="card-perspective w-8 h-10 sm:w-11 sm:h-14 shrink-0" aria-label={flipped && value !== undefined ? `공개된 바위 카드 ${value}` : '비공개 바위 카드'}>
+    <div
+      className="card-perspective w-8 h-10 sm:w-11 sm:h-14 shrink-0"
+      aria-label={flipped && value !== undefined ? `공개된 바위 카드 ${value}` : '비공개 바위 카드'}
+    >
       <div className={`card-inner ${flipped ? 'is-flipped' : ''}`}>
         {/* Front (Hidden) */}
-        <div className="card-face rounded-md sm:rounded-lg border border-lounge-slate-700 bg-obsidian-950 flex flex-col items-center justify-center shadow-inner">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-gold-500/35 rotate-45 flex items-center justify-center">
-            <span className="-rotate-45 font-mono-tabular text-[10px] sm:text-[11px] font-bold text-gold-300/80">
-              ?
-            </span>
-          </div>
+        <div className="card-face rounded-md border border-white/12 bg-obsidian-900 flex items-center justify-center">
+          <span className="font-mono-tabular text-[11px] font-semibold text-lounge-slate-400">
+            ?
+          </span>
         </div>
 
         {/* Back (Revealed) */}
         <div
           className={[
-            'card-face card-face-back rounded-md sm:rounded-lg border flex flex-col items-center justify-center shadow-md',
+            'card-face card-face-back rounded-md border flex flex-col items-center justify-center',
             isHighlighted
-              ? 'bg-gold-400 border-gold-200 text-gold-950'
-              : 'bg-obsidian-800 border-gold-400/75 text-gold-100',
+              ? 'bg-gold-400 border-gold-300 text-gold-950'
+              : 'bg-obsidian-800 border-white/20 text-white',
           ].join(' ')}
         >
           <span
             className={[
-              'text-[7px] sm:text-[8px] font-semibold leading-none',
+              'text-[7px] sm:text-[8px] font-medium leading-none',
               isHighlighted ? 'text-gold-950/75' : 'text-lounge-slate-400',
             ].join(' ')}
           >
             바위
           </span>
-          <span className="font-mono-tabular text-sm sm:text-lg font-extrabold leading-tight mt-0.5">
+          <span className="font-mono-tabular text-sm sm:text-lg font-bold leading-tight mt-0.5">
             {value ?? '?'}
           </span>
         </div>
@@ -287,9 +290,9 @@ interface PedestalStationProps {
 }
 
 const PEDESTAL_BORDER_CLASS: Record<PedestalColor, string> = {
-  red: 'border-rival-400/50',
-  green: 'border-emerald-400/50',
-  blue: 'border-lounge-sky-400/50',
+  red: 'border-white/10',
+  green: 'border-white/10',
+  blue: 'border-white/10',
 };
 
 const PEDESTAL_BAR_BG: Record<PedestalColor, string> = {
@@ -337,46 +340,51 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           }
         : {})}
       className={[
-        'relative rounded-xl sm:rounded-2xl border p-2 sm:p-4 flex flex-col justify-between gap-2 sm:gap-3 text-left transition-all duration-150',
-        'bg-obsidian-850/95',
-        isBursting ? 'animate-pedestal-shake border-rival-400 shadow-[0_0_30px_rgba(251,113,133,0.35)]' : '',
+        'relative rounded-xl border p-2.5 sm:p-4 flex flex-col justify-between gap-2.5 sm:gap-3 text-left transition-colors duration-150 overflow-visible bg-obsidian-900',
+        isBursting ? 'animate-pedestal-shake border-rival-400' : '',
         !isBursting && isSelectableTarget
-          ? 'cursor-pointer hover:-translate-y-0.5 hover:border-gold-300 ring-1 ring-gold-400/50'
+          ? 'cursor-pointer hover:border-gold-400 ring-1 ring-gold-400/40'
           : '',
         !isBursting && isHighlightedTarget
-          ? 'border-gold-400 shadow-[0_0_24px_rgba(229,193,88,0.2)]'
+          ? 'border-gold-400'
           : !isBursting
             ? PEDESTAL_BORDER_CLASS[color]
             : '',
       ].join(' ')}
     >
+      {/* Top 2px Color Marker */}
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute top-0 inset-x-3 h-[2px] rounded-full ${PEDESTAL_BAR_BG[color]}`}
+      />
+
       {/* Overflow Penalty Floating Popup */}
       {isBursting && burstEffect && (
         <div
           key={burstEffect.id}
           className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 z-30 animate-penalty-popup"
         >
-          <div className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl bg-rival-950 border-2 border-rival-400 shadow-[0_10px_28px_rgba(225,29,72,0.5)] whitespace-nowrap flex items-center gap-1.5 sm:gap-2">
-            <span className="text-[11px] sm:text-sm font-extrabold text-white max-w-[78px] sm:max-w-none truncate">
+          <div className="px-2.5 sm:px-3.5 py-1 rounded-lg bg-rival-950 border border-rival-400 whitespace-nowrap flex items-center gap-1.5">
+            <span className="text-[11px] sm:text-sm font-bold text-white max-w-[78px] sm:max-w-none truncate">
               {burstEffect.actorName}
             </span>
-            <span className="font-mono-tabular text-[11px] sm:text-sm font-extrabold text-rival-400">
+            <span className="font-mono-tabular text-[11px] sm:text-sm font-bold text-rival-400">
               +{burstEffect.penaltyAdded}
             </span>
           </div>
         </div>
       )}
 
-      {/* Prominent Turn / Selection Forecast Banner on Top of Pedestal */}
+      {/* Turn / Selection Forecast Banner */}
       {projectedSum !== null && (
         <div
           className={[
-            'rounded-lg sm:rounded-xl border px-1.5 sm:px-3 py-1 sm:py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 sm:gap-2 text-[10px] sm:text-xs font-bold leading-tight',
+            'rounded-lg border px-2 sm:px-2.5 py-1 sm:py-1.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 sm:gap-2 text-[10px] sm:text-xs font-semibold leading-tight',
             wouldOverflow
-              ? 'bg-rival-950/85 border-rival-400/75 text-rival-400'
+              ? 'bg-rival-950/90 border-rival-400/60 text-rival-400'
               : isMyTurnPreview
-                ? 'bg-emerald-950/75 border-emerald-400/70 text-emerald-300'
-                : 'bg-gold-950/80 border-gold-400/60 text-gold-200',
+                ? 'bg-emerald-950/70 border-emerald-400/50 text-emerald-300'
+                : 'bg-obsidian-800 border-gold-400/50 text-gold-200',
           ].join(' ')}
         >
           <span className="font-mono-tabular whitespace-nowrap">
@@ -389,12 +397,12 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
         </div>
       )}
 
-      {/* Top Color Strip */}
-      <div className="space-y-1.5 sm:space-y-2">
+      {/* Header & Weight Meter */}
+      <div className="space-y-2">
         <div className="flex items-center justify-between gap-1">
           <div className="flex items-center gap-1.5 min-w-0">
             <span
-              className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm shrink-0 ${PEDESTAL_BAR_BG[color]}`}
+              className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm shrink-0 ${PEDESTAL_BAR_BG[color]}`}
               aria-hidden="true"
             />
             <span className={`text-xs sm:text-sm font-bold whitespace-nowrap ${PEDESTAL_TEXT_COLOR[color]}`}>
@@ -408,22 +416,17 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           </span>
         </div>
 
-        {/* Weight Meter toward 13 */}
         <div className="flex items-baseline justify-between gap-1">
-          <div className="font-mono-tabular text-xl sm:text-3xl font-bold text-white leading-none">
+          <div className="font-mono-tabular text-2xl sm:text-3xl font-bold text-white leading-none">
             {sum}
-            <span className="text-[10px] sm:text-xs font-normal text-lounge-slate-400 ml-0.5 sm:ml-1">
+            <span className="text-[11px] sm:text-xs font-normal text-lounge-slate-500 ml-0.5 sm:ml-1">
               /{OVERFLOW_THRESHOLD}
             </span>
           </div>
           <span
             className={[
               'text-[10px] sm:text-xs font-semibold font-mono-tabular whitespace-nowrap',
-              isBursting
-                ? 'text-rival-400'
-                : isDangerZone
-                  ? 'text-rival-400'
-                  : 'text-lounge-slate-400',
+              isBursting || isDangerZone ? 'text-rival-400' : 'text-lounge-slate-400',
             ].join(' ')}
           >
             {isBursting ? (
@@ -433,7 +436,7 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
               </>
             ) : isDangerZone ? (
               <>
-                <span className="hidden sm:inline">폭발 주의 (여유 {OVERFLOW_THRESHOLD - 1 - sum})</span>
+                <span className="hidden sm:inline">주의 (여유 {OVERFLOW_THRESHOLD - 1 - sum})</span>
                 <span className="sm:hidden">주의 {OVERFLOW_THRESHOLD - 1 - sum}</span>
               </>
             ) : (
@@ -442,7 +445,7 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           </span>
         </div>
 
-        <div className="w-full h-1.5 sm:h-2 rounded-full bg-obsidian-950 overflow-hidden border border-white/5">
+        <div className="relative w-full h-1.5 rounded-full bg-obsidian-950 overflow-hidden">
           <div
             className={[
               'h-full transition-[width] duration-200',
@@ -453,24 +456,24 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
         </div>
       </div>
 
-      {/* Stacked Rock Cubes (with Drop & Burst Fly-Away Staging) */}
-      <div className="relative min-h-[56px] sm:min-h-[84px] rounded-lg sm:rounded-xl bg-obsidian-950/75 border border-lounge-slate-800 p-1.5 sm:p-2.5 flex flex-wrap content-start gap-1 sm:gap-2 overflow-visible">
+      {/* Stacked Rock Cubes */}
+      <div className="relative min-h-[58px] sm:min-h-[86px] rounded-lg bg-obsidian-950/75 border border-white/[0.06] p-1.5 sm:p-2 flex flex-wrap content-start gap-1.5 overflow-visible">
         {isBursting && burstEffect ? (
           burstEffect.cubes.map((cube, idx) => (
             <div
               key={`${burstEffect.id}-${cube.id}`}
-              className={`w-7 h-8 sm:w-10 sm:h-11 rounded-md sm:rounded-lg bg-rival-950 border border-rival-400/80 flex flex-col items-center justify-center shadow-md animate-cube-burst-${idx % 4}`}
+              className={`w-7 h-8 sm:w-9 sm:h-10 rounded bg-rival-950 border border-rival-400/75 flex flex-col items-center justify-center animate-cube-burst-${idx % 4}`}
             >
-              <span className="font-mono-tabular text-xs sm:text-base font-bold text-rival-400 leading-none">
+              <span className="font-mono-tabular text-xs sm:text-sm font-bold text-rival-400 leading-none">
                 {cube.value}
               </span>
-              <span className="text-[7px] sm:text-[9px] text-rival-400/80 truncate max-w-[26px] sm:max-w-[34px] mt-0.5">
+              <span className="text-[7px] sm:text-[9px] text-rival-400/80 truncate max-w-[26px] sm:max-w-[32px] mt-0.5">
                 수거
               </span>
             </div>
           ))
         ) : cubes.length === 0 ? (
-          <div className="w-full h-[42px] sm:h-[60px] flex items-center justify-center text-[10px] sm:text-xs text-lounge-slate-500 text-center">
+          <div className="w-full h-[44px] sm:h-[64px] flex items-center justify-center text-[10px] sm:text-xs text-lounge-slate-500 text-center">
             <span className="hidden sm:inline">놓인 바위 큐브 없음</span>
             <span className="sm:hidden">비어 있음</span>
           </div>
@@ -482,16 +485,16 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
                 key={cube.id}
                 title={`${cube.ownerName} · R${cube.roundPlaced}`}
                 className={[
-                  'w-7 h-8 sm:w-10 sm:h-11 rounded-md sm:rounded-lg flex flex-col items-center justify-center shadow-sm',
+                  'relative w-7 h-8 sm:w-9 sm:h-10 rounded flex flex-col items-center justify-center bg-obsidian-800',
                   isJustDropped
-                    ? 'bg-obsidian-800 border-2 border-gold-300 shadow-[0_0_14px_rgba(229,193,88,0.35)] animate-cube-drop'
-                    : 'bg-obsidian-800 border border-gold-500/40',
+                    ? 'border-2 border-gold-400 animate-cube-drop'
+                    : 'border border-white/15',
                 ].join(' ')}
               >
-                <span className="font-mono-tabular text-xs sm:text-base font-bold text-gold-100 leading-none">
+                <span className="font-mono-tabular text-xs sm:text-sm font-bold text-white leading-none">
                   {cube.value}
                 </span>
-                <span className="text-[7px] sm:text-[9px] text-lounge-slate-400 truncate max-w-[26px] sm:max-w-[34px] mt-0.5">
+                <span className="text-[7px] sm:text-[9px] text-lounge-slate-400 truncate max-w-[26px] sm:max-w-[32px] mt-0.5">
                   {cube.ownerName.replace(' AI', '').replace('플레이어 ', 'P').replace('나 (P1)', 'P1')}
                 </span>
               </div>
@@ -505,8 +508,8 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
           className={[
             'text-center text-[11px] sm:text-xs font-bold py-1.5 px-1 rounded-lg border min-h-[36px] flex items-center justify-center',
             wouldOverflow
-              ? 'bg-rival-950/70 border-rival-400/60 text-rival-400'
-              : 'bg-gold-400/15 border-gold-400/60 text-gold-200',
+              ? 'bg-rival-950/75 border-rival-400/60 text-rival-400'
+              : 'bg-gold-400/15 border-gold-400/60 text-gold-300',
           ].join(' ')}
         >
           <span className="hidden sm:inline">

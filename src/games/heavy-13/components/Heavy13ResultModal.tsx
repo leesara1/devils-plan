@@ -56,9 +56,9 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
       aria-modal="true"
       aria-label="무거운 13 최종 결과"
     >
-      <div className="w-full max-w-4xl max-h-[94vh] overflow-y-auto obsidian-panel rounded-2xl p-3.5 sm:p-7 space-y-4 sm:space-y-5">
+      <div className="w-full max-w-4xl max-h-[94vh] overflow-y-auto obsidian-panel rounded-xl p-3.5 sm:p-7 space-y-4 sm:space-y-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gold-400/15 border border-gold-400/50 text-gold-200 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gold-400/15 border border-gold-400/50 text-gold-300 flex items-center justify-center shrink-0">
             <Trophy className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div className="min-w-0">
@@ -201,7 +201,7 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
             <button
               type="button"
               onClick={onExitToHub}
-              className="min-h-[44px] px-4 py-2.5 rounded-xl border border-lounge-slate-700 text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+              className="min-h-[44px] px-4 py-2.5 rounded-lg border border-white/10 text-sm font-medium text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
             >
               게임 목록
             </button>
@@ -209,14 +209,14 @@ export const Heavy13ResultModal: React.FC<Heavy13ResultModalProps> = ({
           <button
             type="button"
             onClick={onReturnToTitle}
-            className="min-h-[44px] px-4 py-2.5 rounded-xl border border-lounge-slate-700 text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+            className="min-h-[44px] px-4 py-2.5 rounded-lg border border-white/10 text-sm font-medium text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
           >
             타이틀로
           </button>
           <button
             type="button"
             onClick={onPlayAgain}
-            className="flex-1 sm:flex-none min-h-[44px] inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
+            className="flex-1 sm:flex-none min-h-[44px] inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
             다시 플레이

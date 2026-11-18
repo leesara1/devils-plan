@@ -48,7 +48,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
       ? 'text-lg'
       : size === 'md'
         ? 'text-2xl sm:text-3xl'
-        : 'text-2xl sm:text-4xl';
+        : 'text-3xl sm:text-4xl';
 
   const WrapperTag = interactive ? 'button' : 'div';
 
@@ -64,45 +64,50 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
             : '카드 뒷면'
       }
       className={[
-        'group relative w-full h-full select-none card-perspective rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian-900',
+        'group relative w-full h-full select-none card-perspective rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian-900',
         interactive ? 'cursor-pointer transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.98]' : '',
         dimmed ? 'opacity-40' : 'opacity-100',
       ].join(' ')}
     >
-      <div className={`card-inner rounded-xl ${faceUp ? '' : 'is-flipped'}`}>
-        {/* Card Front */}
+      <div className={`card-inner rounded-lg ${faceUp ? '' : 'is-flipped'}`}>
+        {/* Card Front — Clean Crisp Off-White */}
         <div
           className={[
-            'card-face rounded-xl bg-[#faf7f0] border shadow-[0_8px_20px_rgba(0,0,0,0.48)] flex flex-col justify-between p-1.5 sm:p-2 overflow-hidden',
+            'card-face rounded-lg bg-[#faf9f6] border flex flex-col justify-between p-1.5 sm:p-2 overflow-hidden',
             isScoringHighlight
               ? 'border-gold-400 ring-2 ring-gold-400'
               : hasToken
-                ? 'border-gold-500 ring-2 ring-gold-500/80'
+                ? 'border-gold-400 ring-2 ring-gold-400/80'
                 : isOptimalHint
                   ? 'border-lounge-sky-400 ring-2 ring-lounge-sky-400/80'
-                  : 'border-[#ddd6c4]',
+                  : 'border-[#d6d3cb]',
           ].join(' ')}
         >
           {/* Top-left rank & suit */}
-          <div className={`flex flex-col items-center self-start font-bold ${cornerSize} ${isRed ? 'text-[#c81e1e]' : 'text-[#111827]'}`}>
+          <div
+            className={`flex flex-col items-center self-start font-bold ${cornerSize} ${
+              isRed ? 'text-[#dc2626]' : 'text-[#111827]'
+            }`}
+          >
             <span className="font-mono-tabular tracking-tight">{rankStr}</span>
             <span className="mt-0.5">{suitChar}</span>
           </div>
 
-          {/* Center pip / court mark */}
-          <div className={`flex items-center justify-center ${centerSize} ${isRed ? 'text-[#c81e1e]' : 'text-[#111827]'}`}>
-            {card.rank >= 11 && card.rank <= 13 ? (
-              <div className="flex flex-col items-center justify-center border border-current/20 rounded-md px-2 py-0.5 bg-current/[0.03]">
-                <span className="font-display font-bold leading-none">{rankStr}</span>
-                <span className="text-[10px] sm:text-xs leading-none mt-0.5">{suitChar}</span>
-              </div>
-            ) : (
-              <span aria-hidden="true">{suitChar}</span>
-            )}
+          {/* Center suit mark */}
+          <div
+            className={`flex items-center justify-center ${centerSize} ${
+              isRed ? 'text-[#dc2626]' : 'text-[#111827]'
+            }`}
+          >
+            <span aria-hidden="true">{suitChar}</span>
           </div>
 
           {/* Bottom-right inverted rank & suit */}
-          <div className={`flex flex-col items-center self-end rotate-180 font-bold ${cornerSize} ${isRed ? 'text-[#c81e1e]' : 'text-[#111827]'}`}>
+          <div
+            className={`flex flex-col items-center self-end rotate-180 font-bold ${cornerSize} ${
+              isRed ? 'text-[#dc2626]' : 'text-[#111827]'
+            }`}
+          >
             <span className="font-mono-tabular tracking-tight">{rankStr}</span>
             <span className="mt-0.5">{suitChar}</span>
           </div>
@@ -115,86 +120,31 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
           )}
         </div>
 
-        {/* Card Back — Obsidian, Slate & Brushed Gold Geometric Inlay */}
+        {/* Card Back — Flat Minimalist Slate */}
         <div
           className={[
-            'card-face card-face-back rounded-xl border shadow-[0_8px_20px_rgba(0,0,0,0.48)] overflow-hidden flex items-center justify-center',
-            'bg-obsidian-850',
+            'card-face card-face-back rounded-lg border bg-[#1a1e28] flex items-center justify-center',
             p1Token
               ? 'border-gold-400 ring-2 ring-gold-400'
-              : 'border-lounge-slate-700 group-hover:border-lounge-sky-400/70',
+              : 'border-white/12 group-hover:border-white/30',
           ].join(' ')}
         >
-          <svg
-            aria-hidden="true"
-            className="absolute inset-1.5 w-[calc(100%-0.75rem)] h-[calc(100%-0.75rem)] rounded-lg opacity-85"
-            viewBox="0 0 100 140"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <pattern id={`obsidian-grid-${card.id}`} width="20" height="20" patternUnits="userSpaceOnUse">
-                <path
-                  d="M 10 0 L 20 10 L 10 20 L 0 10 Z"
-                  fill="none"
-                  stroke="var(--color-gold-500)"
-                  strokeWidth="0.7"
-                  strokeOpacity="0.28"
-                />
-                <line
-                  x1="0"
-                  y1="10"
-                  x2="20"
-                  y2="10"
-                  stroke="var(--color-lounge-sky-400)"
-                  strokeWidth="0.35"
-                  strokeOpacity="0.18"
-                />
-              </pattern>
-            </defs>
-            <rect
-              x="2"
-              y="2"
-              width="96"
-              height="136"
-              rx="6"
-              fill={`url(#obsidian-grid-${card.id})`}
-              stroke="var(--color-gold-500)"
-              strokeWidth="1.2"
-              strokeOpacity="0.45"
-            />
-            <rect
-              x="7"
-              y="7"
-              width="86"
-              height="126"
-              rx="4"
-              fill="none"
-              stroke="var(--color-lounge-slate-400)"
-              strokeWidth="0.6"
-              strokeOpacity="0.25"
-            />
-          </svg>
-
           {coord ? (
-            <div className="relative z-10 flex flex-col items-center justify-center px-2.5 py-1 rounded-md bg-obsidian-900/95 border border-gold-500/45">
-              <span className="font-mono-tabular text-xs sm:text-sm font-bold text-gold-200 tracking-wider">
-                {coord}
-              </span>
-            </div>
+            <span className="font-mono-tabular text-xs sm:text-sm font-semibold text-lounge-slate-300 tracking-wide">
+              {coord}
+            </span>
           ) : (
-            <div className="relative z-10 w-7 h-7 rotate-45 border border-lounge-sky-400/50 bg-obsidian-900/90 flex items-center justify-center">
-              <span className="-rotate-45 text-[10px] text-gold-400">♠</span>
-            </div>
+            <span className="text-xs text-lounge-slate-500">♠</span>
           )}
         </div>
       </div>
 
-      {/* Golden Piece (P1) & Crimson Piece (AI/P2) Tokens */}
+      {/* Clean Flat Player Tokens */}
       {(p1Token || p2Token) && (
-        <div className="pointer-events-none absolute -top-2 -right-2 z-20 flex items-center gap-1">
+        <div className="pointer-events-none absolute -top-1.5 -right-1.5 z-20 flex items-center gap-1">
           {p1Token && (
             <div
-              className="h-7 min-w-7 px-1.5 rounded-full bg-gold-400 text-gold-950 border-2 border-gold-100 shadow-[0_3px_10px_rgba(0,0,0,0.65)] flex items-center justify-center font-mono-tabular text-[11px] font-bold tracking-tight"
+              className="h-6 min-w-6 px-1.5 rounded-full bg-gold-400 text-gold-950 border border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold"
               title="플레이어 1 선택 말"
             >
               P1
@@ -202,7 +152,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
           )}
           {p2Token && (
             <div
-              className="h-7 min-w-7 px-1.5 rounded-md bg-rival-500 text-white border-2 border-rose-100 shadow-[0_3px_10px_rgba(0,0,0,0.65)] flex items-center justify-center font-mono-tabular text-[11px] font-bold tracking-tight"
+              className="h-6 min-w-6 px-1.5 rounded bg-rival-500 text-white border border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold"
               title={`${p2Label} 선택 말`}
             >
               {p2Label}

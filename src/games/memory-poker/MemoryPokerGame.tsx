@@ -51,7 +51,7 @@ import {
   recordRoundInStats,
 } from './engine/stats';
 import { GameScreenProps } from '../types';
-import arenaBackdrop from '../../assets/images/obsidian_brass_arena_1794918534030.jpg';
+import { MemoryPokerPreviewDiagram } from '../../components/GameBoardIllustrations';
 
 const MEMORIZE_SECONDS = 20;
 
@@ -88,7 +88,6 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   const [matchFormat, setMatchFormat] = useState<MatchFormat>('single');
   const [muted, setMuted] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
-  const [bgFailed, setBgFailed] = useState(false);
 
   // Round & Match State
   const [roundNumber, setRoundNumber] = useState(1);
@@ -522,263 +521,215 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
     }
   })();
 
-  return (
-    <div className="relative min-h-screen w-full overflow-x-hidden bg-obsidian-900 text-[#f3f1ec] flex flex-col">
-      {/* Architectural Obsidian & Brass Studio Backdrop */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        {!bgFailed && (
-          <img
-            src={arenaBackdrop}
-            alt="옵시디언과 브러시드 골드 게임 아레나 배경"
-            referrerPolicy="no-referrer"
-            onError={() => setBgFailed(true)}
-            className="w-full h-full object-cover opacity-40"
-          />
-        )}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at 50% 38%, rgba(22, 27, 42, 0.42) 0%, rgba(9, 10, 15, 0.88) 70%, rgba(7, 8, 12, 0.98) 100%)',
-          }}
-        />
-      </div>
+  const phaseStepIndex = (() => {
+    switch (phase) {
+      case 'MEMORIZE':
+        return 0;
+      case 'COMMUNITY_REVEAL':
+        return 1;
+      case 'P1_SELECT':
+      case 'PASS_TO_P2':
+      case 'P2_SELECT':
+      case 'AI_THINKING':
+        return 2;
+      case 'SHOWDOWN':
+        return 3;
+    }
+  })();
 
+  return (
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-obsidian-900 text-[#f3f4f6] flex flex-col">
       {/* ================= TITLE SCREEN ================= */}
       {shell === 'TITLE_MENU' && (
-        <main className="relative z-10 flex-1 flex flex-col justify-between px-6 py-8 sm:px-10 sm:py-10 max-w-6xl w-full mx-auto">
+        <main className="relative z-10 flex-1 flex flex-col justify-between px-5 py-6 sm:px-8 sm:py-8 max-w-6xl w-full mx-auto gap-8">
           {/* Top minimal utility row */}
-          <div className="flex items-center justify-between gap-2">
-            <div>
+          <div className="flex items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
+            <div className="flex items-center gap-3">
               {onExitToHub && (
                 <button
                   type="button"
                   onClick={onExitToHub}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-lounge-slate-700 bg-obsidian-850/90 text-xs font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-white/10 bg-obsidian-850 text-xs font-medium text-lounge-slate-300 hover:border-white/25 hover:text-white transition-colors cursor-pointer whitespace-nowrap"
                 >
-                  <ArrowLeft className="w-4 h-4 text-gold-400" />
-                  게임 목록
+                  <ArrowLeft className="w-4 h-4 text-lounge-slate-400" />
+                  매치 목록
                 </button>
               )}
+              <span className="hidden sm:inline font-mono-tabular text-xs text-lounge-slate-500">
+                시즌 2 · 데스매치
+              </span>
             </div>
+
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setRulesOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-lounge-slate-700 bg-obsidian-850/90 text-xs font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-white/10 bg-obsidian-850 text-xs font-medium text-lounge-slate-300 hover:border-white/25 hover:text-white transition-colors cursor-pointer whitespace-nowrap"
               >
-                <BookOpen className="w-4 h-4 text-gold-400" />
+                <BookOpen className="w-4 h-4 text-lounge-slate-400" />
                 규칙 및 족보
               </button>
               <button
                 type="button"
                 onClick={toggleMute}
                 aria-label={muted ? '소리 켜기' : '음소거'}
-                className="min-w-[40px] min-h-[40px] inline-flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850/90 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="min-w-[38px] min-h-[38px] inline-flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-300 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
               >
                 {muted ? <VolumeX className="w-4 h-4 text-rival-400" /> : <Volume2 className="w-4 h-4 text-gold-400" />}
               </button>
             </div>
           </div>
 
-          {/* Center Hero with 30-40% calm negative space */}
-          <div className="my-auto grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 items-center py-6">
-            {/* Left: Bespoke Inline SVG Title Lockup & concise game brief */}
-            <div className="space-y-6">
-              <svg
-                viewBox="0 0 460 132"
-                className="w-full max-w-[440px] h-auto"
-                role="img"
-                aria-label="기억 포커 Memory Poker"
-              >
-                {/* Decorative card fan crest */}
-                <g transform="translate(8, 12)">
-                  <rect
-                    x="4"
-                    y="14"
-                    width="54"
-                    height="78"
-                    rx="7"
-                    fill="var(--color-obsidian-850)"
-                    stroke="var(--color-gold-500)"
-                    strokeWidth="2"
-                    transform="rotate(-10 31 53)"
-                  />
-                  <rect
-                    x="22"
-                    y="10"
-                    width="54"
-                    height="78"
-                    rx="7"
-                    fill="#faf7f0"
-                    stroke="#ddd6c4"
-                    strokeWidth="2"
-                    transform="rotate(6 49 49)"
-                  />
-                  <text
-                    x="49"
-                    y="42"
-                    textAnchor="middle"
-                    fill="#c81e1e"
-                    fontSize="18"
-                    fontWeight="700"
-                    fontFamily="Fraunces, serif"
-                    transform="rotate(6 49 49)"
-                  >
-                    A
-                  </text>
-                  <text
-                    x="49"
-                    y="66"
-                    textAnchor="middle"
-                    fill="#c81e1e"
-                    fontSize="22"
-                    transform="rotate(6 49 49)"
-                  >
-                    ♥
-                  </text>
-                </g>
+          {/* Center Hero Split */}
+          <div className="my-auto grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-8 lg:gap-10 items-stretch">
+            {/* Left: Clean Vector Board Diagram & Summary */}
+            <div className="flex flex-col justify-between gap-6">
+              <div className="space-y-5">
+                <div className="rounded-xl overflow-hidden border border-white/[0.08]">
+                  <MemoryPokerPreviewDiagram />
+                </div>
 
-                {/* Title Lockup */}
-                <text
-                  x="104"
-                  y="66"
-                  fill="var(--color-gold-100)"
-                  fontSize="50"
-                  fontWeight="700"
-                  fontFamily="Fraunces, Noto Sans KR, serif"
-                  letterSpacing="-0.02em"
-                >
-                  기억 포커
-                </text>
-                <line x1="106" y1="82" x2="368" y2="82" stroke="var(--color-gold-500)" strokeOpacity="0.48" strokeWidth="1.5" />
-                <text
-                  x="106"
-                  y="108"
-                  fill="var(--color-lounge-sky-300)"
-                  fontSize="16"
-                  fontWeight="600"
-                  fontFamily="Plus Jakarta Sans, sans-serif"
-                  letterSpacing="0.24em"
-                >
-                  MEMORY POKER
-                </text>
-              </svg>
+                <div className="space-y-2">
+                  <div className="font-mono-tabular text-xs text-lounge-slate-400">
+                    MEMORY POKER · 16 CARDS · 20 SEC
+                  </div>
+                  <h1 className="font-display text-3xl sm:text-4xl font-bold text-white">
+                    기억 포커
+                  </h1>
+                  <p className="text-sm sm:text-base text-lounge-slate-300 leading-relaxed text-pretty pt-1">
+                    52장 중 무작위 <strong className="text-white font-semibold">16장의 카드</strong>를 20초 동안 암기한 뒤,
+                    공개되는 <strong className="text-white font-semibold">공유 카드 3장</strong>과 합쳐 가장 강력한 5장 홀덤 족보를 완성하세요.
+                  </p>
+                </div>
+              </div>
 
-              <p className="max-w-lg text-base sm:text-lg text-lounge-slate-300 leading-relaxed text-pretty">
-                52장 중 무작위 <strong className="text-gold-200 font-semibold">16장의 카드</strong>를 20초 동안 암기한 뒤,
-                공개되는 <strong className="text-gold-200 font-semibold">공유 카드 3장</strong>과 합쳐 가장 강력한 5장 홀덤 족보를 완성하세요.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-lounge-slate-400">
-                <span>16장 암기 (20초)</span>
-                <span aria-hidden="true">·</span>
-                <span>공유 카드 3장 공개</span>
-                <span aria-hidden="true">·</span>
-                <span>개인 게임판 말 2개 배치</span>
+              <div className="grid grid-cols-3 border-y border-white/[0.08] divide-x divide-white/[0.08] text-xs">
+                <div className="py-3 pr-3">
+                  <div className="text-lounge-slate-500">1단계</div>
+                  <div className="font-semibold text-white mt-0.5">16장 암기 (20초)</div>
+                </div>
+                <div className="py-3 px-3">
+                  <div className="text-lounge-slate-500">2단계</div>
+                  <div className="font-semibold text-white mt-0.5">공유 카드 3장 공개</div>
+                </div>
+                <div className="py-3 pl-3">
+                  <div className="text-lounge-slate-500">3단계</div>
+                  <div className="font-semibold text-white mt-0.5">비공개 말 2개 배치</div>
+                </div>
               </div>
             </div>
 
             {/* Right: Mode Config & Primary Start CTA */}
-            <div className="obsidian-panel rounded-2xl p-6 sm:p-7 space-y-5">
-              {/* Mode selector */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-lounge-slate-400">
-                  대전 방식
-                </label>
-                <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl obsidian-subpanel">
-                  <button
-                    type="button"
-                    onClick={() => setMode('ai')}
-                    className={[
-                      'py-2.5 px-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
-                      mode === 'ai'
-                        ? 'bg-gold-400 text-gold-950'
-                        : 'text-lounge-slate-300 hover:text-white',
-                    ].join(' ')}
-                  >
-                    1P vs AI
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMode('local2p')}
-                    className={[
-                      'py-2.5 px-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
-                      mode === 'local2p'
-                        ? 'bg-gold-400 text-gold-950'
-                        : 'text-lounge-slate-300 hover:text-white',
-                    ].join(' ')}
-                  >
-                    2P 로컬 대전
-                  </button>
+            <div className="obsidian-panel rounded-xl p-5 sm:p-6 flex flex-col justify-between gap-6">
+              <div className="space-y-4">
+                <div className="pb-3 border-b border-white/[0.08] flex items-center justify-between gap-2">
+                  <h2 className="font-display text-base font-bold text-white">
+                    매치 설정
+                  </h2>
+                  <span className="font-mono-tabular text-xs text-lounge-slate-400">
+                    1P vs AI · 2P 로컬
+                  </span>
                 </div>
-              </div>
 
-              {/* AI Difficulty (only in AI mode) */}
-              {mode === 'ai' && (
-                <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-lounge-slate-400">
-                    AI 기억력 난이도
+                {/* Mode selector */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-lounge-slate-400">
+                    대전 방식
                   </label>
-                  <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl obsidian-subpanel">
-                    {(['normal', 'hard', 'master'] as AIDifficulty[]).map((diff) => (
-                      <button
-                        key={diff}
-                        type="button"
-                        onClick={() => setAiDifficulty(diff)}
-                        className={[
-                          'py-2 px-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
-                          aiDifficulty === diff
-                            ? 'bg-lounge-slate-700/90 text-gold-200 border border-gold-500/40'
-                            : 'text-lounge-slate-300 hover:text-white',
-                        ].join(' ')}
-                      >
-                        {AI_DIFFICULTY_LABEL[diff]}
-                      </button>
-                    ))}
+                  <div className="grid grid-cols-2 gap-1 p-1 rounded-lg bg-obsidian-900 border border-white/[0.07]">
+                    <button
+                      type="button"
+                      onClick={() => setMode('ai')}
+                      className={[
+                        'py-2 px-3 rounded-md text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                        mode === 'ai'
+                          ? 'bg-gold-400 text-gold-950 font-bold'
+                          : 'text-lounge-slate-300 hover:text-white',
+                      ].join(' ')}
+                    >
+                      1P vs AI
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode('local2p')}
+                      className={[
+                        'py-2 px-3 rounded-md text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                        mode === 'local2p'
+                          ? 'bg-gold-400 text-gold-950 font-bold'
+                          : 'text-lounge-slate-300 hover:text-white',
+                      ].join(' ')}
+                    >
+                      2P 로컬 대전
+                    </button>
                   </div>
                 </div>
-              )}
 
-              {/* Match format */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold text-lounge-slate-400">
-                  경기 형식
-                </label>
-                <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl obsidian-subpanel">
-                  <button
-                    type="button"
-                    onClick={() => setMatchFormat('single')}
-                    className={[
-                      'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
-                      matchFormat === 'single'
-                        ? 'bg-lounge-slate-700/90 text-gold-200 border border-gold-500/40'
-                        : 'text-lounge-slate-300 hover:text-white',
-                    ].join(' ')}
-                  >
-                    단판 승부
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMatchFormat('bo3')}
-                    className={[
-                      'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
-                      matchFormat === 'bo3'
-                        ? 'bg-lounge-slate-700/90 text-gold-200 border border-gold-500/40'
-                        : 'text-lounge-slate-300 hover:text-white',
-                    ].join(' ')}
-                  >
-                    3판 2선승
-                  </button>
+                {/* AI Difficulty (only in AI mode) */}
+                {mode === 'ai' && (
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-lounge-slate-400">
+                      AI 기억력 난이도
+                    </label>
+                    <div className="grid grid-cols-3 gap-1 p-1 rounded-lg bg-obsidian-900 border border-white/[0.07]">
+                      {(['normal', 'hard', 'master'] as AIDifficulty[]).map((diff) => (
+                        <button
+                          key={diff}
+                          type="button"
+                          onClick={() => setAiDifficulty(diff)}
+                          className={[
+                            'py-2 px-2 rounded-md text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                            aiDifficulty === diff
+                              ? 'bg-obsidian-800 text-white border border-white/15'
+                              : 'text-lounge-slate-400 hover:text-white',
+                          ].join(' ')}
+                        >
+                          {AI_DIFFICULTY_LABEL[diff]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Match format */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-lounge-slate-400">
+                    경기 형식
+                  </label>
+                  <div className="grid grid-cols-2 gap-1 p-1 rounded-lg bg-obsidian-900 border border-white/[0.07]">
+                    <button
+                      type="button"
+                      onClick={() => setMatchFormat('single')}
+                      className={[
+                        'py-2 px-3 rounded-md text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                        matchFormat === 'single'
+                          ? 'bg-obsidian-800 text-white border border-white/15'
+                          : 'text-lounge-slate-400 hover:text-white',
+                      ].join(' ')}
+                    >
+                      단판 승부
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMatchFormat('bo3')}
+                      className={[
+                        'py-2 px-3 rounded-md text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                        matchFormat === 'bo3'
+                          ? 'bg-obsidian-800 text-white border border-white/15'
+                          : 'text-lounge-slate-400 hover:text-white',
+                      ].join(' ')}
+                    >
+                      3판 2선승
+                    </button>
+                  </div>
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={startMatch}
-                className="w-full py-3.5 px-6 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-base shadow-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 px-5 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm sm:text-base transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Play className="w-5 h-5 fill-current" />
+                <Play className="w-4 h-4 fill-current" />
                 게임 시작
               </button>
             </div>
@@ -795,9 +746,9 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
       {(shell === 'PLAYING' || shell === 'PAUSED' || shell === 'GAME_OVER') && (
         <div className="relative z-10 flex-1 flex flex-col max-w-6xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-4 gap-3 sm:gap-4">
           {/* Unobtrusive Top HUD Bar */}
-          <header className="obsidian-panel flex items-center justify-between gap-3 px-3 sm:px-4 py-2.5 rounded-xl">
+          <header className="obsidian-panel flex items-center justify-between gap-3 px-3.5 sm:px-5 py-2.5 rounded-xl">
             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-              <span className="font-display font-bold text-base sm:text-lg text-gold-200 whitespace-nowrap">
+              <span className="font-display font-bold text-base sm:text-lg text-white whitespace-nowrap">
                 기억 포커
               </span>
               <span className="hidden sm:inline text-lounge-slate-500" aria-hidden="true">·</span>
@@ -812,8 +763,8 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
 
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               {/* Score tally */}
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-mono-tabular px-2.5 py-1 rounded-lg obsidian-subpanel">
-                <span className="text-gold-200 font-bold">P1 {p1Score}</span>
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-mono-tabular px-3 py-1 rounded-lg bg-obsidian-950 border border-white/[0.08]">
+                <span className="text-gold-300 font-bold">P1 {p1Score}</span>
                 <span className="text-lounge-slate-500">:</span>
                 <span className="text-rival-400 font-bold">{p2Score} {opponentShortLabel}</span>
               </div>
@@ -822,7 +773,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                 type="button"
                 onClick={() => setRulesOpen(true)}
                 aria-label="게임 규칙 및 족보"
-                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
               >
                 <BookOpen className="w-4 h-4" />
               </button>
@@ -830,27 +781,58 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                 type="button"
                 onClick={toggleMute}
                 aria-label={muted ? '소리 켜기' : '음소거'}
-                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
               >
-                {muted ? <VolumeX className="w-4 h-4 text-rival-400" /> : <Volume2 className="w-4 h-4 text-gold-400" />}
+                {muted ? <VolumeX className="w-4 h-4 text-rival-400" /> : <Volume2 className="w-4 h-4 text-lounge-slate-200" />}
               </button>
               <button
                 type="button"
                 onClick={() => setShell('PAUSED')}
                 aria-label="일시정지"
-                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
               >
                 <Pause className="w-4 h-4" />
               </button>
             </div>
           </header>
 
+          {/* 4-Step Round Progress Bar */}
+          <div
+            aria-label="라운드 진행 단계"
+            className="grid grid-cols-4 gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono-tabular"
+          >
+            {[
+              '01. 16장 암기',
+              '02. 공유 카드',
+              '03. 말 2개 배치',
+              '04. 족보 판정',
+            ].map((label, idx) => {
+              const isCurrent = idx === phaseStepIndex;
+              const isDone = idx < phaseStepIndex;
+              return (
+                <div
+                  key={label}
+                  className={[
+                    'px-2.5 py-1.5 rounded-lg border text-center truncate transition-colors',
+                    isCurrent
+                      ? 'bg-gold-400/15 border-gold-400/60 text-gold-200 font-bold'
+                      : isDone
+                        ? 'bg-obsidian-850/80 border-white/10 text-lounge-slate-300'
+                        : 'bg-obsidian-950/60 border-white/5 text-lounge-slate-500',
+                  ].join(' ')}
+                >
+                  {label}
+                </div>
+              );
+            })}
+          </div>
+
           {/* Main Tabletop Workspace */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(0,440px)_1fr] gap-4 sm:gap-6 items-start">
-            {/* LEFT: 4x4 Memory Grid / Personal Game Board */}
-            <section className="obsidian-panel rounded-2xl p-3.5 sm:p-4">
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(0,450px)_1fr] gap-4 sm:gap-6 items-start">
+            {/* LEFT: 4x4 Memory Grid / Personal Game Board on Emerald Felt */}
+            <section className="felt-table-surface rounded-xl p-3.5 sm:p-4.5">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-xs sm:text-sm font-semibold text-lounge-slate-200">
+                <div className="text-xs sm:text-sm font-semibold text-white">
                   {phase === 'MEMORIZE'
                     ? '16장 카드 보드 (암기 중)'
                     : phase === 'P1_SELECT'
@@ -859,7 +841,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                         ? '플레이어 2 개인 게임판'
                         : '16장 카드 보드'}
                 </div>
-                <span className="font-mono-tabular text-xs text-gold-500">
+                <span className="font-mono-tabular text-xs text-lounge-slate-400">
                   4 × 4 · A1–D4
                 </span>
               </div>
@@ -914,10 +896,10 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
             {/* RIGHT: Community Cards + Phase Status / Controls / Showdown */}
             <div className="flex flex-col gap-4">
               {/* Community Cards Zone */}
-              <section className="obsidian-panel rounded-2xl p-4 sm:p-5">
+              <section className="felt-table-surface rounded-xl p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div>
-                    <h2 className="text-sm sm:text-base font-bold text-gold-200">
+                    <h2 className="text-sm sm:text-base font-bold text-white">
                       공유 카드 3장
                     </h2>
                     <p className="text-xs text-lounge-slate-400 mt-0.5">
@@ -946,7 +928,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
 
               {/* Phase-Specific Control Panel */}
               {phase === 'MEMORIZE' && (
-                <section className="obsidian-sky-panel rounded-2xl p-4 sm:p-5 space-y-4">
+                <section className="obsidian-sky-panel rounded-xl p-4 sm:p-5 space-y-4">
                   <div className="flex items-end justify-between gap-4">
                     <div>
                       <span className="text-xs font-semibold text-lounge-sky-300">
@@ -961,7 +943,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                     <button
                       type="button"
                       onClick={finishMemorization}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-xs sm:text-sm transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-xs sm:text-sm transition-colors cursor-pointer whitespace-nowrap shrink-0"
                     >
                       <SkipForward className="w-4 h-4" />
                       암기 완료 · 바로 시작
@@ -969,7 +951,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                   </div>
 
                   {/* Progress bar */}
-                  <div className="w-full h-2.5 rounded-full obsidian-subpanel overflow-hidden">
+                  <div className="w-full h-2 rounded-full obsidian-subpanel overflow-hidden">
                     <div
                       className={[
                         'h-full transition-[width] duration-75',
@@ -986,13 +968,13 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
               )}
 
               {phase === 'COMMUNITY_REVEAL' && (
-                <section className="obsidian-sky-panel rounded-2xl p-5 text-sm text-lounge-sky-200">
+                <section className="obsidian-sky-panel rounded-xl p-5 text-sm text-lounge-sky-200">
                   공유 카드 3장을 테이블에 공개하고 있습니다...
                 </section>
               )}
 
               {(phase === 'P1_SELECT' || phase === 'P2_SELECT') && (
-                <section className="obsidian-panel rounded-2xl p-4 sm:p-5 space-y-4">
+                <section className="obsidian-panel rounded-xl p-4 sm:p-5 space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <h3 className="text-base font-bold text-white">
@@ -1012,7 +994,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                         <div
                           key={slotIdx}
                           className={[
-                            'flex-1 rounded-xl border px-3.5 py-2.5 flex items-center justify-between',
+                            'flex-1 rounded-lg border px-3.5 py-2.5 flex items-center justify-between',
                             hasPick
                               ? 'bg-gold-400/10 border-gold-400/60 text-gold-200'
                               : 'obsidian-subpanel text-lounge-slate-500',
@@ -1036,7 +1018,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                         if (phase === 'P1_SELECT') setP1Selected([]);
                         else setP2Selected([]);
                       }}
-                      className="px-3.5 py-2.5 rounded-xl border border-lounge-slate-700 text-xs sm:text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                      className="px-3.5 py-2.5 rounded-lg border border-white/10 text-xs sm:text-sm font-medium text-lounge-slate-200 hover:border-white/25 hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
                     >
                       배치 초기화
                     </button>
@@ -1045,7 +1027,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                       type="button"
                       disabled={activeSelection.length !== 2}
                       onClick={handleConfirmSelection}
-                      className="px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 disabled:bg-lounge-slate-800 disabled:text-lounge-slate-500 text-gold-950 font-bold text-sm transition-colors cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
+                      className="px-5 py-2.5 rounded-lg bg-gold-400 hover:bg-gold-300 disabled:bg-lounge-slate-800 disabled:text-lounge-slate-500 text-gold-950 font-bold text-sm transition-colors cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
                     >
                       선택 확정 (Enter)
                     </button>
@@ -1054,8 +1036,8 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
               )}
 
               {phase === 'PASS_TO_P2' && (
-                <section className="obsidian-panel rounded-2xl p-5 sm:p-6 space-y-4">
-                  <h3 className="font-display text-xl font-bold text-gold-200">
+                <section className="obsidian-panel rounded-xl p-5 sm:p-6 space-y-4">
+                  <h3 className="font-display text-xl font-bold text-white">
                     플레이어 1 선택 완료
                   </h3>
                   <p className="text-sm text-lounge-slate-300 leading-relaxed">
@@ -1064,7 +1046,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                   <button
                     type="button"
                     onClick={() => setPhase('P2_SELECT')}
-                    className="px-5 py-3 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
+                    className="px-5 py-3 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
                   >
                     플레이어 2 말 배치 시작 (Enter)
                   </button>
@@ -1072,7 +1054,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
               )}
 
               {phase === 'AI_THINKING' && (
-                <section className="obsidian-sky-panel rounded-2xl p-5 space-y-2">
+                <section className="obsidian-sky-panel rounded-xl p-5 space-y-2">
                   <h3 className="text-base font-bold text-lounge-sky-300">
                     {opponentLabel} 선택 중...
                   </h3>
@@ -1111,8 +1093,8 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
           aria-modal="true"
           aria-label="게임 일시정지"
         >
-          <div className="w-full max-w-sm obsidian-panel rounded-2xl p-6 space-y-4">
-            <h2 className="font-display text-2xl font-bold text-gold-200">일시정지</h2>
+          <div className="w-full max-w-sm obsidian-panel rounded-xl p-6 space-y-4">
+            <h2 className="font-display text-2xl font-bold text-white">일시정지</h2>
             <p className="text-sm text-lounge-slate-300">
               {phase === 'MEMORIZE' ? '암기 타이머가 일시정지되었습니다.' : '게임이 잠시 멈췄습니다.'}
             </p>
@@ -1120,28 +1102,28 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
               <button
                 type="button"
                 onClick={() => setShell('PLAYING')}
-                className="w-full py-2.5 px-4 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
               >
                 계속하기 (Esc)
               </button>
               <button
                 type="button"
                 onClick={() => setRulesOpen(true)}
-                className="w-full py-2.5 px-4 rounded-xl border border-lounge-slate-700 bg-obsidian-850 hover:border-gold-500/70 text-lounge-slate-200 font-semibold text-sm transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg border border-white/10 bg-obsidian-850 hover:border-white/25 text-lounge-slate-200 font-semibold text-sm transition-colors cursor-pointer"
               >
                 규칙 및 족보 보기
               </button>
               <button
                 type="button"
                 onClick={startMatch}
-                className="w-full py-2.5 px-4 rounded-xl border border-lounge-slate-700 bg-obsidian-850 hover:border-gold-500/70 text-lounge-slate-200 font-semibold text-sm transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg border border-white/10 bg-obsidian-850 hover:border-white/25 text-lounge-slate-200 font-semibold text-sm transition-colors cursor-pointer"
               >
                 새 게임 다시 시작
               </button>
               <button
                 type="button"
                 onClick={() => setShell('TITLE_MENU')}
-                className="w-full py-2.5 px-4 rounded-xl border border-lounge-slate-800 text-lounge-slate-400 hover:text-white hover:border-lounge-slate-500 font-medium text-sm transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg border border-white/[0.08] text-lounge-slate-400 hover:text-white hover:border-white/25 font-medium text-sm transition-colors cursor-pointer"
               >
                 게임 타이틀로
               </button>
@@ -1149,7 +1131,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                 <button
                   type="button"
                   onClick={onExitToHub}
-                  className="w-full py-2.5 px-4 rounded-xl border border-lounge-slate-800 text-lounge-slate-400 hover:text-white hover:border-lounge-slate-500 font-medium text-sm transition-colors cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-lg border border-white/[0.08] text-lounge-slate-400 hover:text-white hover:border-white/25 font-medium text-sm transition-colors cursor-pointer"
                 >
                   전체 게임 목록으로
                 </button>
@@ -1167,7 +1149,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
           aria-modal="true"
           aria-label="최종 경기 결과"
         >
-          <div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto obsidian-panel rounded-2xl p-5 sm:p-7 space-y-5">
+          <div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto obsidian-panel rounded-xl p-5 sm:p-7 space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3.5">
                 <div className="w-12 h-12 rounded-xl bg-gold-400/15 border border-gold-400/50 text-gold-200 flex items-center justify-center shrink-0">
@@ -1487,7 +1469,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                 <button
                   type="button"
                   onClick={onExitToHub}
-                  className="px-4 py-2.5 rounded-xl border border-lounge-slate-700 text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                  className="px-4 py-2.5 rounded-lg border border-white/10 text-sm font-medium text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
                 >
                   게임 목록
                 </button>
@@ -1495,14 +1477,14 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
               <button
                 type="button"
                 onClick={() => setShell('TITLE_MENU')}
-                className="px-4 py-2.5 rounded-xl border border-lounge-slate-700 text-sm font-medium text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-lg border border-white/10 text-sm font-medium text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
               >
                 타이틀로
               </button>
               <button
                 type="button"
                 onClick={startMatch}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
                 다시 플레이

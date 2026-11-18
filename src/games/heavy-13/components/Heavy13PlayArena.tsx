@@ -149,7 +149,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
         {/* Top HUD */}
         <header className="obsidian-panel flex items-center justify-between gap-2 sm:gap-3 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <span className="font-display font-bold text-sm sm:text-lg text-gold-200 whitespace-nowrap">
+            <span className="font-display font-bold text-sm sm:text-lg text-white whitespace-nowrap">
               무거운 13
             </span>
             <span className="text-lounge-slate-500" aria-hidden="true">·</span>
@@ -166,7 +166,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
             {memoryMode && (
               <>
                 <span className="hidden sm:inline text-lounge-slate-500" aria-hidden="true">·</span>
-                <span className="hidden sm:inline text-xs font-semibold text-gold-300 whitespace-nowrap">
+                <span className="hidden sm:inline text-xs font-semibold text-gold-400 whitespace-nowrap">
                   기억 모드
                 </span>
               </>
@@ -188,7 +188,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
               type="button"
               onClick={onOpenRules}
               aria-label="게임 규칙"
-              className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+              className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
             >
               <BookOpen className="w-4 h-4" />
             </button>
@@ -196,19 +196,19 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
               type="button"
               onClick={onToggleMute}
               aria-label={muted ? '소리 켜기' : '음소거'}
-              className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+              className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
             >
               {muted ? (
                 <VolumeX className="w-4 h-4 text-rival-400" />
               ) : (
-                <Volume2 className="w-4 h-4 text-gold-400" />
+                <Volume2 className="w-4 h-4 text-lounge-slate-200" />
               )}
             </button>
             <button
               type="button"
               onClick={onPause}
               aria-label="일시정지"
-              className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-lounge-slate-700 bg-obsidian-850 text-lounge-slate-200 hover:border-gold-500/70 hover:text-white transition-colors cursor-pointer"
+              className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-white/10 bg-obsidian-850 text-lounge-slate-200 hover:border-white/25 hover:text-white transition-colors cursor-pointer"
             >
               <Pause className="w-4 h-4" />
             </button>
@@ -251,8 +251,8 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                 className={[
                   'rounded-lg sm:rounded-xl border px-2.5 sm:px-3.5 py-1.5 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-2.5 transition-colors',
                   isTurn
-                    ? 'bg-obsidian-800 border-gold-400 shadow-[0_0_16px_rgba(229,193,88,0.16)]'
-                    : 'bg-obsidian-850/90 border-lounge-slate-700/80',
+                    ? 'bg-obsidian-800 border-gold-400'
+                    : 'bg-obsidian-850 border-white/[0.08]',
                 ].join(' ')}
               >
                 <div className="min-w-0 flex-1 space-y-0.5 sm:space-y-1.5">
@@ -266,7 +266,10 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                       </span>
                     </div>
                     {isFirst && (
-                      <span className="text-[10px] sm:text-[11px] font-bold text-gold-300 shrink-0">
+                      <span
+                        title="현재 라운드 선 플레이어"
+                        className="font-mono-tabular text-[10px] sm:text-[11px] font-extrabold text-gold-950 bg-gold-400 px-1.5 py-0.5 rounded shrink-0 leading-none"
+                      >
                         선
                       </span>
                     )}
@@ -323,10 +326,10 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
 
         {/* Staged Reveal & Large Placement Order Showcase */}
         {(phase === 'REVEAL_CHIPS' || phase === 'REVEAL_CARDS') && (
-          <section className="obsidian-sky-panel rounded-2xl p-4 sm:p-5 space-y-4">
+          <section className="obsidian-sky-panel rounded-xl p-4 sm:p-5 space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
-                <h2 className="font-display text-lg sm:text-xl font-bold text-gold-200">
+                <h2 className="font-display text-lg sm:text-xl font-bold text-white">
                   {phase === 'REVEAL_CHIPS'
                     ? '1단계 · 색깔 칩 공개'
                     : allCardsRevealed
@@ -346,7 +349,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                 <button
                   type="button"
                   onClick={onStartPlacementImmediately}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
                 >
                   <SkipForward className="w-4 h-4" />
                   바로 배치 진행
@@ -362,10 +365,10 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                   return (
                     <div
                       key={`order-spotlight-${entry.playerId}`}
-                      className="animate-order-reveal rounded-xl border border-gold-400/50 bg-obsidian-900/95 px-3 py-3 flex flex-col justify-between gap-2 shadow-md"
+                      className="animate-order-reveal rounded-lg border border-white/15 bg-obsidian-900 px-3 py-2.5 flex flex-col justify-between gap-2"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-mono-tabular text-sm sm:text-base font-extrabold text-gold-300">
+                        <span className="font-mono-tabular text-sm sm:text-base font-extrabold text-gold-400">
                           {idx + 1}번
                         </span>
                         <ChipMiniEmblem chip={entry.chip} size="sm" />
@@ -375,7 +378,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                       </div>
                       <div className="flex items-center justify-between gap-1 text-[11px] font-mono-tabular text-lounge-slate-300 pt-1 border-t border-white/10">
                         <span>{CHIP_META[entry.chip].shortKo}</span>
-                        <span className="font-bold text-gold-200">바위 {entry.card}</span>
+                        <span className="font-bold text-white">바위 {entry.card}</span>
                       </div>
                     </div>
                   );
@@ -388,9 +391,9 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
         {/* Center Stage: 3 Bearer Pedestals + Live Placement Queue/Feed */}
         <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-2.5 sm:gap-4 items-stretch">
           {/* 3 Pedestals */}
-          <section className="obsidian-panel rounded-2xl p-2.5 sm:p-5 flex flex-col justify-between gap-2 sm:gap-3">
+          <section className="obsidian-panel rounded-xl p-2.5 sm:p-5 flex flex-col justify-between gap-2 sm:gap-3">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-xs sm:text-base font-bold text-gold-200">
+              <h2 className="text-xs sm:text-base font-bold text-white">
                 짐꾼 받침대 (13 이상 수거)
               </h2>
               <span className="text-[11px] sm:text-xs text-lounge-slate-400 truncate">
@@ -447,7 +450,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
           {/* Right: Placement Queue & Round Log */}
           <aside
             className={[
-              'obsidian-panel rounded-2xl p-3 sm:p-5 flex-col justify-between gap-3',
+              'obsidian-panel rounded-xl p-3 sm:p-5 flex-col justify-between gap-3',
               phase === 'SUBMISSION' || phase === 'PASS_TO_HUMAN' ? 'hidden lg:flex' : 'flex',
             ].join(' ')}
           >
@@ -464,7 +467,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
               </div>
 
               {(phase === 'REVEAL_CARDS' || phase === 'PLACEMENT_STEP') && (
-                <div className="obsidian-subpanel rounded-xl p-3 space-y-2">
+                <div className="rounded-xl bg-obsidian-950/75 border border-white/10 p-3 space-y-2">
                   <div className="text-[11px] font-semibold text-lounge-slate-400">
                     남은 배치 대기열
                   </div>
@@ -502,7 +505,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                 </div>
               )}
 
-              <div className="obsidian-subpanel rounded-xl p-3 space-y-1.5 max-h-[210px] overflow-y-auto text-xs">
+              <div className="rounded-xl bg-obsidian-950/75 border border-white/10 p-3 space-y-1.5 max-h-[210px] overflow-y-auto text-xs">
                 {roundLogs.length === 0 ? (
                   <p className="text-lounge-slate-500 py-4 text-center">
                     큐브가 배치되면 이곳에 기록이 표시됩니다.
@@ -541,10 +544,10 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
 
         {/* Bottom Interactive Action Deck */}
         {phase === 'SUBMISSION' && currentSubmittingPlayer && (
-          <section className="obsidian-panel rounded-2xl p-2.5 sm:p-5 space-y-2.5 sm:space-y-4">
+          <section className="obsidian-panel rounded-xl p-2.5 sm:p-5 space-y-2.5 sm:space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
               <div className="flex items-center justify-between sm:block gap-2">
-                <h3 className="text-xs sm:text-base font-bold text-gold-200 truncate">
+                <h3 className="text-xs sm:text-base font-bold text-white truncate">
                   {currentSubmittingPlayer.name} · 카드 및 칩 선택
                 </h3>
                 <p className="hidden sm:block text-xs text-lounge-slate-400 mt-0.5">
@@ -555,7 +558,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                 type="button"
                 disabled={selectedCard === null || selectedChip === null}
                 onClick={onConfirmSubmission}
-                className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 disabled:bg-lounge-slate-800 disabled:text-lounge-slate-500 text-gold-950 font-bold text-sm transition-colors cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
+                className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-lg bg-gold-400 hover:bg-gold-300 disabled:bg-lounge-slate-800 disabled:text-lounge-slate-500 text-gold-950 font-bold text-sm transition-colors cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
               >
                 비공개 제출 확정
               </button>
@@ -608,9 +611,9 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
         )}
 
         {phase === 'PASS_TO_HUMAN' && currentSubmittingPlayer && (
-          <section className="obsidian-sky-panel rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <section className="obsidian-sky-panel rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div className="space-y-1">
-              <h3 className="font-display text-lg sm:text-xl font-bold text-gold-200">
+              <h3 className="font-display text-lg sm:text-xl font-bold text-white">
                 {currentSubmittingPlayer.name} 차례 준비
               </h3>
               <p className="text-xs sm:text-sm text-lounge-slate-300">
@@ -620,7 +623,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
             <button
               type="button"
               onClick={onBeginHumanSubmission}
-              className="w-full sm:w-auto min-h-[44px] px-5 py-3 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
+              className="w-full sm:w-auto min-h-[44px] px-5 py-3 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
             >
               선택 시작
             </button>
@@ -628,11 +631,11 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
         )}
 
         {phase === 'PLACEMENT_STEP' && activePlacementEntry && activePlacementPlayer && (
-          <section className="obsidian-panel rounded-2xl p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <section className="obsidian-panel rounded-xl p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             {activePlacementPlayer.isHuman ? (
               <>
                 <div className="space-y-1">
-                  <h3 className="text-sm sm:text-base font-bold text-gold-200">
+                  <h3 className="text-sm sm:text-base font-bold text-white">
                     {activePlacementPlayer.name}의 배치 차례 · {CHIP_META[activePlacementEntry.chip].labelKo} (바위 {activePlacementEntry.card})
                   </h3>
                   <p className="text-xs sm:text-sm text-lounge-slate-300">
@@ -705,9 +708,9 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
         )}
 
         {phase === 'ROUND_SUMMARY' && (
-          <section className="obsidian-panel rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+          <section className="obsidian-panel rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-1">
-              <h3 className="font-display text-xl font-bold text-gold-200">
+              <h3 className="font-display text-xl font-bold text-white">
                 라운드 {roundNumber} 종료
               </h3>
               <p className="text-xs sm:text-sm text-lounge-slate-300">
@@ -725,7 +728,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
             <button
               type="button"
               onClick={onNextRound}
-              className="px-5 py-3 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
+              className="px-5 py-3 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer whitespace-nowrap"
             >
               {roundNumber >= TOTAL_ROUNDS
                 ? '최종 순위 보기'
@@ -751,35 +754,35 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
           aria-modal="true"
           aria-label="일시정지"
         >
-          <div className="w-full max-w-sm obsidian-panel rounded-2xl p-6 space-y-4">
-            <h2 className="font-display text-2xl font-bold text-gold-200">일시정지</h2>
+          <div className="w-full max-w-sm obsidian-panel rounded-xl p-6 space-y-4">
+            <h2 className="font-display text-2xl font-bold text-white">일시정지</h2>
             <p className="text-sm text-lounge-slate-300">무거운 13 경기가 잠시 멈췄습니다.</p>
             <div className="flex flex-col gap-2.5 pt-1">
               <button
                 type="button"
                 onClick={onResume}
-                className="w-full py-2.5 px-4 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
               >
                 계속하기 (Esc)
               </button>
               <button
                 type="button"
                 onClick={onOpenRules}
-                className="w-full py-2.5 px-4 rounded-xl border border-lounge-slate-700 bg-obsidian-850 hover:border-gold-500/70 text-lounge-slate-200 font-semibold text-sm transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg border border-white/10 bg-obsidian-850 hover:border-white/25 text-lounge-slate-200 font-semibold text-sm transition-colors cursor-pointer"
               >
                 게임 규칙 보기
               </button>
               <button
                 type="button"
                 onClick={onRestartMatch}
-                className="w-full py-2.5 px-4 rounded-xl border border-lounge-slate-700 bg-obsidian-850 hover:border-gold-500/70 text-lounge-slate-200 font-semibold text-sm transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg border border-white/10 bg-obsidian-850 hover:border-white/25 text-lounge-slate-200 font-semibold text-sm transition-colors cursor-pointer"
               >
                 새 게임 다시 시작
               </button>
               <button
                 type="button"
                 onClick={onReturnToTitle}
-                className="w-full py-2.5 px-4 rounded-xl border border-lounge-slate-800 text-lounge-slate-400 hover:text-white hover:border-lounge-slate-500 font-medium text-sm transition-colors cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-lg border border-white/[0.08] text-lounge-slate-400 hover:text-white hover:border-white/25 font-medium text-sm transition-colors cursor-pointer"
               >
                 게임 타이틀로
               </button>
@@ -787,7 +790,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                 <button
                   type="button"
                   onClick={onExitToHub}
-                  className="w-full py-2.5 px-4 rounded-xl border border-lounge-slate-800 text-lounge-slate-400 hover:text-white hover:border-lounge-slate-500 font-medium text-sm transition-colors cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-lg border border-white/[0.08] text-lounge-slate-400 hover:text-white hover:border-white/25 font-medium text-sm transition-colors cursor-pointer"
                 >
                   전체 게임 목록으로
                 </button>
@@ -805,12 +808,12 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
           aria-modal="true"
           aria-label="2세트 시작 및 카드 재지급 안내"
         >
-          <div className="w-full max-w-xl obsidian-panel rounded-2xl p-6 sm:p-8 space-y-6 animate-order-reveal">
+          <div className="w-full max-w-xl obsidian-panel rounded-xl p-6 sm:p-8 space-y-6 animate-order-reveal">
             <div className="space-y-2 text-center">
-              <div className="font-mono-tabular text-xs font-bold tracking-widest text-lounge-sky-300">
-                SET 2 · 라운드 8–14
+              <div className="font-mono-tabular text-xs font-semibold text-lounge-sky-300">
+                세트 2 · 라운드 8–14
               </div>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold text-gold-200">
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">
                 2세트 시작 · 카드 재지급
               </h2>
               <p className="text-sm text-lounge-slate-300 leading-relaxed">
@@ -828,7 +831,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                 {ROCK_NUMBERS.map((num) => (
                   <div
                     key={`set2-card-${num}`}
-                    className="w-9 h-11 rounded-lg bg-obsidian-800 border border-gold-400/60 flex items-center justify-center font-mono-tabular text-base font-bold text-gold-100"
+                    className="w-9 h-11 rounded-lg bg-obsidian-800 border border-white/15 flex items-center justify-center font-mono-tabular text-base font-bold text-white"
                   >
                     {num}
                   </div>

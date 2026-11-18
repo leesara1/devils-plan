@@ -1,52 +1,51 @@
 @import "tailwindcss";
 
 @theme {
-  /* Obsidian Void & Surfaces */
-  --color-obsidian-950: #07080c;
-  --color-obsidian-900: #090a0f;
-  --color-obsidian-850: #10121a;
-  --color-obsidian-800: #161922;
+  /* Matte Neutral Charcoal Canvas & Surfaces */
+  --color-obsidian-950: #0a0b0f;
+  --color-obsidian-900: #0e1015;
+  --color-obsidian-850: #14171f;
+  --color-obsidian-800: #1a1e28;
 
-  /* Brushed Gold & Piece Brass */
-  --color-gold-100: #fff9e6;
-  --color-gold-200: #f3e2a6;
-  --color-gold-300: #f3d474;
-  --color-gold-400: #e5c158;
-  --color-gold-500: #d4af37;
-  --color-gold-600: #b38b28;
-  --color-gold-950: #141004;
+  /* Restrained Amber-Gold Accent (10% Accent Budget) */
+  --color-gold-100: #fef9c3;
+  --color-gold-200: #fde68a;
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #eab308;
+  --color-gold-500: #ca8a04;
+  --color-gold-600: #a16207;
+  --color-gold-950: #1c1503;
 
-  /* Architectural Slate Neutrals */
-  --color-lounge-slate-200: #e2e8f0;
+  /* Clean Slate Neutrals */
+  --color-lounge-slate-200: #e5e7eb;
   --color-lounge-slate-300: #cbd5e1;
   --color-lounge-slate-400: #94a3b8;
   --color-lounge-slate-500: #64748b;
-  --color-lounge-slate-700: #2b3142;
-  --color-lounge-slate-800: #1c202c;
+  --color-lounge-slate-700: #282e3d;
+  --color-lounge-slate-800: #1e2330;
 
-  /* Cerebral Sky Accents */
+  /* Sky Info & Blue Pedestal */
   --color-lounge-sky-200: #bae6fd;
   --color-lounge-sky-300: #7dd3fc;
   --color-lounge-sky-400: #38bdf8;
   --color-lounge-sky-500: #0ea5e9;
-  --color-lounge-sky-900: #0c2233;
+  --color-lounge-sky-900: #0f2537;
 
-  /* Rival Crimson Accents */
+  /* Crimson Rival & Red Pedestal */
   --color-rival-400: #fb7185;
   --color-rival-500: #e11d48;
-  --color-rival-950: #1f0810;
+  --color-rival-950: #240b12;
 }
 
 @layer base {
   :root {
-    --font-display: 'Fraunces', 'Noto Sans KR', Georgia, serif;
+    --font-display: 'Plus Jakarta Sans', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
     --font-sans: 'Plus Jakarta Sans', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
-    /* Semantic Theme Aliases for Game Logic Components & Charts */
     --theme-bg-canvas: var(--color-obsidian-900);
-    --theme-surface-panel: var(--color-obsidian-800);
-    --theme-surface-sub: var(--color-obsidian-850);
+    --theme-surface-panel: var(--color-obsidian-850);
+    --theme-surface-sub: var(--color-obsidian-800);
     --theme-accent-gold: var(--color-gold-400);
     --theme-accent-gold-soft: var(--color-gold-200);
     --theme-accent-brass: var(--color-gold-500);
@@ -55,6 +54,10 @@
     --theme-accent-sky: var(--color-lounge-sky-400);
     --theme-accent-sky-soft: var(--color-lounge-sky-300);
     --theme-accent-rival: var(--color-rival-400);
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   html,
@@ -68,6 +71,7 @@
 
 .font-display {
   font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 .font-mono-tabular {
@@ -75,29 +79,28 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Flat, clean single-elevation container */
 .obsidian-panel {
-  background: linear-gradient(145deg, rgba(22, 25, 34, 0.95) 0%, rgba(13, 15, 21, 0.97) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.24);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background-color: #14171f;
+  border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
+/* Quiet inset surface */
 .obsidian-subpanel {
-  background: rgba(16, 18, 26, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  background-color: #0e1015;
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
+/* Clean tactical callout surface */
 .obsidian-sky-panel {
-  background: linear-gradient(145deg, rgba(12, 34, 51, 0.72) 0%, rgba(16, 18, 26, 0.92) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background-color: #111b27;
+  border: 1px solid rgba(56, 189, 248, 0.24);
 }
 
-.gold-title-gradient {
-  background: linear-gradient(180deg, var(--color-gold-100) 0%, var(--color-gold-200) 45%, var(--color-gold-500) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Subtle matte board surface for Memory Poker */
+.felt-table-surface {
+  background-color: #14171f;
+  border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 /* 3D Card Flip (compositor-only transform & opacity) */
@@ -110,7 +113,7 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card-inner.is-flipped {
@@ -132,11 +135,11 @@
 @keyframes h13CubeDrop {
   0% {
     opacity: 0;
-    transform: translate3d(0, -28px, 0) scale(1.18);
+    transform: translate3d(0, -24px, 0) scale(1.12);
   }
-  65% {
+  70% {
     opacity: 1;
-    transform: translate3d(0, 3px, 0) scale(0.96);
+    transform: translate3d(0, 2px, 0) scale(0.98);
   }
   100% {
     opacity: 1;
@@ -146,22 +149,19 @@
 
 @keyframes h13PedestalShake {
   0%, 100% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
+    transform: translate3d(0, 0, 0);
   }
-  15% {
-    transform: translate3d(-7px, -2px, 0) rotate(-1.4deg);
+  20% {
+    transform: translate3d(-5px, 0, 0);
   }
-  30% {
-    transform: translate3d(7px, 2px, 0) rotate(1.4deg);
-  }
-  45% {
-    transform: translate3d(-6px, 1px, 0) rotate(-1deg);
+  40% {
+    transform: translate3d(5px, 0, 0);
   }
   60% {
-    transform: translate3d(5px, -1px, 0) rotate(0.9deg);
+    transform: translate3d(-3px, 0, 0);
   }
-  75% {
-    transform: translate3d(-3px, 0, 0) rotate(-0.4deg);
+  80% {
+    transform: translate3d(3px, 0, 0);
   }
 }
 
@@ -172,7 +172,7 @@
   }
   100% {
     opacity: 0;
-    transform: translate3d(-44px, -58px, 0) rotate(-32deg) scale(0.65);
+    transform: translate3d(-40px, -50px, 0) rotate(-24deg) scale(0.7);
   }
 }
 
@@ -183,7 +183,7 @@
   }
   100% {
     opacity: 0;
-    transform: translate3d(12px, -68px, 0) rotate(24deg) scale(0.65);
+    transform: translate3d(10px, -58px, 0) rotate(18deg) scale(0.7);
   }
 }
 
@@ -194,7 +194,7 @@
   }
   100% {
     opacity: 0;
-    transform: translate3d(48px, -52px, 0) rotate(38deg) scale(0.65);
+    transform: translate3d(42px, -46px, 0) rotate(28deg) scale(0.7);
   }
 }
 
@@ -205,77 +205,77 @@
   }
   100% {
     opacity: 0;
-    transform: translate3d(-22px, -74px, 0) rotate(-18deg) scale(0.6);
+    transform: translate3d(-18px, -64px, 0) rotate(-14deg) scale(0.65);
   }
 }
 
 @keyframes h13PenaltyPopup {
   0% {
     opacity: 0;
-    transform: translate3d(0, 12px, 0) scale(0.76);
+    transform: translate3d(0, 10px, 0) scale(0.85);
   }
-  18% {
+  20% {
     opacity: 1;
-    transform: translate3d(0, -4px, 0) scale(1.08);
-  }
-  32% {
-    opacity: 1;
-    transform: translate3d(0, -8px, 0) scale(1);
+    transform: translate3d(0, -4px, 0) scale(1);
   }
   80% {
     opacity: 1;
-    transform: translate3d(0, -18px, 0) scale(1);
+    transform: translate3d(0, -14px, 0) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate3d(0, -30px, 0) scale(0.95);
+    transform: translate3d(0, -24px, 0) scale(0.95);
   }
 }
 
 @keyframes h13OrderReveal {
   0% {
     opacity: 0;
-    transform: translate3d(0, 10px, 0) scale(0.96);
+    transform: translate3d(0, 8px, 0);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-cube-drop {
-  animation: h13CubeDrop 340ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: h13CubeDrop 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .animate-pedestal-shake {
-  animation: h13PedestalShake 460ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: h13PedestalShake 380ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 .animate-cube-burst-0 {
-  animation: h13CubeBurst0 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: h13CubeBurst0 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-cube-burst-1 {
-  animation: h13CubeBurst1 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: h13CubeBurst1 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-cube-burst-2 {
-  animation: h13CubeBurst2 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: h13CubeBurst2 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-cube-burst-3 {
-  animation: h13CubeBurst3 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: h13CubeBurst3 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-penalty-popup {
-  animation: h13PenaltyPopup 1050ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: h13PenaltyPopup 950ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-order-reveal {
-  animation: h13OrderReveal 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: h13OrderReveal 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .card-inner {
     transition-duration: 0.01ms !important;
   }
