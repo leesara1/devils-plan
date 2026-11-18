@@ -6,7 +6,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
   {
     id: 'memory-poker',
     indexLabel: '01',
-    seasonLabel: '시즌 2 · 데스매치',
+    seasonLabel: '시즌 3 · 데스매치',
     matchFormatLabel: '1:1 기억력 포커',
     category: 'memory',
     titleKo: '기억 포커',

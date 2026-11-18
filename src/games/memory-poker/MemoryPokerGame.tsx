@@ -556,7 +556,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                 </button>
               )}
               <span className="hidden sm:inline font-mono-tabular text-xs text-lounge-slate-500">
-                시즌 2 · 데스매치
+                시즌 3 · 데스매치
               </span>
             </div>
 
