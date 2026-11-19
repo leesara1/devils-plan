@@ -87,7 +87,6 @@ export type Heavy13Action =
       playerCount: PlayerCount;
       startingSeatChoice: number;
       aiDifficulty: AIDifficulty;
-      humanNames?: string[];
       initialFirstSeat?: number;
     }
   | {
@@ -308,8 +307,7 @@ export function heavy13Reducer(
       const initialPlayers = createInitialPlayers(
         action.playerCount,
         humanSeats,
-        action.mode,
-        action.humanNames
+        action.mode
       );
       const firstSeat =
         action.initialFirstSeat !== undefined

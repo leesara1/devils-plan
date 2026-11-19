@@ -9,44 +9,7 @@ export const AI_CHARACTER_NAMES = [
   '로디',
 ] as const;
 
-export const DEFAULT_PLAYER_NAME = '도전자';
-export const DEFAULT_P2_NAME = '상대 플레이어';
-const PLAYER_NAME_STORAGE_KEY = 'devils_plan_player_name';
-
-export function loadSavedPlayerName(): string {
-  if (typeof window === 'undefined') {
-    return '';
-  }
-  try {
-    return window.localStorage.getItem(PLAYER_NAME_STORAGE_KEY) ?? '';
-  } catch {
-    return '';
-  }
-}
-
-export function savePlayerName(name: string): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  try {
-    const trimmed = name.trim();
-    if (trimmed) {
-      window.localStorage.setItem(PLAYER_NAME_STORAGE_KEY, trimmed);
-    } else {
-      window.localStorage.removeItem(PLAYER_NAME_STORAGE_KEY);
-    }
-  } catch {
-    // Ignore storage quota / privacy mode errors
-  }
-}
-
-export function resolvePlayerName(
-  rawName: string | undefined,
-  fallback: string = DEFAULT_PLAYER_NAME,
-): string {
-  const trimmed = (rawName ?? '').trim();
-  return trimmed.length > 0 ? trimmed : fallback;
-}
+export const DEFAULT_PLAYER_NAME = '플레이어';
 
 export function pickAiOpponents(
   count: number,
@@ -77,7 +40,7 @@ export function pickAiOpponents(
 export function formatCompactBadgeName(name: string, maxChars: number = 4): string {
   const cleaned = name.replace(/\s+AI$/i, '').trim();
   if (!cleaned) {
-    return '나';
+    return DEFAULT_PLAYER_NAME;
   }
   const chars = Array.from(cleaned);
   if (chars.length <= maxChars) {

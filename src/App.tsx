@@ -18,11 +18,6 @@ import {
 } from './games/memory-poker/engine/stats';
 import { RulesModal as MemoryPokerRulesModal } from './games/memory-poker/components/RulesModal';
 import { Heavy13RulesModal } from './games/heavy-13/components/Heavy13RulesModal';
-import {
-  DEFAULT_PLAYER_NAME,
-  loadSavedPlayerName,
-  savePlayerName,
-} from './games/playerProfiles';
 import { ThemeProvider } from './theme/ThemeContext';
 
 function DevilsPlanHub() {
@@ -35,12 +30,6 @@ function DevilsPlanHub() {
   const [activeGameId, setActiveGameId] = useState<string | null>(initialRoute.gameId);
   const [previewRulesGameId, setPreviewRulesGameId] = useState<string | null>(null);
   const [statsVersion, setStatsVersion] = useState(0);
-  const [playerName, setPlayerName] = useState<string>(() => loadSavedPlayerName());
-
-  const handlePlayerNameChange = (value: string) => {
-    setPlayerName(value);
-    savePlayerName(value);
-  };
 
   const navigateToGame = useCallback((gameId: string | null) => {
     const targetUrl = buildGameUrl(hubBasePathRef.current, gameId);
@@ -142,7 +131,7 @@ function DevilsPlanHub() {
       <main id="top" className="flex-1">
         {/* Clean Page Header */}
         <section className="max-w-5xl mx-auto px-5 sm:px-8 pt-10 pb-8 sm:pt-14 sm:pb-10">
-          <div className="pb-8 border-b theme-border flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="pb-8 border-b theme-border">
             <div className="space-y-2.5 max-w-2xl">
               <div className="flex flex-wrap items-center gap-2 text-xs font-mono-tabular theme-text-muted">
                 <span className="theme-text-gold font-semibold">시즌 3</span>
@@ -155,26 +144,8 @@ function DevilsPlanHub() {
               </h1>
 
               <p className="text-sm sm:text-base theme-text-muted leading-relaxed text-pretty">
-                원작의 핵심 규칙을 그대로 구현한 웹 보드게임입니다. 이름을 입력하고 원하는 게임을 선택해 바로 플레이하세요.
+                원작의 핵심 규칙을 그대로 구현한 웹 보드게임입니다. 원하는 게임을 선택해 바로 플레이하세요.
               </p>
-            </div>
-
-            <div className="w-full md:w-72 shrink-0 space-y-1.5">
-              <label
-                htmlFor="hub-player-name"
-                className="block text-xs font-medium theme-text-muted"
-              >
-                플레이어 이름
-              </label>
-              <input
-                id="hub-player-name"
-                type="text"
-                maxLength={12}
-                value={playerName}
-                onChange={(e) => handlePlayerNameChange(e.target.value)}
-                placeholder={`닉네임 입력 (기본: ${DEFAULT_PLAYER_NAME})`}
-                className="w-full px-3.5 py-2.5 rounded-lg obsidian-subpanel text-sm font-medium theme-text-primary placeholder:text-slate-400 dark:placeholder:text-lounge-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-400"
-              />
             </div>
           </div>
         </section>

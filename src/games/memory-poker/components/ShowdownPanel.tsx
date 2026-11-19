@@ -34,7 +34,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
   p1Eval,
   p2Eval,
   optimalSolution,
-  p1Label = '도전자',
+  p1Label = '플레이어',
   opponentLabel,
   showAllBoardCards,
   onToggleShowAllBoardCards,

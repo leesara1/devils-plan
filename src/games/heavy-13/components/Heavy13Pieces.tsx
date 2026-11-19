@@ -495,8 +495,8 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
                 <span className="font-mono-tabular text-xs sm:text-sm font-bold theme-text-primary leading-none">
                   {cube.value}
                 </span>
-                <span className="text-[7px] sm:text-[9px] theme-text-muted truncate max-w-[26px] sm:max-w-[32px] mt-0.5">
-                  {formatCompactBadgeName(cube.ownerName, 3)}
+                <span className="text-[7px] sm:text-[9px] theme-text-muted truncate max-w-[30px] sm:max-w-[38px] mt-0.5">
+                  {formatCompactBadgeName(cube.ownerName, 4)}
                 </span>
               </div>
             );

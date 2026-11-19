@@ -53,13 +53,9 @@ import {
 import { GameScreenProps } from '../types';
 import {
   AI_CHARACTER_NAMES,
-  DEFAULT_P2_NAME,
   DEFAULT_PLAYER_NAME,
   formatCompactBadgeName,
-  loadSavedPlayerName,
   pickAiOpponents,
-  resolvePlayerName,
-  savePlayerName,
 } from '../playerProfiles';
 import { MemoryPokerPreviewDiagram } from '../../components/GameBoardIllustrations';
 import { ThemeToggleButton } from '../../components/ThemeToggleButton';
@@ -99,8 +95,6 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   const [matchFormat, setMatchFormat] = useState<MatchFormat>('single');
   const [muted, setMuted] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
-  const [player1Name, setPlayer1Name] = useState<string>(() => loadSavedPlayerName());
-  const [player2Name, setPlayer2Name] = useState<string>('');
   const [selectedAiChoice, setSelectedAiChoice] = useState<string>('random');
   const [activeAiName, setActiveAiName] = useState<string>(AI_CHARACTER_NAMES[0]);
 
@@ -129,20 +123,14 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   const [optimalSolution, setOptimalSolution] = useState<BoardSolution | null>(null);
   const [showAllBoardCards, setShowAllBoardCards] = useState(false);
 
-  const p1DisplayName = resolvePlayerName(player1Name, DEFAULT_PLAYER_NAME);
-  const p1ShortLabel = formatCompactBadgeName(p1DisplayName, 4);
-  const opponentName =
-    mode === 'ai' ? activeAiName : resolvePlayerName(player2Name, DEFAULT_P2_NAME);
+  const p1DisplayName = mode === 'ai' ? DEFAULT_PLAYER_NAME : '플레이어 1';
+  const p1ShortLabel = mode === 'ai' ? DEFAULT_PLAYER_NAME : '플레이어 1';
+  const opponentName = mode === 'ai' ? activeAiName : '플레이어 2';
   const opponentLabel =
     mode === 'ai'
       ? `${activeAiName} (${AI_DIFFICULTY_LABEL[aiDifficulty]})`
       : opponentName;
-  const opponentShortLabel = formatCompactBadgeName(opponentName, 4);
-
-  const handlePlayer1NameChange = (value: string) => {
-    setPlayer1Name(value);
-    savePlayerName(value);
-  };
+  const opponentShortLabel = formatCompactBadgeName(opponentName, 5);
 
   const toggleMute = useCallback(() => {
     setMuted((prev) => {
@@ -711,47 +699,6 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                       2인 로컬 대전
                     </button>
                   </div>
-                </div>
-
-                {/* Player Name Input(s) */}
-                <div className={mode === 'local2p' ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : 'space-y-1.5'}>
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="mp-p1-name"
-                      className="block text-xs font-medium theme-text-muted"
-                    >
-                      {mode === 'ai' ? '내 이름' : '첫 번째 플레이어 이름'}
-                    </label>
-                    <input
-                      id="mp-p1-name"
-                      type="text"
-                      maxLength={12}
-                      value={player1Name}
-                      onChange={(e) => handlePlayer1NameChange(e.target.value)}
-                      placeholder={`기본: ${DEFAULT_PLAYER_NAME}`}
-                      className="w-full px-3 py-2 rounded-lg obsidian-subpanel text-sm font-medium theme-text-primary placeholder:text-slate-400 dark:placeholder:text-lounge-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-400"
-                    />
-                  </div>
-
-                  {mode === 'local2p' && (
-                    <div className="space-y-1.5">
-                      <label
-                        htmlFor="mp-p2-name"
-                        className="block text-xs font-medium theme-text-muted"
-                      >
-                        두 번째 플레이어 이름
-                      </label>
-                      <input
-                        id="mp-p2-name"
-                        type="text"
-                        maxLength={12}
-                        value={player2Name}
-                        onChange={(e) => setPlayer2Name(e.target.value)}
-                        placeholder={`기본: ${DEFAULT_P2_NAME}`}
-                        className="w-full px-3 py-2 rounded-lg obsidian-subpanel text-sm font-medium theme-text-primary placeholder:text-slate-400 dark:placeholder:text-lounge-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-400"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 {/* AI Opponent Picker (only in AI mode) */}

@@ -1,7 +1,6 @@
 import {
   DEFAULT_PLAYER_NAME,
   pickAiOpponents,
-  resolvePlayerName,
 } from '../../playerProfiles';
 
 export type PedestalColor = 'red' | 'green' | 'blue';
@@ -158,25 +157,19 @@ export type PlayerCount = 3 | 4 | 5 | 6 | 7;
 export function createInitialPlayers(
   playerCount: PlayerCount,
   humanSeatIndices: number[],
-  mode: 'ai' | 'local',
-  humanNames?: string[]
+  mode: 'ai' | 'local'
 ): PlayerState[] {
   const aiCount = Math.max(0, playerCount - humanSeatIndices.length);
-  const resolvedHumanNames = humanSeatIndices.map((_, idx) =>
-    resolvePlayerName(
-      humanNames?.[idx],
-      mode === 'local' ? `참가자 ${idx + 1}` : DEFAULT_PLAYER_NAME
-    )
-  );
-  const aiPool = pickAiOpponents(aiCount, resolvedHumanNames);
+  const aiPool = pickAiOpponents(aiCount);
   let aiNameIdx = 0;
 
   return Array.from({ length: playerCount }, (_, seatIndex) => {
-    const humanIdx = humanSeatIndices.indexOf(seatIndex);
-    const isHuman = humanIdx !== -1;
+    const isHuman = humanSeatIndices.includes(seatIndex);
     let name: string;
-    if (isHuman) {
-      name = resolvedHumanNames[humanIdx];
+    if (mode === 'local') {
+      name = `플레이어 ${seatIndex + 1}`;
+    } else if (isHuman) {
+      name = DEFAULT_PLAYER_NAME;
     } else {
       name = aiPool[aiNameIdx % aiPool.length];
       aiNameIdx += 1;

@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { GameScreenProps } from '../types';
-import {
-  DEFAULT_PLAYER_NAME,
-  loadSavedPlayerName,
-  resolvePlayerName,
-  savePlayerName,
-} from '../playerProfiles';
 import { heavy13Sound } from './audio/heavy13Sound';
 import { PedestalBurstEffect } from './components/Heavy13Pieces';
 import { Heavy13PlayArena } from './components/Heavy13PlayArena';
@@ -51,38 +45,6 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   const [rulesOpen, setRulesOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [round1HintsEnabled, setRound1HintsEnabled] = useState(true);
-  const [playerName, setPlayerName] = useState<string>(() => loadSavedPlayerName());
-  const [localPlayerNames, setLocalPlayerNames] = useState<string[]>(() => [
-    loadSavedPlayerName(),
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ]);
-
-  const handlePlayerNameChange = useCallback((value: string) => {
-    setPlayerName(value);
-    savePlayerName(value);
-    setLocalPlayerNames((prev) => {
-      const next = [...prev];
-      next[0] = value;
-      return next;
-    });
-  }, []);
-
-  const handleLocalPlayerNameChange = useCallback((index: number, value: string) => {
-    if (index === 0) {
-      setPlayerName(value);
-      savePlayerName(value);
-    }
-    setLocalPlayerNames((prev) => {
-      const next = [...prev];
-      next[index] = value;
-      return next;
-    });
-  }, []);
 
   // Pure Reducer Match Engine
   const [state, dispatch] = useReducer(heavy13Reducer, undefined, createInitialMatchState);
@@ -171,33 +133,14 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
     setRevealedCardIds([]);
     setNewlyPlacedCubeId(null);
     setPedestalBurst(null);
-    const humanNames =
-      mode === 'ai'
-        ? [resolvePlayerName(playerName, DEFAULT_PLAYER_NAME)]
-        : Array.from({ length: playerCount }, (_, idx) =>
-            resolvePlayerName(
-              idx === 0 ? playerName || localPlayerNames[0] : localPlayerNames[idx],
-              `참가자 ${idx + 1}`
-            )
-          );
-
     dispatch({
       type: 'START_MATCH',
       mode,
       playerCount,
       startingSeatChoice,
       aiDifficulty,
-      humanNames,
     });
-  }, [
-    mode,
-    playerCount,
-    startingSeatChoice,
-    aiDifficulty,
-    playerName,
-    localPlayerNames,
-    clearPresentationTimers,
-  ]);
+  }, [mode, playerCount, startingSeatChoice, aiDifficulty, clearPresentationTimers]);
 
   // Reset UI selection when entering a new SUBMISSION step
   useEffect(() => {
@@ -660,15 +603,11 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
           aiDifficulty={aiDifficulty}
           memoryMode={memoryMode}
           muted={muted}
-          playerName={playerName}
-          localPlayerNames={localPlayerNames}
           onChangeMode={setMode}
           onChangePlayerCount={setPlayerCount}
           onChangeStartingSeatChoice={setStartingSeatChoice}
           onChangeAiDifficulty={setAiDifficulty}
           onChangeMemoryMode={setMemoryMode}
-          onChangePlayerName={handlePlayerNameChange}
-          onChangeLocalPlayerName={handleLocalPlayerNameChange}
           onToggleMute={toggleMute}
           onOpenRules={() => setRulesOpen(true)}
           onOpenTutorial={() => setTutorialOpen(true)}

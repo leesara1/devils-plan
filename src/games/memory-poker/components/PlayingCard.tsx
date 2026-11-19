@@ -28,7 +28,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
   isOptimalHint = false,
   p1Token = false,
   p2Token = false,
-  p1Label = '나',
+  p1Label = '플레이어',
   p2Label = 'AI',
   onClick,
   size = 'lg',
@@ -148,18 +148,18 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
         <div className="pointer-events-none absolute -top-1.5 -right-1.5 z-20 flex items-center gap-1">
           {p1Token && (
             <div
-              className="h-6 min-w-6 max-w-[54px] px-1.5 rounded-full bg-gold-400 text-gold-950 border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold truncate"
+              className="h-6 min-w-6 max-w-[62px] px-1.5 rounded-full bg-gold-400 text-gold-950 border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold truncate"
               title={`${p1Label} 선택 말`}
             >
-              <span className="truncate">{formatCompactBadgeName(p1Label, 3)}</span>
+              <span className="truncate">{formatCompactBadgeName(p1Label, 5)}</span>
             </div>
           )}
           {p2Token && (
             <div
-              className="h-6 min-w-6 max-w-[54px] px-1.5 rounded bg-rival-500 text-white border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold truncate"
+              className="h-6 min-w-6 max-w-[62px] px-1.5 rounded bg-rival-500 text-white border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold truncate"
               title={`${p2Label} 선택 말`}
             >
-              <span className="truncate">{formatCompactBadgeName(p2Label, 3)}</span>
+              <span className="truncate">{formatCompactBadgeName(p2Label, 5)}</span>
             </div>
           )}
         </div>
