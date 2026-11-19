@@ -1,3 +1,9 @@
+import {
+  DEFAULT_PLAYER_NAME,
+  pickAiOpponents,
+  resolvePlayerName,
+} from '../../playerProfiles';
+
 export type PedestalColor = 'red' | 'green' | 'blue';
 export type ChipType = PedestalColor | 'rainbow';
 export type RockNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -152,28 +158,27 @@ export type PlayerCount = 3 | 4 | 5 | 6 | 7;
 export function createInitialPlayers(
   playerCount: PlayerCount,
   humanSeatIndices: number[],
-  mode: 'ai' | 'local'
+  mode: 'ai' | 'local',
+  humanNames?: string[]
 ): PlayerState[] {
-  const aiNames = [
-    '강지연 AI',
-    '최민혁 AI',
-    '윤서진 AI',
-    '박도현 AI',
-    '이수아 AI',
-    '정태호 AI',
-    '한예린 AI',
-  ];
+  const aiCount = Math.max(0, playerCount - humanSeatIndices.length);
+  const resolvedHumanNames = humanSeatIndices.map((_, idx) =>
+    resolvePlayerName(
+      humanNames?.[idx],
+      mode === 'local' ? `참가자 ${idx + 1}` : DEFAULT_PLAYER_NAME
+    )
+  );
+  const aiPool = pickAiOpponents(aiCount, resolvedHumanNames);
   let aiNameIdx = 0;
 
   return Array.from({ length: playerCount }, (_, seatIndex) => {
-    const isHuman = humanSeatIndices.includes(seatIndex);
+    const humanIdx = humanSeatIndices.indexOf(seatIndex);
+    const isHuman = humanIdx !== -1;
     let name: string;
-    if (mode === 'local') {
-      name = `플레이어 ${seatIndex + 1}`;
-    } else if (isHuman) {
-      name = '나 (P1)';
+    if (isHuman) {
+      name = resolvedHumanNames[humanIdx];
     } else {
-      name = aiNames[aiNameIdx % aiNames.length];
+      name = aiPool[aiNameIdx % aiPool.length];
       aiNameIdx += 1;
     }
 

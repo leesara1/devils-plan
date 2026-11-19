@@ -18,6 +18,7 @@ interface ShowdownPanelProps {
   p1Eval: HandEvaluation;
   p2Eval: HandEvaluation;
   optimalSolution: BoardSolution;
+  p1Label?: string;
   opponentLabel: string;
   showAllBoardCards: boolean;
   onToggleShowAllBoardCards: () => void;
@@ -33,6 +34,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
   p1Eval,
   p2Eval,
   optimalSolution,
+  p1Label = '도전자',
   opponentLabel,
   showAllBoardCards,
   onToggleShowAllBoardCards,
@@ -47,7 +49,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
 
   const headline =
     cmp === 1
-      ? '플레이어 1 승리'
+      ? `${p1Label} 승리`
       : cmp === -1
         ? `${opponentLabel} 승리`
         : '무승부';
@@ -112,7 +114,7 @@ export const ShowdownPanel: React.FC<ShowdownPanelProps> = ({
         >
           <div className="flex items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-2 text-sm">
-              <span className="font-bold theme-text-gold">플레이어 1</span>
+              <span className="font-bold theme-text-gold">{p1Label}</span>
               <span className="theme-text-faint" aria-hidden="true">·</span>
               <span className="font-mono-tabular text-xs theme-text-muted">
                 {GRID_COORDS[p1Indices[0]]}, {GRID_COORDS[p1Indices[1]]}

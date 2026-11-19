@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, RotateCcw } from 'lucide-react';
 import {
   Heavy13PreviewDiagram,
@@ -7,18 +7,63 @@ import {
 import { ThemeToggleButton } from './components/ThemeToggleButton';
 import { GAMES_REGISTRY } from './games/registry';
 import {
+  buildGameUrl,
+  getDocumentTitleForGame,
+  parseGameRoute,
+} from './games/routing';
+import {
   CareerStats,
   clearModeStats,
   loadCareerStats,
 } from './games/memory-poker/engine/stats';
 import { RulesModal as MemoryPokerRulesModal } from './games/memory-poker/components/RulesModal';
 import { Heavy13RulesModal } from './games/heavy-13/components/Heavy13RulesModal';
+import {
+  DEFAULT_PLAYER_NAME,
+  loadSavedPlayerName,
+  savePlayerName,
+} from './games/playerProfiles';
 import { ThemeProvider } from './theme/ThemeContext';
 
 function DevilsPlanHub() {
-  const [activeGameId, setActiveGameId] = useState<string | null>(null);
+  const initialRoute = useMemo(
+    () => parseGameRoute(window.location.pathname, window.location.hash),
+    [],
+  );
+  const hubBasePathRef = useRef<string>(initialRoute.hubBasePath);
+
+  const [activeGameId, setActiveGameId] = useState<string | null>(initialRoute.gameId);
   const [previewRulesGameId, setPreviewRulesGameId] = useState<string | null>(null);
   const [statsVersion, setStatsVersion] = useState(0);
+  const [playerName, setPlayerName] = useState<string>(() => loadSavedPlayerName());
+
+  const handlePlayerNameChange = (value: string) => {
+    setPlayerName(value);
+    savePlayerName(value);
+  };
+
+  const navigateToGame = useCallback((gameId: string | null) => {
+    const targetUrl = buildGameUrl(hubBasePathRef.current, gameId);
+    if (window.location.pathname !== targetUrl || window.location.hash) {
+      window.history.pushState({ gameId }, '', targetUrl);
+    }
+    setActiveGameId(gameId);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const parsed = parseGameRoute(window.location.pathname, window.location.hash);
+      setActiveGameId(parsed.gameId);
+      setPreviewRulesGameId(null);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    document.title = getDocumentTitleForGame(activeGameId);
+  }, [activeGameId]);
 
   const careerStats: CareerStats = useMemo(() => {
     return loadCareerStats();
@@ -49,7 +94,7 @@ function DevilsPlanHub() {
 
   if (activeGame) {
     const ActiveComponent = activeGame.component;
-    return <ActiveComponent onExitToHub={() => setActiveGameId(null)} />;
+    return <ActiveComponent onExitToHub={() => navigateToGame(null)} />;
   }
 
   const handleClearMemoryStats = () => {
@@ -97,12 +142,12 @@ function DevilsPlanHub() {
       <main id="top" className="flex-1">
         {/* Clean Page Header */}
         <section className="max-w-5xl mx-auto px-5 sm:px-8 pt-10 pb-8 sm:pt-14 sm:pb-10">
-          <div className="pb-8 border-b theme-border">
+          <div className="pb-8 border-b theme-border flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2.5 max-w-2xl">
               <div className="flex flex-wrap items-center gap-2 text-xs font-mono-tabular theme-text-muted">
                 <span className="theme-text-gold font-semibold">시즌 3</span>
                 <span aria-hidden="true">·</span>
-                <span>1P vs AI · 로컬 대전</span>
+                <span>솔로 vs AI · 로컬 대전</span>
               </div>
 
               <h1 className="font-display text-2xl sm:text-4xl font-bold theme-text-primary leading-tight [text-wrap:balance]">
@@ -110,8 +155,26 @@ function DevilsPlanHub() {
               </h1>
 
               <p className="text-sm sm:text-base theme-text-muted leading-relaxed text-pretty">
-                원작의 핵심 규칙을 그대로 구현한 웹 보드게임입니다. 원하는 게임을 선택해 바로 플레이하세요.
+                원작의 핵심 규칙을 그대로 구현한 웹 보드게임입니다. 이름을 입력하고 원하는 게임을 선택해 바로 플레이하세요.
               </p>
+            </div>
+
+            <div className="w-full md:w-72 shrink-0 space-y-1.5">
+              <label
+                htmlFor="hub-player-name"
+                className="block text-xs font-medium theme-text-muted"
+              >
+                플레이어 이름
+              </label>
+              <input
+                id="hub-player-name"
+                type="text"
+                maxLength={12}
+                value={playerName}
+                onChange={(e) => handlePlayerNameChange(e.target.value)}
+                placeholder={`닉네임 입력 (기본: ${DEFAULT_PLAYER_NAME})`}
+                className="w-full px-3.5 py-2.5 rounded-lg obsidian-subpanel text-sm font-medium theme-text-primary placeholder:text-slate-400 dark:placeholder:text-lounge-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-400"
+              />
             </div>
           </div>
         </section>
@@ -170,14 +233,19 @@ function DevilsPlanHub() {
                     규칙 보기
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setActiveGameId(game.id)}
+                  <a
+                    href={buildGameUrl(hubBasePathRef.current, game.id)}
+                    onClick={(e) => {
+                      if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) {
+                        e.preventDefault();
+                        navigateToGame(game.id);
+                      }
+                    }}
                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                   >
                     플레이
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </a>
                 </div>
               </article>
             ))}
@@ -224,7 +292,7 @@ function DevilsPlanHub() {
                   </div>
                 </div>
                 <div className="py-3 pl-3">
-                  <div className="theme-text-faint">2P 로컬</div>
+                  <div className="theme-text-faint">로컬 대전</div>
                   <div className="mt-1 font-mono-tabular text-base font-bold theme-text-primary">
                     {memoryStats.localTotal}R
                   </div>
@@ -239,7 +307,7 @@ function DevilsPlanHub() {
               <div className="divide-y divide-slate-300/70 dark:divide-white/[0.08] border-y theme-border text-xs sm:text-sm">
                 <div className="py-2.5 flex items-center justify-between gap-3">
                   <span className="theme-text-secondary">대전 방식</span>
-                  <span className="theme-text-muted">1P vs AI · 로컬 대전</span>
+                  <span className="theme-text-muted">솔로 vs AI · 로컬 대전</span>
                 </div>
                 <div className="py-2.5 flex items-center justify-between gap-3">
                   <span className="theme-text-secondary">키보드 조작</span>

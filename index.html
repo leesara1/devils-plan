@@ -24,6 +24,14 @@
     <script>
       (function () {
         try {
+          var p = window.location.pathname;
+          if (/\/(memory-poker|heavy-13)\/$/.test(p)) {
+            window.history.replaceState(
+              null,
+              '',
+              p.replace(/\/$/, '') + window.location.search + window.location.hash
+            );
+          }
           var saved = localStorage.getItem('devils_plan_theme');
           if (saved !== 'light') {
             document.documentElement.classList.add('dark');

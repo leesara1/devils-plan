@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, RANK_LABEL, SUIT_SYMBOL } from '../engine/poker';
+import { formatCompactBadgeName } from '../../playerProfiles';
 
 interface PlayingCardProps {
   card: Card;
@@ -11,6 +12,7 @@ interface PlayingCardProps {
   isOptimalHint?: boolean;
   p1Token?: boolean;
   p2Token?: boolean;
+  p1Label?: string;
   p2Label?: string;
   onClick?: () => void;
   size?: 'sm' | 'md' | 'lg';
@@ -26,6 +28,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
   isOptimalHint = false,
   p1Token = false,
   p2Token = false,
+  p1Label = '나',
   p2Label = 'AI',
   onClick,
   size = 'lg',
@@ -58,7 +61,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
       onClick={interactive ? onClick : undefined}
       aria-label={
         coord
-          ? `${coord} 위치 카드${faceUp ? ` ${rankStr} ${suitChar}` : ' (뒷면)'}${p1Token ? ', P1 말 배치됨' : ''}${p2Token ? `, ${p2Label} 말 배치됨` : ''}`
+          ? `${coord} 위치 카드${faceUp ? ` ${rankStr} ${suitChar}` : ' (뒷면)'}${p1Token ? `, ${p1Label} 말 배치됨` : ''}${p2Token ? `, ${p2Label} 말 배치됨` : ''}`
           : faceUp
             ? `${rankStr} ${suitChar}`
             : '카드 뒷면'
@@ -145,18 +148,18 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
         <div className="pointer-events-none absolute -top-1.5 -right-1.5 z-20 flex items-center gap-1">
           {p1Token && (
             <div
-              className="h-6 min-w-6 px-1.5 rounded-full bg-gold-400 text-gold-950 border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold"
-              title="플레이어 1 선택 말"
+              className="h-6 min-w-6 max-w-[54px] px-1.5 rounded-full bg-gold-400 text-gold-950 border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold truncate"
+              title={`${p1Label} 선택 말`}
             >
-              P1
+              <span className="truncate">{formatCompactBadgeName(p1Label, 3)}</span>
             </div>
           )}
           {p2Token && (
             <div
-              className="h-6 min-w-6 px-1.5 rounded bg-rival-500 text-white border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold"
+              className="h-6 min-w-6 max-w-[54px] px-1.5 rounded bg-rival-500 text-white border border-white dark:border-obsidian-900 flex items-center justify-center font-mono-tabular text-[10px] font-bold truncate"
               title={`${p2Label} 선택 말`}
             >
-              {p2Label}
+              <span className="truncate">{formatCompactBadgeName(p2Label, 3)}</span>
             </div>
           )}
         </div>

@@ -34,10 +34,10 @@ interface OrderCandidate {
 }
 
 const ORDER_CANDIDATES: OrderCandidate[] = [
-  { id: 'p1', name: '나 (P1)', chip: 'green', card: 6, isFirst: false },
-  { id: 'p2', name: '민준 AI', chip: 'red', card: 6, isFirst: true },
-  { id: 'p3', name: '서연 AI', chip: 'rainbow', card: 1, isFirst: false },
-  { id: 'p4', name: '도윤 AI', chip: 'blue', card: 4, isFirst: false },
+  { id: 'p1', name: '나', chip: 'green', card: 6, isFirst: false },
+  { id: 'p2', name: '뽀로로', chip: 'red', card: 6, isFirst: true },
+  { id: 'p3', name: '루피', chip: 'rainbow', card: 1, isFirst: false },
+  { id: 'p4', name: '크롱', chip: 'blue', card: 4, isFirst: false },
 ];
 
 const EXPECTED_ORDER_IDS = ['p3', 'p2', 'p1', 'p4'];
@@ -52,7 +52,7 @@ function makeDemoPedestals(
       id: `tut-${color}-${idx}-${value}`,
       value,
       ownerId: `demo-${idx}`,
-      ownerName: ['민준', '서연', '도윤'][idx % 3],
+      ownerName: ['뽀로로', '루피', '크롱'][idx % 3],
       roundPlaced: idx + 1,
     }));
   return {
@@ -90,8 +90,8 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
   const [step3Burst, setStep3Burst] = useState<PedestalBurstEffect | null>(null);
   const [step3Status, setStep3Status] = useState<'idle' | 'animating' | 'passed_success' | 'placed_fail'>('idle');
   const [step3Log, setStep3Log] = useState<string[]>([
-    '현재 차례: 1번 나 (P1) — 빨강 칩 + 바위 4',
-    '대기 2번: 서연 AI — 빨강 칩 + 바위 3 (놓으면 10+3=13 폭발 예정!)',
+    '현재 차례: 1번 나 — 빨강 칩 + 바위 4',
+    '대기 2번: 루피 — 빨강 칩 + 바위 3 (놓으면 10+3=13 폭발 예정!)',
   ]);
 
   // Step 3: Rainbow Chip
@@ -130,8 +130,8 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
     setStep3Burst(null);
     setStep3Status('idle');
     setStep3Log([
-      '현재 차례: 1번 나 (P1) — 빨강 칩 + 바위 4',
-      '대기 2번: 서연 AI — 빨강 칩 + 바위 3 (놓으면 10+3=13 폭발 예정!)',
+      '현재 차례: 1번 나 — 빨강 칩 + 바위 4',
+      '대기 2번: 루피 — 빨강 칩 + 바위 3 (놓으면 10+3=13 폭발 예정!)',
     ]);
     setStep4Pedestals(makeDemoPedestals([5, 3, 3], [6, 4], [3, 2]));
     setStep4Burst(null);
@@ -174,11 +174,11 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
       const next = [...pickedOrder, candidate.id];
       setPickedOrder(next);
       if (next.length === 1) {
-        setOrderFeedback('정답! 레인보우 칩(서연 AI)은 숫자 1이어도 무조건 가장 먼저 놓습니다.');
+        setOrderFeedback('정답! 레인보우 칩(루피)은 숫자 1이어도 무조건 가장 먼저 놓습니다.');
       } else if (next.length === 2) {
-        setOrderFeedback('정답! 같은 6일 때는 선 플레이어(민준 AI) 기준 시계 방향 우선입니다.');
+        setOrderFeedback('정답! 같은 6일 때는 선 플레이어(뽀로로) 기준 시계 방향 우선입니다.');
       } else if (next.length === 3) {
-        setOrderFeedback('정답! 민준 AI 다음 시계 방향인 나 (P1)가 3번째입니다.');
+        setOrderFeedback('정답! 뽀로로 다음 시계 방향인 나가 3번째입니다.');
       } else {
         setOrderFeedback('완벽합니다! 순서 규칙(레인보우 → 높은 숫자 → 선 기준 시계 방향)을 마스터했습니다.');
       }
@@ -186,9 +186,9 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
       if (pickedOrder.length === 0) {
         setOrderFeedback('힌트: 숫자보다 먼저 "레인보우 칩"을 낸 플레이어가 최우선입니다!');
       } else if (pickedOrder.length === 1) {
-        setOrderFeedback('힌트: 남은 중 가장 큰 숫자는 6입니다. 6이 두 명이라면 선(민준 AI)부터 시계 방향입니다!');
+        setOrderFeedback('힌트: 남은 중 가장 큰 숫자는 6입니다. 6이 두 명이라면 선(뽀로로)부터 시계 방향입니다!');
       } else {
-        setOrderFeedback('힌트: 6을 낸 나(P1)가 4를 낸 도윤 AI보다 먼저입니다.');
+        setOrderFeedback('힌트: 6을 낸 나가 4를 낸 크롱보다 먼저입니다.');
       }
     }
   };
@@ -201,14 +201,14 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
       id: 'tut-red-new-3',
       value: 3,
       ownerId: 'p1',
-      ownerName: '나 (P1)',
+      ownerName: '나',
       roundPlaced: 4,
     };
     heavy13Sound.playOverflowPenalty();
     setStep2Burst({
       id: 'tut-burst-step2',
       color: 'red',
-      actorName: '나 (P1)',
+      actorName: '나',
       penaltyAdded: preRed.length,
       sumAfter: 13,
       cubes: [...preRed, newCube],
@@ -232,14 +232,14 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
       id: 'tut-s3-p1-4',
       value: 4,
       ownerId: 'p1',
-      ownerName: '나 (P1)',
+      ownerName: '나',
       roundPlaced: 4,
     };
     heavy13Sound.playOverflowPenalty();
     setStep3Burst({
       id: 'tut-burst-step3-fail',
       color: 'red',
-      actorName: '나 (P1)',
+      actorName: '나',
       penaltyAdded: preRed.length,
       sumAfter: 14,
       cubes: [...preRed, newCube],
@@ -247,7 +247,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
     setStep3Pedestals((prev) => ({ ...prev, red: [] }));
     setStep3Status('placed_fail');
     setStep3Log([
-      '나 (P1)가 빨강에 +4 배치 → 합계 14 폭발! 벌점 +3점을 받았습니다.',
+      '나가 빨강에 +4 배치 → 합계 14 폭발! 벌점 +3점을 받았습니다.',
       '아래 "다시 시도"를 눌러 이번에는 "패스 (후순위)"를 선택해 보세요!',
     ]);
     const t = window.setTimeout(() => setStep3Burst(null), 1100);
@@ -258,7 +258,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
     if (step3Status !== 'idle') return;
     heavy13Sound.playPass();
     setStep3Status('animating');
-    setStep3Log(['1) 나 (P1) 패스 선택! 순서를 뒤로 미룹니다.']);
+    setStep3Log(['1) 나 패스 선택! 순서를 뒤로 미룹니다.']);
 
     const t1 = window.setTimeout(() => {
       const preRed = step3Pedestals.red;
@@ -266,14 +266,14 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
         id: 'tut-s3-ai-3',
         value: 3,
         ownerId: 'ai2',
-        ownerName: '서연',
+        ownerName: '루피',
         roundPlaced: 4,
       };
       heavy13Sound.playOverflowPenalty();
       setStep3Burst({
         id: 'tut-burst-step3-ai',
         color: 'red',
-        actorName: '서연',
+        actorName: '루피',
         penaltyAdded: preRed.length,
         sumAfter: 13,
         cubes: [...preRed, aiCube],
@@ -281,7 +281,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
       setStep3Pedestals((prev) => ({ ...prev, red: [] }));
       setStep3Log((prev) => [
         ...prev,
-        '2) 서연 AI가 빨강에 +3 배치 → 10+3=13 폭발! 서연 벌점 +3 · 빨강 비워짐!',
+        '2) 루피가 빨강에 +3 배치 → 10+3=13 폭발! 루피 벌점 +3 · 빨강 비워짐!',
       ]);
     }, 650);
 
@@ -295,7 +295,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
             id: 'tut-s3-p1-safe4',
             value: 4,
             ownerId: 'p1',
-            ownerName: '나 (P1)',
+            ownerName: '나',
             roundPlaced: 4,
           },
         ],
@@ -303,7 +303,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
       setStep3Status('passed_success');
       setStep3Log((prev) => [
         ...prev,
-        '3) 마지막 후순위로 나 (P1)가 빈 빨강(0→4)에 안전 배치! 벌점 0점으로 위기 탈출!',
+        '3) 마지막 후순위로 나가 빈 빨강(0→4)에 안전 배치! 벌점 0점으로 위기 탈출!',
       ]);
     }, 1850);
 
@@ -319,14 +319,14 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
         id: 'tut-s4-red-2',
         value: 2,
         ownerId: 'p1',
-        ownerName: '나 (P1)',
+        ownerName: '나',
         roundPlaced: 5,
       };
       heavy13Sound.playOverflowPenalty();
       setStep4Burst({
         id: 'tut-burst-step4',
         color: 'red',
-        actorName: '나 (P1)',
+        actorName: '나',
         penaltyAdded: preRed.length,
         sumAfter: 13,
         cubes: [...preRed, newCube],
@@ -351,7 +351,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
           id: `tut-s4-${color}-2`,
           value: 2,
           ownerId: 'p1',
-          ownerName: '나 (P1)',
+          ownerName: '나',
           roundPlaced: 5,
         },
       ],
@@ -424,7 +424,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                 미션: 이번 라운드 배치 순서(1번 → 4번)대로 플레이어를 클릭하세요!
               </div>
               <p className="text-xs theme-text-secondary">
-                현재 선 플레이어는 <strong className="theme-text-gold">민준 AI (2번 자리)</strong>입니다.
+                현재 선 플레이어는 <strong className="theme-text-gold">뽀로로 (2번 자리)</strong>입니다.
                 규칙: <strong>레인보우 칩 우선 → 높은 바위 숫자 → 선 기준 시계 방향</strong>
               </p>
             </div>
@@ -553,7 +553,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                 미션: 13 폭발 위기에서 &apos;패스 (후순위)&apos;로 벌점 회피하기
               </div>
               <p className="text-xs theme-text-secondary">
-                내가 먼저 빨강(합 10)에 바위 4를 놓으면 폭발합니다. 하지만 뒤에 <strong className="theme-text-primary">서연 AI(빨강/3)</strong>가 기다리고 있습니다!
+                내가 먼저 빨강(합 10)에 바위 4를 놓으면 폭발합니다. 하지만 뒤에 <strong className="theme-text-primary">루피(빨강/3)</strong>가 기다리고 있습니다!
                 <span className="block theme-text-muted mt-0.5">
                   ※ 여러 명이 패스하면 패스한 순서의 역순(LIFO)으로 놓으며, 패스하지 않은 마지막 사람은 패스 불가
                 </span>
@@ -590,8 +590,8 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                     setStep3Burst(null);
                     setStep3Status('idle');
                     setStep3Log([
-                      '현재 차례: 1번 나 (P1) — 빨강 칩 + 바위 4',
-                      '대기 2번: 서연 AI — 빨강 칩 + 바위 3 (놓으면 10+3=13 폭발 예정!)',
+                      '현재 차례: 1번 나 — 빨강 칩 + 바위 4',
+                      '대기 2번: 루피 — 빨강 칩 + 바위 3 (놓으면 10+3=13 폭발 예정!)',
                     ]);
                   }}
                   className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 bg-white text-slate-700 hover:text-slate-900 dark:border-lounge-slate-700 dark:bg-transparent dark:text-lounge-slate-200 dark:hover:text-white text-xs sm:text-sm font-semibold cursor-pointer"

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Heavy13PreviewDiagram } from '../../../components/GameBoardIllustrations';
 import { ThemeToggleButton } from '../../../components/ThemeToggleButton';
+import { AI_CHARACTER_NAMES, DEFAULT_PLAYER_NAME } from '../../playerProfiles';
 import { AIDifficulty, PlayerCount } from '../engine/heavy13';
 import { GameMode } from '../engine/heavy13Reducer';
 
@@ -25,11 +26,15 @@ interface Heavy13TitleScreenProps {
   aiDifficulty: AIDifficulty;
   memoryMode: boolean;
   muted: boolean;
+  playerName: string;
+  localPlayerNames: string[];
   onChangeMode: (mode: GameMode) => void;
   onChangePlayerCount: (count: PlayerCount) => void;
   onChangeStartingSeatChoice: (seat: number) => void;
   onChangeAiDifficulty: (diff: AIDifficulty) => void;
   onChangeMemoryMode: (memoryMode: boolean) => void;
+  onChangePlayerName: (name: string) => void;
+  onChangeLocalPlayerName: (index: number, name: string) => void;
   onToggleMute: () => void;
   onOpenRules: () => void;
   onOpenTutorial: () => void;
@@ -44,11 +49,15 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
   aiDifficulty,
   memoryMode,
   muted,
+  playerName,
+  localPlayerNames,
   onChangeMode,
   onChangePlayerCount,
   onChangeStartingSeatChoice,
   onChangeAiDifficulty,
   onChangeMemoryMode,
+  onChangePlayerName,
+  onChangeLocalPlayerName,
   onToggleMute,
   onOpenRules,
   onOpenTutorial,
@@ -174,7 +183,7 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
                       : 'text-slate-600 hover:text-slate-900 dark:text-lounge-slate-300 dark:hover:text-white',
                   ].join(' ')}
                 >
-                  1P vs AI
+                  솔로 vs AI
                 </button>
                 <button
                   type="button"
@@ -190,6 +199,47 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
                 </button>
               </div>
             </div>
+
+            {/* Player Name Input(s) */}
+            {mode === 'ai' ? (
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="h13-player-name"
+                  className="block text-xs font-medium theme-text-muted"
+                >
+                  내 이름
+                </label>
+                <input
+                  id="h13-player-name"
+                  type="text"
+                  maxLength={12}
+                  value={playerName}
+                  onChange={(e) => onChangePlayerName(e.target.value)}
+                  placeholder={`닉네임 입력 (기본: ${DEFAULT_PLAYER_NAME})`}
+                  className="w-full px-3 py-2 rounded-lg obsidian-subpanel text-sm font-medium theme-text-primary placeholder:text-slate-400 dark:placeholder:text-lounge-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-400"
+                />
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium theme-text-muted">
+                  참가자 이름 설정
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {Array.from({ length: playerCount }, (_, idx) => (
+                    <input
+                      key={idx}
+                      type="text"
+                      maxLength={12}
+                      value={idx === 0 ? playerName : localPlayerNames[idx] ?? ''}
+                      onChange={(e) => onChangeLocalPlayerName(idx, e.target.value)}
+                      placeholder={`참가자 ${idx + 1}`}
+                      aria-label={`${idx + 1}번 참가자 이름`}
+                      className="w-full px-2.5 py-1.5 rounded-lg obsidian-subpanel text-xs sm:text-sm font-medium theme-text-primary placeholder:text-slate-400 dark:placeholder:text-lounge-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-400"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Player Count (3 to 7) */}
             <div className="space-y-1.5">
@@ -267,6 +317,9 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
                     </button>
                   ))}
                 </div>
+                <p className="text-[11px] theme-text-faint leading-snug">
+                  AI 상대: {AI_CHARACTER_NAMES.join(', ')} 중 무작위 배정
+                </p>
               </div>
             )}
 

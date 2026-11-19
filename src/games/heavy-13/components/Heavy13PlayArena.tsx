@@ -486,7 +486,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                               : 'bg-white border-slate-200 text-slate-700 dark:bg-obsidian-900 dark:border-lounge-slate-700 dark:text-lounge-slate-300',
                           ].join(' ')}
                         >
-                          {p?.name.replace(' AI', '')} ({CHIP_META[entry.chip].shortKo}/{entry.card})
+                          {p?.name} ({CHIP_META[entry.chip].shortKo}/{entry.card})
                         </span>
                       );
                     })}
@@ -499,7 +499,7 @@ export const Heavy13PlayArena: React.FC<Heavy13PlayArenaProps> = ({
                             key={`${entry.playerId}-def-${idx}`}
                             className="font-mono-tabular px-2 py-1 rounded border border-sky-300 bg-sky-50 text-sky-700 dark:border-lounge-sky-400/40 dark:bg-lounge-sky-900/40 dark:text-lounge-sky-200"
                           >
-                            보류: {p?.name.replace(' AI', '')} ({entry.card})
+                            보류: {p?.name} ({entry.card})
                           </span>
                         );
                       })}

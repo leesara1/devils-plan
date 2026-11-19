@@ -26,6 +26,11 @@ export default defineConfig(() => {
           if (fs.existsSync(distDir) && fs.existsSync(srcAssets)) {
             fs.cpSync(srcAssets, distAssets, {recursive: true, force: true});
           }
+          const distIndex = path.resolve(distDir, 'index.html');
+          const dist404 = path.resolve(distDir, '404.html');
+          if (fs.existsSync(distIndex)) {
+            fs.copyFileSync(distIndex, dist404);
+          }
         },
       },
     ],

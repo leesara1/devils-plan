@@ -51,6 +51,16 @@ import {
   recordRoundInStats,
 } from './engine/stats';
 import { GameScreenProps } from '../types';
+import {
+  AI_CHARACTER_NAMES,
+  DEFAULT_P2_NAME,
+  DEFAULT_PLAYER_NAME,
+  formatCompactBadgeName,
+  loadSavedPlayerName,
+  pickAiOpponents,
+  resolvePlayerName,
+  savePlayerName,
+} from '../playerProfiles';
 import { MemoryPokerPreviewDiagram } from '../../components/GameBoardIllustrations';
 import { ThemeToggleButton } from '../../components/ThemeToggleButton';
 
@@ -89,6 +99,10 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   const [matchFormat, setMatchFormat] = useState<MatchFormat>('single');
   const [muted, setMuted] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
+  const [player1Name, setPlayer1Name] = useState<string>(() => loadSavedPlayerName());
+  const [player2Name, setPlayer2Name] = useState<string>('');
+  const [selectedAiChoice, setSelectedAiChoice] = useState<string>('random');
+  const [activeAiName, setActiveAiName] = useState<string>(AI_CHARACTER_NAMES[0]);
 
   // Round & Match State
   const [roundNumber, setRoundNumber] = useState(1);
@@ -115,8 +129,20 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   const [optimalSolution, setOptimalSolution] = useState<BoardSolution | null>(null);
   const [showAllBoardCards, setShowAllBoardCards] = useState(false);
 
-  const opponentLabel = mode === 'ai' ? `AI (${AI_DIFFICULTY_LABEL[aiDifficulty]})` : '플레이어 2';
-  const opponentShortLabel = mode === 'ai' ? 'AI' : 'P2';
+  const p1DisplayName = resolvePlayerName(player1Name, DEFAULT_PLAYER_NAME);
+  const p1ShortLabel = formatCompactBadgeName(p1DisplayName, 4);
+  const opponentName =
+    mode === 'ai' ? activeAiName : resolvePlayerName(player2Name, DEFAULT_P2_NAME);
+  const opponentLabel =
+    mode === 'ai'
+      ? `${activeAiName} (${AI_DIFFICULTY_LABEL[aiDifficulty]})`
+      : opponentName;
+  const opponentShortLabel = formatCompactBadgeName(opponentName, 4);
+
+  const handlePlayer1NameChange = (value: string) => {
+    setPlayer1Name(value);
+    savePlayerName(value);
+  };
 
   const toggleMute = useCallback(() => {
     setMuted((prev) => {
@@ -148,12 +174,19 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   }, []);
 
   const startMatch = useCallback(() => {
+    if (mode === 'ai') {
+      const nextAi =
+        selectedAiChoice === 'random'
+          ? pickAiOpponents(1, [p1DisplayName])[0]
+          : selectedAiChoice;
+      setActiveAiName(nextAi);
+    }
     setP1Score(0);
     setP2Score(0);
     setHistory([]);
     setShell('PLAYING');
     setupNewRound(1);
-  }, [setupNewRound]);
+  }, [mode, selectedAiChoice, p1DisplayName, setupNewRound]);
 
   const finishMemorization = useCallback(() => {
     soundEngine.playCardFlip();
@@ -359,12 +392,12 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
         round: `R${item.roundNumber}`,
         p1: p1Running,
         opponent: p2Running,
-        summary: `P1 ${item.p1Eval.categoryNameKo} vs ${opponentShortLabel} ${item.p2Eval.categoryNameKo}`,
+        summary: `${p1ShortLabel} ${item.p1Eval.categoryNameKo} vs ${opponentShortLabel} ${item.p2Eval.categoryNameKo}`,
       });
     }
 
     return points;
-  }, [history, opponentShortLabel]);
+  }, [history, p1ShortLabel, opponentShortLabel]);
 
   const activeStats = careerStats[mode];
 
@@ -375,7 +408,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
     const drawRate = total > 0 ? Math.max(0, 100 - p1Rate - oppRate) : 0;
 
     const slices = [
-      { name: 'P1 승리', value: activeStats.p1Wins, color: 'var(--color-gold-400)', rate: p1Rate },
+      { name: `${p1ShortLabel} 승리`, value: activeStats.p1Wins, color: 'var(--color-gold-400)', rate: p1Rate },
       { name: `${opponentShortLabel} 승리`, value: activeStats.opponentWins, color: 'var(--color-rival-400)', rate: oppRate },
       { name: '무승부', value: activeStats.draws, color: 'var(--color-lounge-sky-400)', rate: drawRate },
     ];
@@ -386,7 +419,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
       slices,
       nonZeroSlices: slices.filter((s) => s.value > 0),
     };
-  }, [activeStats, opponentShortLabel]);
+  }, [activeStats, p1ShortLabel, opponentShortLabel]);
 
   const handComparisonData = useMemo(() => {
     const ordered = [...HAND_RANKINGS_META].sort((a, b) => a.category - b.category);
@@ -432,6 +465,20 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   // Global keyboard shortcuts (Enter, Space, Esc, M)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isTextInput =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        target?.isContentEditable;
+
+      if (isTextInput) {
+        if (e.key === 'Escape' && target instanceof HTMLElement) {
+          target.blur();
+        }
+        return;
+      }
+
       if (e.key === 'm' || e.key === 'M') {
         e.preventDefault();
         toggleMute();
@@ -499,7 +546,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   ]);
 
   const activeSelection = phase === 'P1_SELECT' ? p1Selected : phase === 'P2_SELECT' ? p2Selected : [];
-  const activePlayerLabel = phase === 'P1_SELECT' ? '플레이어 1' : '플레이어 2';
+  const activePlayerLabel = phase === 'P1_SELECT' ? p1DisplayName : opponentName;
   const timerSecondsDisplay = (timeLeftMs / 1000).toFixed(1);
   const timerPercent = Math.max(0, Math.min(100, (timeLeftMs / (MEMORIZE_SECONDS * 1000)) * 100));
 
@@ -510,13 +557,13 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
       case 'COMMUNITY_REVEAL':
         return '공유 카드 공개';
       case 'P1_SELECT':
-        return '플레이어 1 · 개인 게임판 말 배치';
+        return `${p1DisplayName} · 개인 게임판 말 배치`;
       case 'PASS_TO_P2':
-        return '플레이어 2 차례 준비';
+        return `${opponentName} 차례 준비`;
       case 'P2_SELECT':
-        return '플레이어 2 · 개인 게임판 말 배치';
+        return `${opponentName} · 개인 게임판 말 배치`;
       case 'AI_THINKING':
-        return 'AI 말 배치 중';
+        return `${activeAiName} 말 배치 중`;
       case 'SHOWDOWN':
         return '카드 공개 및 족보 판정';
     }
@@ -629,7 +676,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                     매치 설정
                   </h2>
                   <span className="font-mono-tabular text-xs theme-text-muted">
-                    1P vs AI · 2P 로컬
+                    솔로 vs AI · 2인 로컬
                   </span>
                 </div>
 
@@ -649,7 +696,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                           : 'theme-text-secondary hover:text-slate-900 dark:hover:text-white',
                       ].join(' ')}
                     >
-                      1P vs AI
+                      솔로 vs AI
                     </button>
                     <button
                       type="button"
@@ -661,10 +708,89 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                           : 'theme-text-secondary hover:text-slate-900 dark:hover:text-white',
                       ].join(' ')}
                     >
-                      2P 로컬 대전
+                      2인 로컬 대전
                     </button>
                   </div>
                 </div>
+
+                {/* Player Name Input(s) */}
+                <div className={mode === 'local2p' ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : 'space-y-1.5'}>
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor="mp-p1-name"
+                      className="block text-xs font-medium theme-text-muted"
+                    >
+                      {mode === 'ai' ? '내 이름' : '첫 번째 플레이어 이름'}
+                    </label>
+                    <input
+                      id="mp-p1-name"
+                      type="text"
+                      maxLength={12}
+                      value={player1Name}
+                      onChange={(e) => handlePlayer1NameChange(e.target.value)}
+                      placeholder={`기본: ${DEFAULT_PLAYER_NAME}`}
+                      className="w-full px-3 py-2 rounded-lg obsidian-subpanel text-sm font-medium theme-text-primary placeholder:text-slate-400 dark:placeholder:text-lounge-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-400"
+                    />
+                  </div>
+
+                  {mode === 'local2p' && (
+                    <div className="space-y-1.5">
+                      <label
+                        htmlFor="mp-p2-name"
+                        className="block text-xs font-medium theme-text-muted"
+                      >
+                        두 번째 플레이어 이름
+                      </label>
+                      <input
+                        id="mp-p2-name"
+                        type="text"
+                        maxLength={12}
+                        value={player2Name}
+                        onChange={(e) => setPlayer2Name(e.target.value)}
+                        placeholder={`기본: ${DEFAULT_P2_NAME}`}
+                        className="w-full px-3 py-2 rounded-lg obsidian-subpanel text-sm font-medium theme-text-primary placeholder:text-slate-400 dark:placeholder:text-lounge-slate-500 focus:outline-none focus:ring-2 focus:ring-gold-400"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* AI Opponent Picker (only in AI mode) */}
+                {mode === 'ai' && (
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium theme-text-muted">
+                      AI 상대 선택
+                    </label>
+                    <div className="flex flex-wrap gap-1.5 p-1.5 rounded-lg obsidian-subpanel">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedAiChoice('random')}
+                        className={[
+                          'px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                          selectedAiChoice === 'random'
+                            ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs dark:bg-obsidian-800 dark:text-white dark:border-white/15'
+                            : 'theme-text-muted hover:text-slate-900 dark:hover:text-white',
+                        ].join(' ')}
+                      >
+                        랜덤
+                      </button>
+                      {AI_CHARACTER_NAMES.map((aiName) => (
+                        <button
+                          key={aiName}
+                          type="button"
+                          onClick={() => setSelectedAiChoice(aiName)}
+                          className={[
+                            'px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap',
+                            selectedAiChoice === aiName
+                              ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs dark:bg-obsidian-800 dark:text-white dark:border-white/15'
+                              : 'theme-text-muted hover:text-slate-900 dark:hover:text-white',
+                          ].join(' ')}
+                        >
+                          {aiName}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* AI Difficulty (only in AI mode) */}
                 {mode === 'ai' && (
@@ -766,7 +892,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
             <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
               {/* Score tally */}
               <div className="flex items-center gap-2 text-xs sm:text-sm font-mono-tabular px-3 py-1 rounded-lg obsidian-subpanel">
-                <span className="theme-text-gold font-bold">P1 {p1Score}</span>
+                <span className="theme-text-gold font-bold">{p1ShortLabel} {p1Score}</span>
                 <span className="theme-text-faint">:</span>
                 <span className="theme-text-rival font-bold">{p2Score} {opponentShortLabel}</span>
               </div>
@@ -839,9 +965,9 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                   {phase === 'MEMORIZE'
                     ? '16장 카드 보드 (암기 중)'
                     : phase === 'P1_SELECT'
-                      ? '플레이어 1 개인 게임판'
+                      ? `${p1DisplayName} 개인 게임판`
                       : phase === 'P2_SELECT'
-                        ? '플레이어 2 개인 게임판'
+                        ? `${opponentName} 개인 게임판`
                         : '16장 카드 보드'}
                 </div>
                 <span className="font-mono-tabular text-xs theme-text-muted">
@@ -886,7 +1012,8 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                         isOptimalHint={isOptimalSlot && !isP1Pick && !isP2Pick}
                         p1Token={isP1Pick}
                         p2Token={isP2Pick}
-                        p2Label={opponentShortLabel}
+                        p1Label={p1DisplayName}
+                        p2Label={opponentName}
                         onClick={() => handleCardSlotClick(idx)}
                         size="md"
                       />
@@ -1041,17 +1168,17 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
               {phase === 'PASS_TO_P2' && (
                 <section className="obsidian-panel rounded-xl p-5 sm:p-6 space-y-4">
                   <h3 className="font-display text-xl font-bold theme-text-primary">
-                    플레이어 1 선택 완료
+                    {p1DisplayName} 선택 완료
                   </h3>
                   <p className="text-sm theme-text-secondary leading-relaxed">
-                    플레이어 1의 말 위치는 비공개로 저장되었습니다. 화면을 <strong className="theme-text-primary">플레이어 2</strong>에게 넘긴 뒤 아래 버튼을 눌러 말을 배치하세요.
+                    {p1DisplayName}의 말 위치는 비공개로 저장되었습니다. 화면을 <strong className="theme-text-primary">{opponentName}</strong>에게 넘긴 뒤 아래 버튼을 눌러 말을 배치하세요.
                   </p>
                   <button
                     type="button"
                     onClick={() => setPhase('P2_SELECT')}
                     className="px-5 py-3 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors cursor-pointer"
                   >
-                    플레이어 2 말 배치 시작 (Enter)
+                    {opponentName} 말 배치 시작 (Enter)
                   </button>
                 </section>
               )}
@@ -1062,7 +1189,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                     {opponentLabel} 선택 중...
                   </h3>
                   <p className="text-xs sm:text-sm theme-text-secondary">
-                    상대가 자신의 게임판 위 2개 위치에 말을 배치하고 있습니다.
+                    {activeAiName}가 자신의 게임판 위 2개 위치에 말을 배치하고 있습니다.
                   </p>
                 </section>
               )}
@@ -1076,6 +1203,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                   p1Eval={p1Eval}
                   p2Eval={p2Eval}
                   optimalSolution={optimalSolution}
+                  p1Label={p1DisplayName}
                   opponentLabel={opponentLabel}
                   showAllBoardCards={showAllBoardCards}
                   onToggleShowAllBoardCards={() => setShowAllBoardCards((v) => !v)}
@@ -1161,13 +1289,13 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                 <div>
                   <h2 className="font-display text-2xl font-bold theme-text-primary">
                     {p1Score > p2Score
-                      ? '플레이어 1 최종 승리'
+                      ? `${p1DisplayName} 최종 승리`
                       : p2Score > p1Score
                         ? `${opponentLabel} 최종 승리`
                         : '무승부 종료'}
                   </h2>
                   <p className="text-sm theme-text-secondary font-mono-tabular mt-0.5">
-                    이번 경기 스코어 · P1 {p1Score} : {p2Score} {opponentShortLabel}
+                    이번 경기 스코어 · {p1ShortLabel} {p1Score} : {p2Score} {opponentShortLabel}
                   </p>
                 </div>
               </div>
@@ -1230,7 +1358,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                             <div className="rounded-lg obsidian-panel px-3 py-2 shadow-lg text-xs space-y-1">
                               <div className="font-mono-tabular font-bold theme-text-primary">{label}</div>
                               <div className="font-mono-tabular theme-text-gold font-semibold">
-                                플레이어 1: {point.p1}점
+                                {p1DisplayName}: {point.p1}점
                               </div>
                               <div className="font-mono-tabular theme-text-rival font-semibold">
                                 {opponentLabel}: {point.opponent}점
@@ -1246,7 +1374,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                       <Line
                         type="linear"
                         dataKey="p1"
-                        name="플레이어 1"
+                        name={p1DisplayName}
                         stroke="var(--color-gold-500)"
                         strokeWidth={2.5}
                         dot={{ r: 4, fill: 'var(--color-gold-400)', stroke: 'var(--color-gold-950)', strokeWidth: 1.5 }}
@@ -1322,7 +1450,9 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                         </PieChart>
                       </ResponsiveContainer>
                       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-[10px] theme-text-muted">P1 승률</span>
+                        <span className="text-[10px] theme-text-muted truncate max-w-[78px]">
+                          {p1ShortLabel} 승률
+                        </span>
                         <span className="font-mono-tabular text-lg font-bold theme-text-gold leading-tight">
                           {winRateStats.p1Rate}%
                         </span>
@@ -1351,19 +1481,19 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
               </div>
             </div>
 
-            {/* Row 2: P1 Preferred vs AI/Opponent Completed Hands Bar Chart */}
+            {/* Row 2: Preferred vs Opponent Completed Hands Bar Chart */}
             <div className="obsidian-subpanel rounded-xl p-4 space-y-2.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-xs sm:text-sm font-semibold theme-text-secondary">
-                  P1 선호 족보 vs {mode === 'ai' ? 'AI' : 'P2'} 완성 족보 비교
+                  {p1ShortLabel} 선호 족보 vs {opponentShortLabel} 완성 족보 비교
                 </h3>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs theme-text-muted">
                   <span>
-                    P1 최다: <strong className="theme-text-gold">{topHandsSummary.p1Top}</strong>
+                    {p1ShortLabel} 최다: <strong className="theme-text-gold">{topHandsSummary.p1Top}</strong>
                   </span>
                   <span aria-hidden="true" className="theme-text-faint">·</span>
                   <span>
-                    {mode === 'ai' ? 'AI' : 'P2'} 최다:{' '}
+                    {opponentShortLabel} 최다:{' '}
                     <strong className="theme-text-rival">{topHandsSummary.oppTop}</strong>
                   </span>
                 </div>
@@ -1405,10 +1535,10 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                           <div className="rounded-lg obsidian-panel px-3 py-2 shadow-lg text-xs space-y-1">
                             <div className="font-bold theme-text-primary">{row.fullName}</div>
                             <div className="font-mono-tabular theme-text-gold">
-                              플레이어 1: {row.p1}회
+                              {p1DisplayName}: {row.p1}회
                             </div>
                             <div className="font-mono-tabular theme-text-rival">
-                              {mode === 'ai' ? 'AI' : '플레이어 2'}: {row.opponent}회
+                              {opponentName}: {row.opponent}회
                             </div>
                           </div>
                         );
@@ -1417,7 +1547,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                     <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '4px' }} />
                     <Bar
                       dataKey="p1"
-                      name="플레이어 1"
+                      name={p1DisplayName}
                       fill="var(--color-gold-400)"
                       radius={[4, 4, 0, 0]}
                       maxBarSize={20}
@@ -1425,7 +1555,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                     />
                     <Bar
                       dataKey="opponent"
-                      name={mode === 'ai' ? 'AI' : '플레이어 2'}
+                      name={opponentName}
                       fill="var(--color-rival-500)"
                       radius={[4, 4, 0, 0]}
                       maxBarSize={20}
@@ -1447,7 +1577,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                     R{item.roundNumber}
                   </span>
                   <div className="flex-1 theme-text-secondary truncate">
-                    <span>P1: {item.p1Eval.descriptionKo}</span>
+                    <span>{p1ShortLabel}: {item.p1Eval.descriptionKo}</span>
                     <span className="mx-1.5 theme-text-faint" aria-hidden="true">vs</span>
                     <span>{opponentShortLabel}: {item.p2Eval.descriptionKo}</span>
                   </div>
@@ -1461,7 +1591,11 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                           : 'theme-text-sky',
                     ].join(' ')}
                   >
-                    {item.winner === 'p1' ? 'P1 승' : item.winner === 'p2' ? `${opponentShortLabel} 승` : '무승부'}
+                    {item.winner === 'p1'
+                      ? `${p1ShortLabel} 승`
+                      : item.winner === 'p2'
+                        ? `${opponentShortLabel} 승`
+                        : '무승부'}
                   </span>
                 </div>
               ))}

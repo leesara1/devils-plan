@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatCompactBadgeName } from '../../playerProfiles';
 import {
   CHIP_META,
   ChipType,
@@ -495,7 +496,7 @@ export const PedestalStation: React.FC<PedestalStationProps> = ({
                   {cube.value}
                 </span>
                 <span className="text-[7px] sm:text-[9px] theme-text-muted truncate max-w-[26px] sm:max-w-[32px] mt-0.5">
-                  {cube.ownerName.replace(' AI', '').replace('플레이어 ', 'P').replace('나 (P1)', 'P1')}
+                  {formatCompactBadgeName(cube.ownerName, 3)}
                 </span>
               </div>
             );
