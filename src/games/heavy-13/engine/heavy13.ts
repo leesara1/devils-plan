@@ -167,7 +167,7 @@ export function createInitialPlayers(
     const isHuman = humanSeatIndices.includes(seatIndex);
     let name: string;
     if (mode === 'local') {
-      name = `플레이어 ${seatIndex + 1}`;
+      name = `${seatIndex + 1}P`;
     } else if (isHuman) {
       name = DEFAULT_PLAYER_NAME;
     } else {

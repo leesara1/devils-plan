@@ -28,7 +28,7 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
   isOptimalHint = false,
   p1Token = false,
   p2Token = false,
-  p1Label = '플레이어',
+  p1Label = '1P',
   p2Label = 'AI',
   onClick,
   size = 'lg',

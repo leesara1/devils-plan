@@ -9,7 +9,7 @@ export const AI_CHARACTER_NAMES = [
   '로디',
 ] as const;
 
-export const DEFAULT_PLAYER_NAME = '플레이어';
+export const DEFAULT_PLAYER_NAME = '1P';
 
 export function pickAiOpponents(
   count: number,

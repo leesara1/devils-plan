@@ -294,7 +294,7 @@ export function explainComparison(p1: HandEvaluation, p2: HandEvaluation): strin
 
   const winner = cmp === 1 ? p1 : p2;
   const loser = cmp === 1 ? p2 : p1;
-  const winnerTag = cmp === 1 ? 'P1' : '상대';
+  const winnerTag = cmp === 1 ? '1P' : '상대';
 
   if (winner.category !== loser.category) {
     return `${winner.categoryNameKo} 조합이 ${loser.categoryNameKo}보다 높아 ${winnerTag} 승리`;

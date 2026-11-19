@@ -38,7 +38,6 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
   // Title Configuration & UI Preferences
   const [mode, setMode] = useState<GameMode>('ai');
   const [playerCount, setPlayerCount] = useState<PlayerCount>(4);
-  const [startingSeatChoice, setStartingSeatChoice] = useState<number>(0);
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('hard');
   const [memoryMode, setMemoryMode] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -137,10 +136,9 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
       type: 'START_MATCH',
       mode,
       playerCount,
-      startingSeatChoice,
       aiDifficulty,
     });
-  }, [mode, playerCount, startingSeatChoice, aiDifficulty, clearPresentationTimers]);
+  }, [mode, playerCount, aiDifficulty, clearPresentationTimers]);
 
   // Reset UI selection when entering a new SUBMISSION step
   useEffect(() => {
@@ -599,13 +597,11 @@ export function Heavy13Game({ onExitToHub }: GameScreenProps) {
         <Heavy13TitleScreen
           mode={mode}
           playerCount={playerCount}
-          startingSeatChoice={startingSeatChoice}
           aiDifficulty={aiDifficulty}
           memoryMode={memoryMode}
           muted={muted}
           onChangeMode={setMode}
           onChangePlayerCount={setPlayerCount}
-          onChangeStartingSeatChoice={setStartingSeatChoice}
           onChangeAiDifficulty={setAiDifficulty}
           onChangeMemoryMode={setMemoryMode}
           onToggleMute={toggleMute}

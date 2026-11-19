@@ -85,7 +85,7 @@ export type Heavy13Action =
       type: 'START_MATCH';
       mode: GameMode;
       playerCount: PlayerCount;
-      startingSeatChoice: number;
+      startingSeatChoice?: number;
       aiDifficulty: AIDifficulty;
       initialFirstSeat?: number;
     }
@@ -298,7 +298,11 @@ export function heavy13Reducer(
 ): Heavy13MatchState {
   switch (action.type) {
     case 'START_MATCH': {
-      const clampedSeat = Math.min(action.startingSeatChoice, action.playerCount - 1);
+      const randomSeat = Math.floor(Math.random() * action.playerCount);
+      const clampedSeat =
+        action.startingSeatChoice !== undefined
+          ? Math.min(action.startingSeatChoice, action.playerCount - 1)
+          : randomSeat;
       const humanSeats =
         action.mode === 'ai'
           ? [clampedSeat]

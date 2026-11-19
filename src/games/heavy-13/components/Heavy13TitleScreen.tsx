@@ -9,26 +9,23 @@ import {
 } from 'lucide-react';
 import { Heavy13PreviewDiagram } from '../../../components/GameBoardIllustrations';
 import { ThemeToggleButton } from '../../../components/ThemeToggleButton';
-import { AI_CHARACTER_NAMES } from '../../playerProfiles';
 import { AIDifficulty, PlayerCount } from '../engine/heavy13';
 import { GameMode } from '../engine/heavy13Reducer';
 
 const AI_DIFFICULTY_LABEL: Record<AIDifficulty, string> = {
-  normal: '보통',
-  hard: '어려움',
-  master: '마스터',
+  normal: '쉬움',
+  hard: '보통',
+  master: '어려움',
 };
 
 interface Heavy13TitleScreenProps {
   mode: GameMode;
   playerCount: PlayerCount;
-  startingSeatChoice: number;
   aiDifficulty: AIDifficulty;
   memoryMode: boolean;
   muted: boolean;
   onChangeMode: (mode: GameMode) => void;
   onChangePlayerCount: (count: PlayerCount) => void;
-  onChangeStartingSeatChoice: (seat: number) => void;
   onChangeAiDifficulty: (diff: AIDifficulty) => void;
   onChangeMemoryMode: (memoryMode: boolean) => void;
   onToggleMute: () => void;
@@ -41,13 +38,11 @@ interface Heavy13TitleScreenProps {
 export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
   mode,
   playerCount,
-  startingSeatChoice,
   aiDifficulty,
   memoryMode,
   muted,
   onChangeMode,
   onChangePlayerCount,
-  onChangeStartingSeatChoice,
   onChangeAiDifficulty,
   onChangeMemoryMode,
   onToggleMute,
@@ -175,7 +170,7 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
                       : 'text-slate-600 hover:text-slate-900 dark:text-lounge-slate-300 dark:hover:text-white',
                   ].join(' ')}
                 >
-                  솔로 vs AI
+                  1P vs AI
                 </button>
                 <button
                   type="button"
@@ -202,10 +197,7 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
                   <button
                     key={count}
                     type="button"
-                    onClick={() => {
-                      onChangePlayerCount(count);
-                      if (startingSeatChoice >= count) onChangeStartingSeatChoice(0);
-                    }}
+                    onClick={() => onChangePlayerCount(count)}
                     className={[
                       'py-2 px-1.5 rounded-md text-xs sm:text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap',
                       playerCount === count
@@ -218,32 +210,6 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
                 ))}
               </div>
             </div>
-
-            {/* Seat Position (in AI mode) */}
-            {mode === 'ai' && (
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium theme-text-muted">
-                  내 좌석 선택 (1라운드 선 플레이어는 무작위 추첨)
-                </label>
-                <div className="flex flex-wrap gap-1 p-1 rounded-lg obsidian-subpanel">
-                  {Array.from({ length: playerCount }, (_, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => onChangeStartingSeatChoice(idx)}
-                      className={[
-                        'flex-1 min-w-[60px] py-1.5 px-2 rounded-md text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap',
-                        startingSeatChoice === idx
-                          ? 'bg-white text-slate-900 border border-slate-300 dark:bg-obsidian-800 dark:text-white dark:border-white/15'
-                          : 'text-slate-600 hover:text-slate-900 dark:text-lounge-slate-400 dark:hover:text-white',
-                      ].join(' ')}
-                    >
-                      {idx + 1}번 자리
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* AI Difficulty */}
             {mode === 'ai' && (
@@ -268,9 +234,6 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
                     </button>
                   ))}
                 </div>
-                <p className="text-[11px] theme-text-faint leading-snug">
-                  AI 상대: {AI_CHARACTER_NAMES.join(', ')} 중 무작위 배정
-                </p>
               </div>
             )}
 

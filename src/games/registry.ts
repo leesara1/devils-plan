@@ -13,7 +13,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
     titleEn: 'Memory Poker',
     description:
       '4×4 보드에 놓인 16장의 카드를 20초 동안 암기한 뒤, 뒤집힌 상태에서 공유 카드 3장과 합쳐 가장 강한 5장 홀덤 족보를 완성하는 기억력 대결입니다.',
-    playersLabel: '솔로 vs AI · 2인 로컬',
+    playersLabel: '1P vs AI · 2P 로컬',
     durationLabel: '단판 · 3판 2선승',
     highlights: [
       '20초 동안 16장 위치와 숫자·문양 암기',

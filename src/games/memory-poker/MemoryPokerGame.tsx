@@ -52,7 +52,6 @@ import {
 } from './engine/stats';
 import { GameScreenProps } from '../types';
 import {
-  AI_CHARACTER_NAMES,
   DEFAULT_PLAYER_NAME,
   formatCompactBadgeName,
   pickAiOpponents,
@@ -82,9 +81,9 @@ interface RoundRecord {
 }
 
 const AI_DIFFICULTY_LABEL: Record<AIDifficulty, string> = {
-  normal: '보통',
-  hard: '어려움',
-  master: '마스터',
+  normal: '쉬움',
+  hard: '보통',
+  master: '어려움',
 };
 
 export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
@@ -95,8 +94,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   const [matchFormat, setMatchFormat] = useState<MatchFormat>('single');
   const [muted, setMuted] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
-  const [selectedAiChoice, setSelectedAiChoice] = useState<string>('random');
-  const [activeAiName, setActiveAiName] = useState<string>(AI_CHARACTER_NAMES[0]);
+  const [activeAiName, setActiveAiName] = useState<string>(() => pickAiOpponents(1)[0]);
 
   // Round & Match State
   const [roundNumber, setRoundNumber] = useState(1);
@@ -123,9 +121,9 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
   const [optimalSolution, setOptimalSolution] = useState<BoardSolution | null>(null);
   const [showAllBoardCards, setShowAllBoardCards] = useState(false);
 
-  const p1DisplayName = mode === 'ai' ? DEFAULT_PLAYER_NAME : '플레이어 1';
-  const p1ShortLabel = mode === 'ai' ? DEFAULT_PLAYER_NAME : '플레이어 1';
-  const opponentName = mode === 'ai' ? activeAiName : '플레이어 2';
+  const p1DisplayName = DEFAULT_PLAYER_NAME;
+  const p1ShortLabel = DEFAULT_PLAYER_NAME;
+  const opponentName = mode === 'ai' ? activeAiName : '2P';
   const opponentLabel =
     mode === 'ai'
       ? `${activeAiName} (${AI_DIFFICULTY_LABEL[aiDifficulty]})`
@@ -163,18 +161,14 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
 
   const startMatch = useCallback(() => {
     if (mode === 'ai') {
-      const nextAi =
-        selectedAiChoice === 'random'
-          ? pickAiOpponents(1, [p1DisplayName])[0]
-          : selectedAiChoice;
-      setActiveAiName(nextAi);
+      setActiveAiName(pickAiOpponents(1, [p1DisplayName])[0]);
     }
     setP1Score(0);
     setP2Score(0);
     setHistory([]);
     setShell('PLAYING');
     setupNewRound(1);
-  }, [mode, selectedAiChoice, p1DisplayName, setupNewRound]);
+  }, [mode, p1DisplayName, setupNewRound]);
 
   const finishMemorization = useCallback(() => {
     soundEngine.playCardFlip();
@@ -664,7 +658,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                     매치 설정
                   </h2>
                   <span className="font-mono-tabular text-xs theme-text-muted">
-                    솔로 vs AI · 2인 로컬
+                    1P vs AI · 2P 로컬
                   </span>
                 </div>
 
@@ -684,7 +678,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                           : 'theme-text-secondary hover:text-slate-900 dark:hover:text-white',
                       ].join(' ')}
                     >
-                      솔로 vs AI
+                      1P vs AI
                     </button>
                     <button
                       type="button"
@@ -696,48 +690,10 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
                           : 'theme-text-secondary hover:text-slate-900 dark:hover:text-white',
                       ].join(' ')}
                     >
-                      2인 로컬 대전
+                      2P 로컬 대전
                     </button>
                   </div>
                 </div>
-
-                {/* AI Opponent Picker (only in AI mode) */}
-                {mode === 'ai' && (
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-medium theme-text-muted">
-                      AI 상대 선택
-                    </label>
-                    <div className="flex flex-wrap gap-1.5 p-1.5 rounded-lg obsidian-subpanel">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedAiChoice('random')}
-                        className={[
-                          'px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap',
-                          selectedAiChoice === 'random'
-                            ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs dark:bg-obsidian-800 dark:text-white dark:border-white/15'
-                            : 'theme-text-muted hover:text-slate-900 dark:hover:text-white',
-                        ].join(' ')}
-                      >
-                        랜덤
-                      </button>
-                      {AI_CHARACTER_NAMES.map((aiName) => (
-                        <button
-                          key={aiName}
-                          type="button"
-                          onClick={() => setSelectedAiChoice(aiName)}
-                          className={[
-                            'px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap',
-                            selectedAiChoice === aiName
-                              ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs dark:bg-obsidian-800 dark:text-white dark:border-white/15'
-                              : 'theme-text-muted hover:text-slate-900 dark:hover:text-white',
-                          ].join(' ')}
-                        >
-                          {aiName}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* AI Difficulty (only in AI mode) */}
                 {mode === 'ai' && (

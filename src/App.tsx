@@ -136,7 +136,7 @@ function DevilsPlanHub() {
               <div className="flex flex-wrap items-center gap-2 text-xs font-mono-tabular theme-text-muted">
                 <span className="theme-text-gold font-semibold">시즌 3</span>
                 <span aria-hidden="true">·</span>
-                <span>솔로 vs AI · 로컬 대전</span>
+                <span>1P vs AI · 로컬 대전</span>
               </div>
 
               <h1 className="font-display text-2xl sm:text-4xl font-bold theme-text-primary leading-tight [text-wrap:balance]">
@@ -278,7 +278,7 @@ function DevilsPlanHub() {
               <div className="divide-y divide-slate-300/70 dark:divide-white/[0.08] border-y theme-border text-xs sm:text-sm">
                 <div className="py-2.5 flex items-center justify-between gap-3">
                   <span className="theme-text-secondary">대전 방식</span>
-                  <span className="theme-text-muted">솔로 vs AI · 로컬 대전</span>
+                  <span className="theme-text-muted">1P vs AI · 로컬 대전</span>
                 </div>
                 <div className="py-2.5 flex items-center justify-between gap-3">
                   <span className="theme-text-secondary">키보드 조작</span>
