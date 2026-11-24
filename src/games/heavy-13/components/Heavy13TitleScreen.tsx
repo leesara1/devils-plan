@@ -67,7 +67,7 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
             </button>
           )}
           <span className="hidden sm:inline font-mono-tabular text-xs theme-text-faint">
-            시즌 3 · 메인 매치
+            시즌 3 · 감옥 매치
           </span>
         </div>
 
