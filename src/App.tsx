@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, RotateCcw } from 'lucide-react';
 import {
   Heavy13PreviewDiagram,
   MemoryPokerPreviewDiagram,
+  RussianRoulettePreviewDiagram,
 } from './components/GameBoardIllustrations';
 import { ThemeToggleButton } from './components/ThemeToggleButton';
 import { GAMES_REGISTRY } from './games/registry';
@@ -18,6 +19,7 @@ import {
 } from './games/memory-poker/engine/stats';
 import { RulesModal as MemoryPokerRulesModal } from './games/memory-poker/components/RulesModal';
 import { Heavy13RulesModal } from './games/heavy-13/components/Heavy13RulesModal';
+import { RouletteRulesModal } from './games/russian-roulette/components/RouletteRulesModal';
 import { ThemeProvider } from './theme/ThemeContext';
 
 function DevilsPlanHub() {
@@ -165,6 +167,8 @@ function DevilsPlanHub() {
                 <div>
                   {game.id === 'memory-poker' ? (
                     <MemoryPokerPreviewDiagram />
+                  ) : game.id === 'russian-roulette' ? (
+                    <RussianRoulettePreviewDiagram />
                   ) : (
                     <Heavy13PreviewDiagram />
                   )}
@@ -295,7 +299,7 @@ function DevilsPlanHub() {
       <footer className="border-t theme-border bg-slate-200/70 dark:bg-obsidian-950">
         <div className="max-w-5xl mx-auto px-5 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-2 text-xs theme-text-faint">
           <span>데블스 플랜 · 시즌 3</span>
-          <span>기억 포커 · 무거운 13</span>
+          <span>기억 포커 · 무거운 13 · 러시안 룰렛</span>
         </div>
       </footer>
 
@@ -305,6 +309,10 @@ function DevilsPlanHub() {
       />
       <Heavy13RulesModal
         open={previewRulesGameId === 'heavy-13'}
+        onClose={() => setPreviewRulesGameId(null)}
+      />
+      <RouletteRulesModal
+        open={previewRulesGameId === 'russian-roulette'}
         onClose={() => setPreviewRulesGameId(null)}
       />
     </div>

@@ -1,6 +1,7 @@
 import { GameEntry } from './types';
 import { MemoryPokerGame } from './memory-poker/MemoryPokerGame';
 import { Heavy13Game } from './heavy-13/Heavy13Game';
+import { RussianRouletteGame } from './russian-roulette/RussianRouletteGame';
 
 export const GAMES_REGISTRY: GameEntry[] = [
   {
@@ -26,7 +27,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
   {
     id: 'heavy-13',
     indexLabel: '02',
-    seasonLabel: '시즌 3 · 메인 매치',
+    seasonLabel: '시즌 3 · 감옥 매치',
     matchFormatLabel: '다인원 심리 수 싸움',
     category: 'strategy',
     titleKo: '무거운 13',
@@ -42,5 +43,25 @@ export const GAMES_REGISTRY: GameEntry[] = [
     ],
     status: 'playable',
     component: Heavy13Game,
+  },
+  {
+    id: 'russian-roulette',
+    indexLabel: '03',
+    seasonLabel: '시즌 3 · 감옥 매치',
+    matchFormatLabel: '6인 크레딧 심리전',
+    category: 'strategy',
+    titleKo: '러시안 룰렛',
+    titleEn: 'Russian Roulette',
+    description:
+      '약실 6개 중 2개에 총알이 든 총을 두고, 크레딧 16개로 약실을 조사하고 총구를 돌리고 몰래 약실을 바꿔 살아남는 6인 심리전입니다. 3명이 크레딧을 다 쓰면 격발합니다.',
+    playersLabel: '6인 · 1P vs AI',
+    durationLabel: '크레딧 소진전',
+    highlights: [
+      '공개·비공개 조사로 총알 위치 추리',
+      '1~2칸 회전으로 총구 방향 바꾸기',
+      '6크레딧 비공개 적립으로 약실 몰래 교환',
+    ],
+    status: 'playable',
+    component: RussianRouletteGame,
   },
 ];

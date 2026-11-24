@@ -179,3 +179,76 @@ export const Heavy13PreviewDiagram: React.FC = () => {
     </div>
   );
 };
+
+export const RussianRoulettePreviewDiagram: React.FC = () => {
+  // chamber states for the mini preview: bullet, known-empty, unknown
+  const chambers: Array<'bullet' | 'empty' | 'unknown'> = [
+    'unknown', 'empty', 'bullet', 'unknown', 'empty', 'unknown',
+  ];
+  const seats = ['1P', '크롱', '루피', '에디', '포비', '패티'];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-4 flex items-center justify-center gap-6 sm:gap-10 select-none overflow-hidden"
+    >
+      <div className="relative h-full aspect-square max-h-[200px]">
+        <div className="absolute inset-[6%] rounded-full bg-white/70 dark:bg-[#232938] border border-slate-200 dark:border-white/10" />
+        {/* barrel toward seat 0 (bottom) */}
+        <div className="absolute left-1/2 top-1/2 w-[9px] h-[34%] -translate-x-1/2 rounded-b-full bg-[#eab308]" />
+        <div className="absolute left-1/2 top-1/2 w-[30%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 dark:bg-[#2a303f]" />
+        {chambers.map((state, i) => {
+          const angle = ((90 + 60 * i) * Math.PI) / 180;
+          return (
+            <div
+              key={`c${i}`}
+              className={[
+                'absolute w-[15%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full border-2 flex items-center justify-center text-[9px] font-bold',
+                state === 'bullet'
+                  ? 'bg-[#fff1f2] dark:bg-[#3a1820] border-[#e11d48] text-[#be123c] dark:text-[#fb7185]'
+                  : state === 'empty'
+                    ? 'bg-[#ecfdf5] dark:bg-[#102a22] border-[#059669] text-[#047857] dark:text-[#6ee7b7]'
+                    : 'bg-white dark:bg-[#181c24] border-slate-300 dark:border-white/15 text-slate-500 dark:text-slate-400',
+              ].join(' ')}
+              style={{ left: `${50 + 22 * Math.cos(angle)}%`, top: `${50 + 22 * Math.sin(angle)}%` }}
+            >
+              {state === 'bullet' ? '탄' : state === 'empty' ? '빈' : '?'}
+            </div>
+          );
+        })}
+        {seats.map((name, i) => {
+          const angle = ((90 + 60 * i) * Math.PI) / 180;
+          return (
+            <div
+              key={name}
+              className={[
+                'absolute -translate-x-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded-md border text-[9px] font-semibold whitespace-nowrap',
+                i === 0
+                  ? 'bg-[#fef9c3] dark:bg-[#2a2410] border-[#ca8a04] text-[#854d0e] dark:text-[#fcd34d]'
+                  : 'bg-white dark:bg-[#212632] border-slate-300 dark:border-white/10 text-slate-700 dark:text-slate-300',
+              ].join(' ')}
+              style={{ left: `${50 + 44 * Math.cos(angle)}%`, top: `${50 + 44 * Math.sin(angle)}%` }}
+            >
+              {name}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="hidden sm:flex flex-col gap-1.5 text-[11px] font-mono-tabular text-slate-700 dark:text-slate-300">
+        {[
+          ['공개 조사', '1'],
+          ['비공개 조사', '2'],
+          ['회전 1·2칸', '3·4'],
+          ['조작', '6'],
+        ].map(([label, cost]) => (
+          <div key={label} className="flex items-center justify-between gap-4">
+            <span>{label}</span>
+            <span className="text-[#a16207] dark:text-[#eab308] font-bold">{cost}</span>
+          </div>
+        ))}
+        <div className="pt-1 text-slate-500 dark:text-slate-500">16 CREDITS · 2 BULLETS</div>
+      </div>
+    </div>
+  );
+};
