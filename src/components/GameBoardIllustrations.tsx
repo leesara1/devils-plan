@@ -252,3 +252,51 @@ export const RussianRoulettePreviewDiagram: React.FC = () => {
     </div>
   );
 };
+
+export const GradationPreviewDiagram: React.FC = () => {
+  const mine = [0, 1, 2, 4, 6, 8, 9];
+  const theirs: (number | null)[] = [null, 2, null, null, 5, null, null];
+  const tube = (i: number, hue: number) => {
+    const l = 86 - i * 8;
+    return { backgroundColor: `hsl(${hue} 70% ${l}%)`, color: l < 58 ? '#fff' : '#1f2937' };
+  };
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 flex flex-col items-center justify-center gap-3 select-none overflow-hidden"
+    >
+      <div className="flex gap-1.5 sm:gap-2">
+        {theirs.map((v, i) => (
+          <div
+            key={`o${i}`}
+            className={[
+              'w-7 sm:w-8 h-11 sm:h-12 rounded-t-full rounded-b-lg border border-black/10 dark:border-white/15 flex items-center justify-center font-mono-tabular text-sm font-bold',
+              i === 4 ? 'ring-2 ring-[#e11d48]' : '',
+            ].join(' ')}
+            style={tube(i, 205)}
+          >
+            {v ?? '?'}
+          </div>
+        ))}
+      </div>
+      <div className="text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">
+        6 &gt; 5 · 1P +1
+      </div>
+      <div className="flex gap-1.5 sm:gap-2">
+        {mine.map((v, i) => (
+          <div
+            key={`m${i}`}
+            className={[
+              'w-7 sm:w-8 h-11 sm:h-12 rounded-t-full rounded-b-lg border border-black/10 dark:border-white/15 flex items-center justify-center font-mono-tabular text-sm font-bold',
+              i === 4 ? 'ring-2 ring-[#059669]' : '',
+            ].join(' ')}
+            style={tube(i, 42)}
+          >
+            {v}
+          </div>
+        ))}
+      </div>
+      <div className="text-[10px] font-mono-tabular text-slate-500">SUM 30 · ASCENDING</div>
+    </div>
+  );
+};

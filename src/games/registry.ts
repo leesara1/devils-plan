@@ -2,6 +2,7 @@ import { GameEntry } from './types';
 import { MemoryPokerGame } from './memory-poker/MemoryPokerGame';
 import { Heavy13Game } from './heavy-13/Heavy13Game';
 import { RussianRouletteGame } from './russian-roulette/RussianRouletteGame';
+import { GradationGame } from './gradation/GradationGame';
 
 export const GAMES_REGISTRY: GameEntry[] = [
   {
@@ -63,5 +64,25 @@ export const GAMES_REGISTRY: GameEntry[] = [
     ],
     status: 'playable',
     component: RussianRouletteGame,
+  },
+  {
+    id: 'gradation',
+    indexLabel: '04',
+    seasonLabel: '시즌 3 · 감옥 매치',
+    matchFormatLabel: '1:1 배치 심리전',
+    category: 'strategy',
+    titleKo: '그라데이션',
+    titleEn: 'Gradation',
+    description:
+      '숫자 큐브 7개를 오름차순·합 30 이하로 몰래 배치한 뒤, 통을 하나씩 맞붙여 더 큰 숫자로 점수를 따는 1:1 심리전입니다. 3인 서바이벌에서는 2연승해야 살아남습니다.',
+    playersLabel: '1P vs AI · 3인 서바이벌',
+    durationLabel: '7라운드 대결',
+    highlights: [
+      '0~9 큐브 각 2개로 합 30 이하 오름차순 배치',
+      '라운드 승자가 다음 라운드 선공',
+      '승자 잔류 방식, 2연승 시 결승 진출',
+    ],
+    status: 'playable',
+    component: GradationGame,
   },
 ];
