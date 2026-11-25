@@ -3,6 +3,7 @@ import { MemoryPokerGame } from './memory-poker/MemoryPokerGame';
 import { Heavy13Game } from './heavy-13/Heavy13Game';
 import { RussianRouletteGame } from './russian-roulette/RussianRouletteGame';
 import { GradationGame } from './gradation/GradationGame';
+import { EquationSignalGame } from './equation-signal/EquationSignalGame';
 
 export const GAMES_REGISTRY: GameEntry[] = [
   {
@@ -84,5 +85,25 @@ export const GAMES_REGISTRY: GameEntry[] = [
     ],
     status: 'playable',
     component: GradationGame,
+  },
+  {
+    id: 'equation-signal',
+    indexLabel: '05',
+    seasonLabel: '시즌 3 · 결승',
+    matchFormatLabel: '1:1 수식 추리전',
+    category: 'memory',
+    titleKo: '수식 신호등',
+    titleEn: 'Equation Signal',
+    description:
+      '9칸짜리 비밀 수식을 정하고, 매 턴 상대 수식을 추측해 초록·노랑·빨강 신호로 범위를 좁히는 1:1 추리 대결입니다. 먼저 맞히는 쪽이 이깁니다.',
+    playersLabel: '1P vs AI',
+    durationLabel: '동시 추측 · 최대 20턴',
+    highlights: [
+      '0~9 + - × ÷ = ^ 로 만드는 성립하는 9칸 수식',
+      '초록=정확한 위치, 노랑=다른 위치, 빨강=없음',
+      '같은 턴에 동시에 추측, 먼저 맞히면 승리',
+    ],
+    status: 'playable',
+    component: EquationSignalGame,
   },
 ];

@@ -300,3 +300,39 @@ export const GradationPreviewDiagram: React.FC = () => {
     </div>
   );
 };
+
+export const EquationSignalPreviewDiagram: React.FC = () => {
+  const rows: Array<Array<[string, 'g' | 'y' | 'r']>> = [
+    // Real signals for guesses against 13×4+8=60
+    [['4', 'y'], ['8', 'y'], ['-', 'r'], ['9', 'r'], ['×', 'y'], ['5', 'r'], ['=', 'g'], ['3', 'y'], ['9', 'r']],
+    [['1', 'g'], ['3', 'g'], ['×', 'g'], ['2', 'r'], ['+', 'g'], ['6', 'y'], ['=', 'g'], ['3', 'r'], ['2', 'r']],
+    [['1', 'g'], ['3', 'g'], ['×', 'g'], ['4', 'g'], ['+', 'g'], ['8', 'g'], ['=', 'g'], ['6', 'g'], ['0', 'g']],
+  ];
+  const tone = {
+    g: 'bg-[#059669] text-white border-[#059669]',
+    y: 'bg-[#eab308] text-[#1c1503] border-[#eab308]',
+    r: 'bg-[#e11d48] text-white border-[#e11d48]',
+  };
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 flex flex-col items-center justify-center gap-1.5 select-none overflow-hidden"
+    >
+      {rows.map((row, r) => (
+        <div key={r} className="flex gap-1">
+          {row.map(([c, t], i) => (
+            <div
+              key={i}
+              className={`w-6 h-7 sm:w-7 sm:h-8 rounded border flex items-center justify-center font-mono-tabular text-xs sm:text-sm font-bold ${tone[t]}`}
+            >
+              {c}
+            </div>
+          ))}
+        </div>
+      ))}
+      <div className="pt-1.5 text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">
+        9 SYMBOLS · 0–9 + - × ÷ = ^
+      </div>
+    </div>
+  );
+};
