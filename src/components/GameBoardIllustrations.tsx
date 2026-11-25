@@ -337,3 +337,46 @@ export const EquationSignalPreviewDiagram: React.FC = () => {
     </div>
   );
 };
+
+export const HitStayPreviewDiagram: React.FC = () => {
+  const card = (v: number | null, key: string, accent = false) => (
+    <div
+      key={key}
+      className={[
+        'w-8 h-11 sm:w-9 sm:h-12 rounded-md border-2 flex items-center justify-center font-mono-tabular text-sm font-bold',
+        v === null
+          ? 'border-slate-400/60 dark:border-white/15 bg-[repeating-linear-gradient(45deg,#cbd5e1_0_4px,#e2e8f0_4px_8px)] dark:bg-[repeating-linear-gradient(45deg,#2a303f_0_4px,#212632_4px_8px)]'
+          : `bg-white dark:bg-[#faf9f6] ${accent ? 'border-[#eab308]' : 'border-slate-300 dark:border-[#d6d3cb]'} ${v < 0 ? 'text-[#e11d48]' : 'text-[#111827]'}`,
+      ].join(' ')}
+    >
+      {v ?? ''}
+    </div>
+  );
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 flex items-center justify-center gap-6 sm:gap-10 select-none overflow-hidden"
+    >
+      <div className="flex flex-col items-center gap-1">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rotate-45 rounded-lg bg-white dark:bg-[#232938] border border-slate-300 dark:border-white/10 flex items-center justify-center">
+          <span className="-rotate-45 font-mono-tabular text-2xl sm:text-3xl font-bold text-[#be123c] dark:text-[#fb7185]">9</span>
+        </div>
+        <span className="mt-3 text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">LIMIT 5–12</span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-1.5">{[card(null, 'a'), card(4, 'b', true), card(null, 'c')]}</div>
+        <div className="flex gap-1.5 items-center">
+          {[card(3, 'd'), card(-1, 'e', true), card(2, 'f')]}
+          <span className="ml-1 text-[11px] font-mono-tabular font-bold text-[#047857] dark:text-[#6ee7b7]">= 4 +HIT</span>
+        </div>
+        <div className="flex gap-2 text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">
+          <span className="text-[#a16207] dark:text-[#eab308] font-bold">HIT</span>
+          <span>·</span>
+          <span>STAY</span>
+          <span>·</span>
+          <span>30 CHIPS</span>
+        </div>
+      </div>
+    </div>
+  );
+};

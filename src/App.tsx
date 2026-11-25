@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, RotateCcw } from 'lucide-react';
 import {
   EquationSignalPreviewDiagram,
   GradationPreviewDiagram,
+  HitStayPreviewDiagram,
   Heavy13PreviewDiagram,
   MemoryPokerPreviewDiagram,
   RussianRoulettePreviewDiagram,
@@ -24,6 +25,7 @@ import { Heavy13RulesModal } from './games/heavy-13/components/Heavy13RulesModal
 import { RouletteRulesModal } from './games/russian-roulette/components/RouletteRulesModal';
 import { GradationRulesModal } from './games/gradation/components/GradationRulesModal';
 import { EquationRulesModal } from './games/equation-signal/components/EquationRulesModal';
+import { HitStayRulesModal } from './games/hit-stay/components/HitStayRulesModal';
 import { ThemeProvider } from './theme/ThemeContext';
 
 const PREVIEW_DIAGRAMS: Record<string, React.ComponentType> = {
@@ -32,6 +34,7 @@ const PREVIEW_DIAGRAMS: Record<string, React.ComponentType> = {
   'russian-roulette': RussianRoulettePreviewDiagram,
   gradation: GradationPreviewDiagram,
   'equation-signal': EquationSignalPreviewDiagram,
+  'hit-stay': HitStayPreviewDiagram,
 };
 
 const RULES_MODALS: Record<string, React.ComponentType<{ open: boolean; onClose: () => void }>> = {
@@ -40,6 +43,7 @@ const RULES_MODALS: Record<string, React.ComponentType<{ open: boolean; onClose:
   'russian-roulette': RouletteRulesModal,
   gradation: GradationRulesModal,
   'equation-signal': EquationRulesModal,
+  'hit-stay': HitStayRulesModal,
 };
 
 const GameLoadingScreen: React.FC<{ title: string }> = ({ title }) => (

@@ -101,4 +101,24 @@ export const GAMES_REGISTRY: GameEntry[] = [
     status: 'playable',
     ...lazyGame(() => import('./equation-signal/EquationSignalGame').then((m) => m.EquationSignalGame)),
   },
+  {
+    id: 'hit-stay',
+    indexLabel: '06',
+    seasonLabel: '시즌 3 · 메인 매치',
+    matchFormatLabel: '5인 칩 서바이벌',
+    category: 'strategy',
+    titleKo: 'HIT, STAY',
+    titleEn: 'Hit, Stay',
+    description:
+      '주사위로 정한 한계 숫자(5~12)에 가장 가깝게, 넘지 않게 카드를 모으는 5인 서바이벌입니다. 3장 중 1장만 공개하고 HIT·STAY와 두 번의 베팅으로 칩을 따내며, 칩이 떨어지면 탈락합니다.',
+    playersLabel: '5인 · 1P vs AI',
+    durationLabel: '1명 남을 때까지',
+    highlights: [
+      '-1~7 카드 35장, 한계 숫자는 8면체 주사위',
+      '3장 중 1장 공개 후 베팅 → HIT/STAY → 베팅',
+      '칩 30개, 0이 되면 탈락',
+    ],
+    status: 'playable',
+    ...lazyGame(() => import('./hit-stay/HitStayGame').then((m) => m.HitStayGame)),
+  },
 ];
