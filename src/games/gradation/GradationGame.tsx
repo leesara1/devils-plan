@@ -26,7 +26,6 @@ import {
   duelWinner,
   SHADE_COUNT,
   SHADE_NAME_KO,
-  hiddenShadeRanges,
   opponentView,
   shadeTubes,
   tubeShade,
@@ -176,9 +175,6 @@ const PlacementPanel: React.FC<PlacementPanelProps> = ({ opponentName, onConfirm
         <p className="text-sm theme-text-muted">
           숫자를 누르면 작은 수부터 자동으로 정렬됩니다. 합은 {MAX_SUM} 이하, 숫자마다 {COPIES_PER_DIGIT}개까지 쓸 수 있습니다. 통을 누르면 빠집니다.
         </p>
-        <p className="text-xs theme-text-faint">
-          통 색은 가운데가 가장 하얗고 양 끝으로 갈수록 검정입니다. 같은 색 통이 두 개씩이라, 상대는 회색 통을 봐도 작은 쪽인지 큰 쪽인지 모릅니다.
-        </p>
       </div>
 
       <div className="flex justify-center gap-1.5 sm:gap-2.5">
@@ -266,10 +262,6 @@ const OpponentShades: React.FC<{
   outcome: 'win' | 'lose' | 'tie' | null;
 }> = ({ duel, humanSide, lastRound, outcome }) => {
   const view = opponentView(duel, humanSide);
-  const historyLength = duel.history.length;
-  // Ranges only change when a new value is revealed.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const ranges = useMemo(() => hiddenShadeRanges(view), [historyLength]);
 
   return (
     <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 sm:gap-x-6">
@@ -277,13 +269,6 @@ const OpponentShades: React.FC<{
         const total = shadeTubes(shade).length;
         const revealed = view.revealedByShade[shade];
         const hiddenCount = total - revealed.length;
-        const range = ranges[shade];
-        const rangeText =
-          !range || (range[0] === 0 && range[1] === 9)
-            ? null
-            : range[0] === range[1]
-              ? `=${range[0]}`
-              : `${range[0]}~${range[1]}`;
         return (
           <div key={shade} className="flex flex-col items-center gap-1">
             <div className="flex gap-1 sm:gap-1.5">
@@ -306,7 +291,6 @@ const OpponentShades: React.FC<{
                   value={null}
                   hidden
                   active={k === 0 && view.pendingShade === shade}
-                  hint={rangeText}
                 />
               ))}
             </div>
@@ -340,7 +324,7 @@ const DuelBoard: React.FC<DuelBoardProps> = ({ duel, humanSide, names, lastRound
   let prompt: string;
   if (duel.finished) prompt = '대결이 끝났습니다.';
   else if (myTurn && duel.pendingLead === null) prompt = '선공입니다. 낼 통을 고르세요.';
-  else if (myTurn) prompt = `${names[aiSide]}이(가) ${SHADE_NAME_KO[tubeShade(duel.pendingLead!)]} 통을 냈습니다. 작은 쪽일까요, 큰 쪽일까요?`;
+  else if (myTurn) prompt = `${names[aiSide]}이(가) ${SHADE_NAME_KO[tubeShade(duel.pendingLead!)]} 통을 냈습니다.`;
   else if (duel.pendingLead === null) prompt = `${names[aiSide]}이(가) 선공 통을 고르는 중…`;
   else prompt = `${names[aiSide]}이(가) 대응할 통을 고르는 중…`;
 
@@ -366,7 +350,7 @@ const DuelBoard: React.FC<DuelBoardProps> = ({ duel, humanSide, names, lastRound
       {/* Opponent */}
       <div className="space-y-1">
         <div className="text-xs theme-text-muted">
-          {names[aiSide]}의 통 · 색만 보이고 위치는 모릅니다 (아래 숫자는 남은 통의 가능한 범위)
+          {names[aiSide]}의 통
         </div>
         <OpponentShades
           duel={duel}

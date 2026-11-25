@@ -244,22 +244,6 @@ export function sampleOpponentWorld(view: OpponentView, rng: () => number = Math
   return { placement: [...p], used: [...used], pendingTube };
 }
 
-/** For each shade: the range of values its still-hidden tubes could hold. */
-export function hiddenShadeRanges(view: OpponentView): ([number, number] | null)[] {
-  const ranges: ([number, number] | null)[] = Array(SHADE_COUNT).fill(null);
-  const { worlds } = consistentWorlds({ ...view, pendingShade: null });
-  worlds.forEach(({ p, used }) => {
-    for (let s = 0; s < SHADE_COUNT; s += 1) {
-      shadeTubes(s).forEach((t) => {
-        if (used[t]) return;
-        const r = ranges[s];
-        ranges[s] = r ? [Math.min(r[0], p[t]), Math.max(r[1], p[t])] : [p[t], p[t]];
-      });
-    }
-  });
-  return ranges;
-}
-
 /* ------------------------------------------------------------------ */
 /* Sampling placements                                                 */
 /* ------------------------------------------------------------------ */
