@@ -1,9 +1,4 @@
-import { GameEntry } from './types';
-import { MemoryPokerGame } from './memory-poker/MemoryPokerGame';
-import { Heavy13Game } from './heavy-13/Heavy13Game';
-import { RussianRouletteGame } from './russian-roulette/RussianRouletteGame';
-import { GradationGame } from './gradation/GradationGame';
-import { EquationSignalGame } from './equation-signal/EquationSignalGame';
+import { GameEntry, lazyGame } from './types';
 
 export const GAMES_REGISTRY: GameEntry[] = [
   {
@@ -24,7 +19,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
       '5장 홀덤 족보 판정 및 보드 최강 조합 복기',
     ],
     status: 'playable',
-    component: MemoryPokerGame,
+    ...lazyGame(() => import('./memory-poker/MemoryPokerGame').then((m) => m.MemoryPokerGame)),
   },
   {
     id: 'heavy-13',
@@ -44,7 +39,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
       '받침대 합계 13 이상 시 기존 큐브 수만큼 벌점',
     ],
     status: 'playable',
-    component: Heavy13Game,
+    ...lazyGame(() => import('./heavy-13/Heavy13Game').then((m) => m.Heavy13Game)),
   },
   {
     id: 'russian-roulette',
@@ -64,7 +59,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
       '6크레딧 비공개 적립으로 약실 몰래 교환',
     ],
     status: 'playable',
-    component: RussianRouletteGame,
+    ...lazyGame(() => import('./russian-roulette/RussianRouletteGame').then((m) => m.RussianRouletteGame)),
   },
   {
     id: 'gradation',
@@ -84,7 +79,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
       '승자 잔류 방식, 2연승 시 결승 진출',
     ],
     status: 'playable',
-    component: GradationGame,
+    ...lazyGame(() => import('./gradation/GradationGame').then((m) => m.GradationGame)),
   },
   {
     id: 'equation-signal',
@@ -104,6 +99,6 @@ export const GAMES_REGISTRY: GameEntry[] = [
       '같은 턴에 동시에 추측, 먼저 맞히면 승리',
     ],
     status: 'playable',
-    component: EquationSignalGame,
+    ...lazyGame(() => import('./equation-signal/EquationSignalGame').then((m) => m.EquationSignalGame)),
   },
 ];

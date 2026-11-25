@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, RotateCcw } from 'lucide-react';
 import {
   EquationSignalPreviewDiagram,
@@ -41,6 +41,60 @@ const RULES_MODALS: Record<string, React.ComponentType<{ open: boolean; onClose:
   gradation: GradationRulesModal,
   'equation-signal': EquationRulesModal,
 };
+
+const GameLoadingScreen: React.FC<{ title: string }> = ({ title }) => (
+  <div className="min-h-screen w-full theme-canvas flex items-center justify-center" role="status">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 rounded-full border-2 border-gold-400 border-t-transparent animate-spin motion-reduce:animate-none" />
+      <span className="text-sm theme-text-muted">{title} 불러오는 중…</span>
+    </div>
+  </div>
+);
+
+/**
+ * Catches a failed game-chunk download — typically a tab opened before a new
+ * deploy asking for a chunk filename that no longer exists — and offers a reload.
+ */
+class GameLoadBoundary extends React.Component<
+  { children: React.ReactNode; onExitToHub: () => void },
+  { failed: boolean }
+> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <div className="min-h-screen w-full theme-canvas flex items-center justify-center p-6">
+        <div className="obsidian-panel rounded-2xl p-6 max-w-sm w-full text-center space-y-4">
+          <h1 className="font-display text-lg font-bold theme-text-primary">게임을 불러오지 못했습니다</h1>
+          <p className="text-sm theme-text-muted">
+            네트워크가 끊겼거나 사이트가 새로 배포되었을 수 있습니다. 새로고침하면 대부분 해결됩니다.
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={this.props.onExitToHub}
+              className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300/80 dark:border-white/10 theme-control text-sm font-medium theme-text-secondary cursor-pointer"
+            >
+              매치 목록
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="flex-1 px-4 py-2.5 rounded-xl bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm cursor-pointer"
+            >
+              새로고침
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
 
 function DevilsPlanHub() {
   const initialRoute = useMemo(
@@ -105,7 +159,13 @@ function DevilsPlanHub() {
 
   if (activeGame) {
     const ActiveComponent = activeGame.component;
-    return <ActiveComponent onExitToHub={() => navigateToGame(null)} />;
+    return (
+      <GameLoadBoundary key={activeGame.id} onExitToHub={() => navigateToGame(null)}>
+        <Suspense fallback={<GameLoadingScreen title={activeGame.titleKo} />}>
+          <ActiveComponent onExitToHub={() => navigateToGame(null)} />
+        </Suspense>
+      </GameLoadBoundary>
+    );
   }
 
   const handleClearMemoryStats = () => {
@@ -227,6 +287,9 @@ function DevilsPlanHub() {
 
                   <a
                     href={buildGameUrl(hubBasePathRef.current, game.id)}
+                    onMouseEnter={() => void game.preload()}
+                    onFocus={() => void game.preload()}
+                    onTouchStart={() => void game.preload()}
                     onClick={(e) => {
                       if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) {
                         e.preventDefault();
