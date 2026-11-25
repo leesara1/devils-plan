@@ -179,3 +179,161 @@ export const Heavy13PreviewDiagram: React.FC = () => {
     </div>
   );
 };
+
+export const RussianRoulettePreviewDiagram: React.FC = () => {
+  // chamber states for the mini preview: bullet, known-empty, unknown
+  const chambers: Array<'bullet' | 'empty' | 'unknown'> = [
+    'unknown', 'empty', 'bullet', 'unknown', 'empty', 'unknown',
+  ];
+  const seats = ['1P', '크롱', '루피', '에디', '포비', '패티'];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-4 flex items-center justify-center gap-6 sm:gap-10 select-none overflow-hidden"
+    >
+      <div className="relative h-full aspect-square max-h-[200px]">
+        <div className="absolute inset-[6%] rounded-full bg-white/70 dark:bg-[#232938] border border-slate-200 dark:border-white/10" />
+        {/* barrel toward seat 0 (bottom) */}
+        <div className="absolute left-1/2 top-1/2 w-[9px] h-[34%] -translate-x-1/2 rounded-b-full bg-[#eab308]" />
+        <div className="absolute left-1/2 top-1/2 w-[30%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 dark:bg-[#2a303f]" />
+        {chambers.map((state, i) => {
+          const angle = ((90 + 60 * i) * Math.PI) / 180;
+          return (
+            <div
+              key={`c${i}`}
+              className={[
+                'absolute w-[15%] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full border-2 flex items-center justify-center text-[9px] font-bold',
+                state === 'bullet'
+                  ? 'bg-[#fff1f2] dark:bg-[#3a1820] border-[#e11d48] text-[#be123c] dark:text-[#fb7185]'
+                  : state === 'empty'
+                    ? 'bg-[#ecfdf5] dark:bg-[#102a22] border-[#059669] text-[#047857] dark:text-[#6ee7b7]'
+                    : 'bg-white dark:bg-[#181c24] border-slate-300 dark:border-white/15 text-slate-500 dark:text-slate-400',
+              ].join(' ')}
+              style={{ left: `${50 + 22 * Math.cos(angle)}%`, top: `${50 + 22 * Math.sin(angle)}%` }}
+            >
+              {state === 'bullet' ? '탄' : state === 'empty' ? '빈' : '?'}
+            </div>
+          );
+        })}
+        {seats.map((name, i) => {
+          const angle = ((90 + 60 * i) * Math.PI) / 180;
+          return (
+            <div
+              key={name}
+              className={[
+                'absolute -translate-x-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded-md border text-[9px] font-semibold whitespace-nowrap',
+                i === 0
+                  ? 'bg-[#fef9c3] dark:bg-[#2a2410] border-[#ca8a04] text-[#854d0e] dark:text-[#fcd34d]'
+                  : 'bg-white dark:bg-[#212632] border-slate-300 dark:border-white/10 text-slate-700 dark:text-slate-300',
+              ].join(' ')}
+              style={{ left: `${50 + 44 * Math.cos(angle)}%`, top: `${50 + 44 * Math.sin(angle)}%` }}
+            >
+              {name}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="hidden sm:flex flex-col gap-1.5 text-[11px] font-mono-tabular text-slate-700 dark:text-slate-300">
+        {[
+          ['공개 조사', '1'],
+          ['비공개 조사', '2'],
+          ['회전 1·2칸', '3·4'],
+          ['조작', '6'],
+        ].map(([label, cost]) => (
+          <div key={label} className="flex items-center justify-between gap-4">
+            <span>{label}</span>
+            <span className="text-[#a16207] dark:text-[#eab308] font-bold">{cost}</span>
+          </div>
+        ))}
+        <div className="pt-1 text-slate-500 dark:text-slate-500">16 CREDITS · 2 BULLETS</div>
+      </div>
+    </div>
+  );
+};
+
+export const GradationPreviewDiagram: React.FC = () => {
+  const mine = [0, 1, 2, 4, 6, 8, 9];
+  const theirs: (number | null)[] = [null, 2, null, null, 5, null, null];
+  // White in the middle tube, darkening toward both ends (same shade = same colour).
+  const tube = (i: number, _hue: number) => {
+    const l = [97, 72, 44, 14][Math.abs(i - 3)];
+    return { backgroundColor: `hsl(220 8% ${l}%)`, color: l < 55 ? '#fff' : '#111827' };
+  };
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 flex flex-col items-center justify-center gap-3 select-none overflow-hidden"
+    >
+      <div className="flex gap-1.5 sm:gap-2">
+        {theirs.map((v, i) => (
+          <div
+            key={`o${i}`}
+            className={[
+              'w-7 sm:w-8 h-11 sm:h-12 rounded-t-full rounded-b-lg border border-black/10 dark:border-white/15 flex items-center justify-center font-mono-tabular text-sm font-bold',
+              i === 4 ? 'ring-2 ring-[#e11d48]' : '',
+            ].join(' ')}
+            style={tube(i, 205)}
+          >
+            {v ?? '?'}
+          </div>
+        ))}
+      </div>
+      <div className="text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">
+        6 &gt; 5 · 1P +1
+      </div>
+      <div className="flex gap-1.5 sm:gap-2">
+        {mine.map((v, i) => (
+          <div
+            key={`m${i}`}
+            className={[
+              'w-7 sm:w-8 h-11 sm:h-12 rounded-t-full rounded-b-lg border border-black/10 dark:border-white/15 flex items-center justify-center font-mono-tabular text-sm font-bold',
+              i === 4 ? 'ring-2 ring-[#059669]' : '',
+            ].join(' ')}
+            style={tube(i, 42)}
+          >
+            {v}
+          </div>
+        ))}
+      </div>
+      <div className="text-[10px] font-mono-tabular text-slate-500">SUM 30 · ASCENDING</div>
+    </div>
+  );
+};
+
+export const EquationSignalPreviewDiagram: React.FC = () => {
+  const rows: Array<Array<[string, 'g' | 'y' | 'r']>> = [
+    // Real signals for guesses against 13×4+8=60
+    [['4', 'y'], ['8', 'y'], ['-', 'r'], ['9', 'r'], ['×', 'y'], ['5', 'r'], ['=', 'g'], ['3', 'y'], ['9', 'r']],
+    [['1', 'g'], ['3', 'g'], ['×', 'g'], ['2', 'r'], ['+', 'g'], ['6', 'y'], ['=', 'g'], ['3', 'r'], ['2', 'r']],
+    [['1', 'g'], ['3', 'g'], ['×', 'g'], ['4', 'g'], ['+', 'g'], ['8', 'g'], ['=', 'g'], ['6', 'g'], ['0', 'g']],
+  ];
+  const tone = {
+    g: 'bg-[#059669] text-white border-[#059669]',
+    y: 'bg-[#eab308] text-[#1c1503] border-[#eab308]',
+    r: 'bg-[#e11d48] text-white border-[#e11d48]',
+  };
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 flex flex-col items-center justify-center gap-1.5 select-none overflow-hidden"
+    >
+      {rows.map((row, r) => (
+        <div key={r} className="flex gap-1">
+          {row.map(([c, t], i) => (
+            <div
+              key={i}
+              className={`w-6 h-7 sm:w-7 sm:h-8 rounded border flex items-center justify-center font-mono-tabular text-xs sm:text-sm font-bold ${tone[t]}`}
+            >
+              {c}
+            </div>
+          ))}
+        </div>
+      ))}
+      <div className="pt-1.5 text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">
+        9 SYMBOLS · 0–9 + - × ÷ = ^
+      </div>
+    </div>
+  );
+};

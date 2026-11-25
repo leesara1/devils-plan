@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, RotateCcw } from 'lucide-react';
 import {
+  EquationSignalPreviewDiagram,
+  GradationPreviewDiagram,
   Heavy13PreviewDiagram,
   MemoryPokerPreviewDiagram,
+  RussianRoulettePreviewDiagram,
 } from './components/GameBoardIllustrations';
 import { ThemeToggleButton } from './components/ThemeToggleButton';
 import { GAMES_REGISTRY } from './games/registry';
@@ -18,7 +21,26 @@ import {
 } from './games/memory-poker/engine/stats';
 import { RulesModal as MemoryPokerRulesModal } from './games/memory-poker/components/RulesModal';
 import { Heavy13RulesModal } from './games/heavy-13/components/Heavy13RulesModal';
+import { RouletteRulesModal } from './games/russian-roulette/components/RouletteRulesModal';
+import { GradationRulesModal } from './games/gradation/components/GradationRulesModal';
+import { EquationRulesModal } from './games/equation-signal/components/EquationRulesModal';
 import { ThemeProvider } from './theme/ThemeContext';
+
+const PREVIEW_DIAGRAMS: Record<string, React.ComponentType> = {
+  'memory-poker': MemoryPokerPreviewDiagram,
+  'heavy-13': Heavy13PreviewDiagram,
+  'russian-roulette': RussianRoulettePreviewDiagram,
+  gradation: GradationPreviewDiagram,
+  'equation-signal': EquationSignalPreviewDiagram,
+};
+
+const RULES_MODALS: Record<string, React.ComponentType<{ open: boolean; onClose: () => void }>> = {
+  'memory-poker': MemoryPokerRulesModal,
+  'heavy-13': Heavy13RulesModal,
+  'russian-roulette': RouletteRulesModal,
+  gradation: GradationRulesModal,
+  'equation-signal': EquationRulesModal,
+};
 
 function DevilsPlanHub() {
   const initialRoute = useMemo(
@@ -163,11 +185,10 @@ function DevilsPlanHub() {
                 className="obsidian-panel rounded-xl overflow-hidden flex flex-col justify-between transition-transform duration-150 hover:-translate-y-0.5"
               >
                 <div>
-                  {game.id === 'memory-poker' ? (
-                    <MemoryPokerPreviewDiagram />
-                  ) : (
-                    <Heavy13PreviewDiagram />
-                  )}
+                  {(() => {
+                    const Preview = PREVIEW_DIAGRAMS[game.id];
+                    return Preview ? <Preview /> : null;
+                  })()}
 
                   <div className="p-5 sm:p-6 space-y-3">
                     <div className="flex flex-wrap items-center gap-2 text-xs font-mono-tabular theme-text-muted">
@@ -295,18 +316,17 @@ function DevilsPlanHub() {
       <footer className="border-t theme-border bg-slate-200/70 dark:bg-obsidian-950">
         <div className="max-w-5xl mx-auto px-5 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-2 text-xs theme-text-faint">
           <span>데블스 플랜 · 시즌 3</span>
-          <span>기억 포커 · 무거운 13</span>
+          <span>{GAMES_REGISTRY.map((g) => g.titleKo).join(' · ')}</span>
         </div>
       </footer>
 
-      <MemoryPokerRulesModal
-        open={previewRulesGameId === 'memory-poker'}
-        onClose={() => setPreviewRulesGameId(null)}
-      />
-      <Heavy13RulesModal
-        open={previewRulesGameId === 'heavy-13'}
-        onClose={() => setPreviewRulesGameId(null)}
-      />
+      {Object.entries(RULES_MODALS).map(([gameId, Modal]) => (
+        <Modal
+          key={gameId}
+          open={previewRulesGameId === gameId}
+          onClose={() => setPreviewRulesGameId(null)}
+        />
+      ))}
     </div>
   );
 }

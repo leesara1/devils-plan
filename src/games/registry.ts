@@ -1,6 +1,9 @@
 import { GameEntry } from './types';
 import { MemoryPokerGame } from './memory-poker/MemoryPokerGame';
 import { Heavy13Game } from './heavy-13/Heavy13Game';
+import { RussianRouletteGame } from './russian-roulette/RussianRouletteGame';
+import { GradationGame } from './gradation/GradationGame';
+import { EquationSignalGame } from './equation-signal/EquationSignalGame';
 
 export const GAMES_REGISTRY: GameEntry[] = [
   {
@@ -26,7 +29,7 @@ export const GAMES_REGISTRY: GameEntry[] = [
   {
     id: 'heavy-13',
     indexLabel: '02',
-    seasonLabel: '시즌 3 · 메인 매치',
+    seasonLabel: '시즌 3 · 감옥 매치',
     matchFormatLabel: '다인원 심리 수 싸움',
     category: 'strategy',
     titleKo: '무거운 13',
@@ -42,5 +45,65 @@ export const GAMES_REGISTRY: GameEntry[] = [
     ],
     status: 'playable',
     component: Heavy13Game,
+  },
+  {
+    id: 'russian-roulette',
+    indexLabel: '03',
+    seasonLabel: '시즌 3 · 감옥 매치',
+    matchFormatLabel: '6인 크레딧 심리전',
+    category: 'strategy',
+    titleKo: '러시안 룰렛',
+    titleEn: 'Russian Roulette',
+    description:
+      '약실 6개 중 2개에 총알이 든 총을 두고, 크레딧 16개로 약실을 조사하고 총구를 돌리고 몰래 약실을 바꿔 살아남는 6인 심리전입니다. 3명이 크레딧을 다 쓰면 격발합니다.',
+    playersLabel: '6인 · 1P vs AI',
+    durationLabel: '크레딧 소진전',
+    highlights: [
+      '공개·비공개 조사로 총알 위치 추리',
+      '1~2칸 회전으로 총구 방향 바꾸기',
+      '6크레딧 비공개 적립으로 약실 몰래 교환',
+    ],
+    status: 'playable',
+    component: RussianRouletteGame,
+  },
+  {
+    id: 'gradation',
+    indexLabel: '04',
+    seasonLabel: '시즌 3 · 감옥 매치',
+    matchFormatLabel: '1:1 배치 심리전',
+    category: 'strategy',
+    titleKo: '그라데이션',
+    titleEn: 'Gradation',
+    description:
+      '숫자 큐브 7개를 오름차순·합 30 이하로 몰래 배치한 뒤, 통을 하나씩 맞붙여 더 큰 숫자로 점수를 따는 1:1 심리전입니다. 3인 서바이벌에서는 2연승해야 살아남습니다.',
+    playersLabel: '1P vs AI · 3인 서바이벌',
+    durationLabel: '7라운드 대결',
+    highlights: [
+      '0~9 큐브 각 2개로 합 30 이하 오름차순 배치',
+      '라운드 승자가 다음 라운드 선공',
+      '승자 잔류 방식, 2연승 시 결승 진출',
+    ],
+    status: 'playable',
+    component: GradationGame,
+  },
+  {
+    id: 'equation-signal',
+    indexLabel: '05',
+    seasonLabel: '시즌 3 · 결승',
+    matchFormatLabel: '1:1 수식 추리전',
+    category: 'memory',
+    titleKo: '수식 신호등',
+    titleEn: 'Equation Signal',
+    description:
+      '9칸짜리 비밀 수식을 정하고, 매 턴 상대 수식을 추측해 초록·노랑·빨강 신호로 범위를 좁히는 1:1 추리 대결입니다. 먼저 맞히는 쪽이 이깁니다.',
+    playersLabel: '1P vs AI',
+    durationLabel: '동시 추측 · 최대 20턴',
+    highlights: [
+      '0~9 + - × ÷ = ^ 로 만드는 성립하는 9칸 수식',
+      '초록=정확한 위치, 노랑=다른 위치, 빨강=없음',
+      '같은 턴에 동시에 추측, 먼저 맞히면 승리',
+    ],
+    status: 'playable',
+    component: EquationSignalGame,
   },
 ];
