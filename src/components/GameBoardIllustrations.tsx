@@ -256,9 +256,10 @@ export const RussianRoulettePreviewDiagram: React.FC = () => {
 export const GradationPreviewDiagram: React.FC = () => {
   const mine = [0, 1, 2, 4, 6, 8, 9];
   const theirs: (number | null)[] = [null, 2, null, null, 5, null, null];
-  const tube = (i: number, hue: number) => {
-    const l = 86 - i * 8;
-    return { backgroundColor: `hsl(${hue} 70% ${l}%)`, color: l < 58 ? '#fff' : '#1f2937' };
+  // White in the middle tube, darkening toward both ends (same shade = same colour).
+  const tube = (i: number, _hue: number) => {
+    const l = [97, 72, 44, 14][Math.abs(i - 3)];
+    return { backgroundColor: `hsl(220 8% ${l}%)`, color: l < 55 ? '#fff' : '#111827' };
   };
   return (
     <div

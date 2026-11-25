@@ -24,7 +24,12 @@ import {
   currentRound,
   digitCounts,
   duelWinner,
-  knownOpponentValues,
+  SHADE_COUNT,
+  SHADE_NAME_KO,
+  hiddenShadeRanges,
+  opponentView,
+  shadeTubes,
+  tubeShade,
   other,
   placementSum,
   playTube,
@@ -64,17 +69,17 @@ const primaryButton =
 /* Tube                                                                */
 /* ------------------------------------------------------------------ */
 
-function tubeColor(index: number, hue: number): { bg: string; fg: string } {
-  const lightness = 86 - index * 8; // 86% -> 38%
-  return {
-    bg: `hsl(${hue} 70% ${lightness}%)`,
-    fg: lightness < 58 ? '#ffffff' : '#1f2937',
-  };
+/** Gradation: white in the middle tube, darkening toward both ends. */
+const SHADE_LIGHTNESS = [97, 72, 44, 14];
+
+function shadeColor(shade: number): { bg: string; fg: string } {
+  const l = SHADE_LIGHTNESS[shade];
+  return { bg: `hsl(220 8% ${l}%)`, fg: l < 55 ? '#ffffff' : '#111827' };
 }
 
 interface TubeProps {
-  index: number;
-  hue: number;
+  shade: number;
+  label?: string | null;
   value: number | null;
   hidden?: boolean;
   used?: boolean;
@@ -82,12 +87,13 @@ interface TubeProps {
   active?: boolean;
   outcome?: 'win' | 'lose' | 'tie' | null;
   hint?: string | null;
+  ariaLabel?: string;
   onClick?: () => void;
 }
 
 const Tube: React.FC<TubeProps> = ({
-  index,
-  hue,
+  shade,
+  label,
   value,
   hidden,
   used,
@@ -95,30 +101,31 @@ const Tube: React.FC<TubeProps> = ({
   active,
   outcome,
   hint,
+  ariaLabel,
   onClick,
 }) => {
-  const { bg, fg } = tubeColor(index, hue);
+  const { bg, fg } = shadeColor(shade);
   return (
     <button
       type="button"
       disabled={!selectable}
       onClick={onClick}
-      aria-label={`${index + 1}번 통${hidden || value === null ? '' : ` ${value}`}`}
+      aria-label={ariaLabel ?? `${SHADE_NAME_KO[shade]} 통${hidden || value === null ? '' : ` ${value}`}`}
       className={[
         'relative flex flex-col items-center gap-1 transition-transform',
         selectable ? 'cursor-pointer hover:-translate-y-1' : 'cursor-default',
         active ? '-translate-y-1.5' : '',
       ].join(' ')}
     >
-      <span className="font-mono-tabular text-[10px] theme-text-faint">{index + 1}</span>
+      <span className="h-3 font-mono-tabular text-[10px] theme-text-faint">{label ?? ''}</span>
       <span
         className={[
           'w-9 sm:w-11 h-16 sm:h-20 rounded-t-full rounded-b-xl border-2 flex items-center justify-center font-mono-tabular font-bold text-lg sm:text-xl',
           used ? 'opacity-35' : '',
-          active ? 'border-gold-400 ring-2 ring-gold-400/60' : 'border-black/10 dark:border-white/15',
+          active ? 'border-gold-400 ring-2 ring-gold-400/60' : 'border-slate-400/60 dark:border-white/25',
           outcome === 'win' ? 'ring-2 ring-emerald-500' : '',
           outcome === 'lose' ? 'ring-2 ring-rival-500' : '',
-          outcome === 'tie' ? 'ring-2 ring-slate-400' : '',
+          outcome === 'tie' ? 'ring-2 ring-sky-400' : '',
         ].join(' ')}
         style={{ backgroundColor: bg, color: fg }}
       >
@@ -130,9 +137,6 @@ const Tube: React.FC<TubeProps> = ({
     </button>
   );
 };
-
-const MY_HUE = 42;
-const OPP_HUE = 205;
 
 /* ------------------------------------------------------------------ */
 /* Placement                                                           */
@@ -172,14 +176,18 @@ const PlacementPanel: React.FC<PlacementPanelProps> = ({ opponentName, onConfirm
         <p className="text-sm theme-text-muted">
           숫자를 누르면 작은 수부터 자동으로 정렬됩니다. 합은 {MAX_SUM} 이하, 숫자마다 {COPIES_PER_DIGIT}개까지 쓸 수 있습니다. 통을 누르면 빠집니다.
         </p>
+        <p className="text-xs theme-text-faint">
+          통 색은 가운데가 가장 하얗고 양 끝으로 갈수록 검정입니다. 같은 색 통이 두 개씩이라, 상대는 회색 통을 봐도 작은 쪽인지 큰 쪽인지 모릅니다.
+        </p>
       </div>
 
       <div className="flex justify-center gap-1.5 sm:gap-2.5">
         {Array.from({ length: TUBE_COUNT }, (_, i) => (
           <Tube
             key={i}
-            index={i}
-            hue={MY_HUE}
+            shade={tubeShade(i)}
+            label={`${i + 1}`}
+            ariaLabel={`${i + 1}번 통 ${sorted[i] ?? '비어 있음'}`}
             value={sorted[i] ?? null}
             selectable={sorted[i] !== undefined}
             onClick={() => removeAt(i)}
@@ -250,24 +258,65 @@ const PlacementPanel: React.FC<PlacementPanelProps> = ({ opponentName, onConfirm
 /* Duel board                                                          */
 /* ------------------------------------------------------------------ */
 
-function rangeHint(known: (number | null)[], i: number): string | null {
-  if (known[i] !== null) return null;
-  let lo = 0;
-  let hi = 9;
-  for (let j = i - 1; j >= 0; j -= 1) {
-    if (known[j] !== null) {
-      lo = known[j] as number;
-      break;
-    }
-  }
-  for (let j = i + 1; j < known.length; j += 1) {
-    if (known[j] !== null) {
-      hi = known[j] as number;
-      break;
-    }
-  }
-  return lo === 0 && hi === 9 ? null : `${lo}~${hi}`;
-}
+/** The opponent's tubes as the human sees them: grouped by colour, positions hidden. */
+const OpponentShades: React.FC<{
+  duel: DuelState;
+  humanSide: Side;
+  lastRound: RoundRecord | null;
+  outcome: 'win' | 'lose' | 'tie' | null;
+}> = ({ duel, humanSide, lastRound, outcome }) => {
+  const view = opponentView(duel, humanSide);
+  const historyLength = duel.history.length;
+  // Ranges only change when a new value is revealed.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const ranges = useMemo(() => hiddenShadeRanges(view), [historyLength]);
+
+  return (
+    <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 sm:gap-x-6">
+      {Array.from({ length: SHADE_COUNT }, (_, idx) => SHADE_COUNT - 1 - idx).map((shade) => {
+        const total = shadeTubes(shade).length;
+        const revealed = view.revealedByShade[shade];
+        const hiddenCount = total - revealed.length;
+        const range = ranges[shade];
+        const rangeText =
+          !range || (range[0] === 0 && range[1] === 9)
+            ? null
+            : range[0] === range[1]
+              ? `=${range[0]}`
+              : `${range[0]}~${range[1]}`;
+        return (
+          <div key={shade} className="flex flex-col items-center gap-1">
+            <div className="flex gap-1 sm:gap-1.5">
+              {revealed.map((r) => {
+                const isLast = !!lastRound && lastRound.round === r.round;
+                return (
+                  <Tube
+                    key={`r${r.round}`}
+                    shade={shade}
+                    value={r.value}
+                    used={!isLast}
+                    outcome={isLast ? outcome : null}
+                  />
+                );
+              })}
+              {Array.from({ length: hiddenCount }, (_, k) => (
+                <Tube
+                  key={`h${k}`}
+                  shade={shade}
+                  value={null}
+                  hidden
+                  active={k === 0 && view.pendingShade === shade}
+                  hint={rangeText}
+                />
+              ))}
+            </div>
+            <span className="text-[10px] theme-text-faint">{SHADE_NAME_KO[shade]}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 interface DuelBoardProps {
   duel: DuelState;
@@ -281,7 +330,6 @@ const DuelBoard: React.FC<DuelBoardProps> = ({ duel, humanSide, names, lastRound
   const aiSide = other(humanSide);
   const myTurn = !duel.finished && actingSide(duel) === humanSide;
   const iLead = duel.leader === humanSide;
-  const known = knownOpponentValues(duel, humanSide);
   const outcomeOf = (side: Side, tube: number): 'win' | 'lose' | 'tie' | null => {
     if (!lastRound || lastRound.tubes[side] !== tube) return null;
     // Rings are always from the human's point of view: green = I won the round.
@@ -292,7 +340,7 @@ const DuelBoard: React.FC<DuelBoardProps> = ({ duel, humanSide, names, lastRound
   let prompt: string;
   if (duel.finished) prompt = '대결이 끝났습니다.';
   else if (myTurn && duel.pendingLead === null) prompt = '선공입니다. 낼 통을 고르세요.';
-  else if (myTurn) prompt = `${names[aiSide]}이(가) ${duel.pendingLead! + 1}번 통을 냈습니다. 대응할 통을 고르세요.`;
+  else if (myTurn) prompt = `${names[aiSide]}이(가) ${SHADE_NAME_KO[tubeShade(duel.pendingLead!)]} 통을 냈습니다. 작은 쪽일까요, 큰 쪽일까요?`;
   else if (duel.pendingLead === null) prompt = `${names[aiSide]}이(가) 선공 통을 고르는 중…`;
   else prompt = `${names[aiSide]}이(가) 대응할 통을 고르는 중…`;
 
@@ -317,25 +365,15 @@ const DuelBoard: React.FC<DuelBoardProps> = ({ duel, humanSide, names, lastRound
 
       {/* Opponent */}
       <div className="space-y-1">
-        <div className="text-xs theme-text-muted">{names[aiSide]}의 통 (숫자 아래는 가능한 범위)</div>
-        <div className="flex justify-center gap-1.5 sm:gap-2.5">
-          {Array.from({ length: TUBE_COUNT }, (_, i) => {
-            const used = duel.used[aiSide][i];
-            return (
-              <Tube
-                key={i}
-                index={i}
-                hue={OPP_HUE}
-                value={used ? duel.placements[aiSide][i] : null}
-                hidden={!used}
-                used={used && outcomeOf(aiSide, i) === null}
-                active={duel.pendingLead === i && duel.leader === aiSide}
-                outcome={outcomeOf(aiSide, i)}
-                hint={used ? null : rangeHint(known, i)}
-              />
-            );
-          })}
+        <div className="text-xs theme-text-muted">
+          {names[aiSide]}의 통 · 색만 보이고 위치는 모릅니다 (아래 숫자는 남은 통의 가능한 범위)
         </div>
+        <OpponentShades
+          duel={duel}
+          humanSide={humanSide}
+          lastRound={lastRound}
+          outcome={lastRound ? outcomeOf(aiSide, lastRound.tubes[aiSide]) : null}
+        />
       </div>
 
       <div
@@ -370,8 +408,9 @@ const DuelBoard: React.FC<DuelBoardProps> = ({ duel, humanSide, names, lastRound
             return (
               <Tube
                 key={i}
-                index={i}
-                hue={MY_HUE}
+                shade={tubeShade(i)}
+                label={`${i + 1}`}
+                ariaLabel={`${i + 1}번 통 ${duel.placements[humanSide][i]}`}
                 value={duel.placements[humanSide][i]}
                 used={used && outcomeOf(humanSide, i) === null}
                 active={isMyPendingLead}
@@ -384,16 +423,20 @@ const DuelBoard: React.FC<DuelBoardProps> = ({ duel, humanSide, names, lastRound
         </div>
       </div>
 
-      <RoundTable duel={duel} names={names} humanSide={humanSide} />
+      <RoundTable duel={duel} names={names} humanSide={humanSide} hideTubesOf={aiSide} />
     </div>
   );
 };
 
-const RoundTable: React.FC<{ duel: DuelState; names: [string, string]; humanSide: Side | null }> = ({
-  duel,
-  names,
-  humanSide,
-}) => {
+const RoundTable: React.FC<{
+  duel: DuelState;
+  names: [string, string];
+  humanSide: Side | null;
+  /** During a live duel the opponent's tube positions are secret: show only the colour. */
+  hideTubesOf?: Side;
+}> = ({ duel, names, humanSide, hideTubesOf }) => {
+  const tubeLabel = (side: Side, tube: number) =>
+    side === hideTubesOf ? SHADE_NAME_KO[tubeShade(tube)] : `${tube + 1}번`;
   if (duel.history.length === 0) return null;
   return (
     <table className="w-full text-xs">
@@ -412,10 +455,10 @@ const RoundTable: React.FC<{ duel: DuelState; names: [string, string]; humanSide
             <td className="py-1.5 font-mono-tabular theme-text-faint">{r.round}</td>
             <td className="theme-text-secondary">{names[r.leader]}</td>
             <td className="text-right font-mono-tabular theme-text-primary">
-              {r.values[0]} <span className="theme-text-faint">({r.tubes[0] + 1}번)</span>
+              {r.values[0]} <span className="theme-text-faint">({tubeLabel(0, r.tubes[0])})</span>
             </td>
             <td className="text-right font-mono-tabular theme-text-primary">
-              {r.values[1]} <span className="theme-text-faint">({r.tubes[1] + 1}번)</span>
+              {r.values[1]} <span className="theme-text-faint">({tubeLabel(1, r.tubes[1])})</span>
             </td>
             <td
               className={[

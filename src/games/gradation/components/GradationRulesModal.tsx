@@ -53,14 +53,19 @@ export const GradationRulesModal: React.FC<GradationRulesModalProps> = ({ open, 
             <li>
               통마다 큐브를 1개씩 비공개로 넣습니다. 큐브 합은 <strong className="theme-text-rival">30 이하</strong>여야 하고, 숫자는 <strong className="theme-text-primary">왼쪽(1번 통)에서 오른쪽(7번 통)으로 갈수록 커져야</strong> 합니다.
             </li>
-            <li>그래서 상대 통의 번호만 봐도 그 통이 몇 번째로 작은 숫자인지는 알 수 있습니다.</li>
+            <li>
+              통 색은 <strong className="theme-text-primary">가운데(4번)가 가장 하얗고, 양 끝으로 갈수록 검정</strong>입니다. 그래서 3·5번, 2·6번, 1·7번 통은 색이 같습니다.
+            </li>
+            <li>
+              상대에게는 통의 <strong className="theme-text-primary">색만 보이고 위치는 보이지 않습니다</strong>. 회색 통을 내면 그것이 작은 쪽(왼쪽)인지 큰 쪽(오른쪽)인지 상대는 알 수 없습니다.
+            </li>
           </ul>
         </section>
 
         <section className="space-y-2.5 text-sm leading-relaxed">
           <h3 className="text-sm font-semibold theme-text-sky">2. 대결 (7라운드)</h3>
           <ul className="space-y-1.5 list-disc list-inside">
-            <li>선 플레이어가 통 1개를 내면, 상대는 그 통의 번호를 보고 자기 통 1개를 냅니다.</li>
+            <li>선 플레이어가 통 1개를 내면, 상대는 그 통의 색을 보고 자기 통 1개를 냅니다.</li>
             <li>두 통을 공개해 <strong className="theme-text-primary">큰 숫자가 1점</strong>을 얻습니다. 같으면 아무도 점수를 얻지 않습니다.</li>
             <li>라운드에서 이긴 사람이 다음 라운드의 선 플레이어가 됩니다. 비기면 선이 바뀌지 않습니다.</li>
             <li>한 번 낸 통은 다시 쓸 수 없습니다. 7라운드 뒤 점수가 높은 쪽이 대결에서 이깁니다. 동점이면 다시 배치해 재대결합니다.</li>

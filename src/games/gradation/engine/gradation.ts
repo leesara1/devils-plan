@@ -128,14 +128,136 @@ export function duelWinner(duel: DuelState): Side | null {
   return duel.scores[0] > duel.scores[1] ? 0 : 1;
 }
 
-/** What `side` knows about the opponent's tubes: revealed values by tube index. */
-export function knownOpponentValues(duel: DuelState, side: Side): (number | null)[] {
+/* ------------------------------------------------------------------ */
+/* Tube shades                                                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Tube colour is a gradation that is whitest in the middle (tube 4) and gets
+ * darker toward both ends. Tubes 3 & 5, 2 & 6, 1 & 7 share a colour, so when a
+ * grey tube is played the opponent cannot tell the smaller side from the larger.
+ */
+export const CENTER_TUBE = 3;
+export const SHADE_COUNT = 4; // 0 = white (centre) … 3 = black (ends)
+
+export function tubeShade(tube: number): number {
+  return Math.abs(tube - CENTER_TUBE);
+}
+
+export function shadeTubes(shade: number): number[] {
+  return shade === 0 ? [CENTER_TUBE] : [CENTER_TUBE - shade, CENTER_TUBE + shade];
+}
+
+export const SHADE_NAME_KO = ['흰색', '밝은 회색', '어두운 회색', '검정'] as const;
+
+/** Everything `side` can legitimately see about the opponent's tubes. */
+export interface OpponentView {
+  /** Revealed values per shade, in the order they were played. */
+  revealedByShade: { value: number; round: number }[][];
+  /** Shade of the tube the opponent has put forward this round (if they lead). */
+  pendingShade: number | null;
+}
+
+export function opponentView(duel: DuelState, side: Side): OpponentView {
   const opp = other(side);
-  const known: (number | null)[] = Array(TUBE_COUNT).fill(null);
+  const revealedByShade: OpponentView['revealedByShade'] = Array.from({ length: SHADE_COUNT }, () => []);
   duel.history.forEach((r) => {
-    known[r.tubes[opp]] = r.values[opp];
+    revealedByShade[tubeShade(r.tubes[opp])].push({ value: r.values[opp], round: r.round });
   });
-  return known;
+  const pendingShade =
+    duel.pendingLead !== null && duel.leader === opp ? tubeShade(duel.pendingLead) : null;
+  return { revealedByShade, pendingShade };
+}
+
+/**
+ * If placement `p` could have produced the revealed values, return which tubes
+ * were used (one consistent assignment); otherwise null.
+ */
+function assignRevealed(p: Placement, view: OpponentView): boolean[] | null {
+  const used: boolean[] = Array(TUBE_COUNT).fill(false);
+  for (let s = 0; s < SHADE_COUNT; s += 1) {
+    const tubes = shadeTubes(s);
+    const vals = view.revealedByShade[s].map((r) => r.value);
+    if (vals.length > tubes.length) return null;
+    for (const v of vals) {
+      const t = tubes.find((tube) => !used[tube] && p[tube] === v);
+      if (t === undefined) return null;
+      used[t] = true;
+    }
+  }
+  if (view.pendingShade !== null && shadeTubes(view.pendingShade).every((t) => used[t])) return null;
+  return used;
+}
+
+export interface SampledWorld {
+  placement: Placement;
+  used: boolean[];
+  pendingTube: number | null;
+}
+
+function viewKey(view: OpponentView): string {
+  return `${view.revealedByShade.map((g) => g.map((r) => r.value).join(',')).join('|')}#${view.pendingShade}`;
+}
+
+let worldCacheKey = '';
+let worldCache: { worlds: { p: Placement; used: boolean[] }[]; cumulative: number[] } | null = null;
+
+function consistentWorlds(view: OpponentView) {
+  const key = viewKey(view);
+  if (worldCache && worldCacheKey === key) return worldCache;
+  const worlds: { p: Placement; used: boolean[] }[] = [];
+  allPlacements().forEach((p) => {
+    const used = assignRevealed(p, view);
+    if (used) worlds.push({ p, used });
+  });
+  let acc = 0;
+  const cumulative = worlds.map((w) => {
+    acc += placementWeight(w.p);
+    return acc;
+  });
+  worldCacheKey = key;
+  worldCache = { worlds, cumulative };
+  return worldCache;
+}
+
+/** Sample a full hidden state of the opponent consistent with what we can see. */
+export function sampleOpponentWorld(view: OpponentView, rng: () => number = Math.random): SampledWorld {
+  const { worlds, cumulative } = consistentWorlds(view);
+  if (worlds.length === 0) {
+    const placement = samplePlacement(undefined, rng);
+    return { placement, used: Array(TUBE_COUNT).fill(false), pendingTube: null };
+  }
+  const target = rng() * cumulative[cumulative.length - 1];
+  let lo = 0;
+  let hi = cumulative.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (cumulative[mid] < target) lo = mid + 1;
+    else hi = mid;
+  }
+  const { p, used } = worlds[lo];
+  let pendingTube: number | null = null;
+  if (view.pendingShade !== null) {
+    const options = shadeTubes(view.pendingShade).filter((t) => !used[t]);
+    pendingTube = options[Math.floor(rng() * options.length)];
+  }
+  return { placement: [...p], used: [...used], pendingTube };
+}
+
+/** For each shade: the range of values its still-hidden tubes could hold. */
+export function hiddenShadeRanges(view: OpponentView): ([number, number] | null)[] {
+  const ranges: ([number, number] | null)[] = Array(SHADE_COUNT).fill(null);
+  const { worlds } = consistentWorlds({ ...view, pendingShade: null });
+  worlds.forEach(({ p, used }) => {
+    for (let s = 0; s < SHADE_COUNT; s += 1) {
+      shadeTubes(s).forEach((t) => {
+        if (used[t]) return;
+        const r = ranges[s];
+        ranges[s] = r ? [Math.min(r[0], p[t]), Math.max(r[1], p[t])] : [p[t], p[t]];
+      });
+    }
+  });
+  return ranges;
 }
 
 /* ------------------------------------------------------------------ */
@@ -229,7 +351,7 @@ export function samplePlacement(
 
 const PARAMS: Record<AIDifficulty, { samples: number; placementCandidates: number; noise: number }> = {
   normal: { samples: 0, placementCandidates: 1, noise: 0 },
-  hard: { samples: 28, placementCandidates: 14, noise: 0.04 },
+  hard: { samples: 10, placementCandidates: 6, noise: 0.12 },
   master: { samples: 90, placementCandidates: 48, noise: 0 },
 };
 
@@ -278,14 +400,19 @@ export function chooseAITube(
   const rem = remainingTubes(duel, side);
   if (rem.length === 1) return rem[0];
 
-  const known = knownOpponentValues(duel, side);
+  // The AI only sees tube shades and revealed values, never the opponent's positions.
+  const view = opponentView(duel, side);
+  const opp = other(side);
 
   if (params.samples === 0) {
     // Simple heuristics with a dash of randomness.
     if (duel.pendingLead === null) {
       return rem[Math.floor(rng() * rem.length)];
     }
-    const guesses = Array.from({ length: 6 }, () => samplePlacement(known, rng)[duel.pendingLead as number]);
+    const guesses = Array.from({ length: 6 }, () => {
+      const w = sampleOpponentWorld(view, rng);
+      return w.pendingTube === null ? 4 : w.placement[w.pendingTube];
+    });
     const guess = guesses.reduce((a, b) => a + b, 0) / guesses.length;
     return greedyFollow(myValues, rem, Math.round(guess));
   }
@@ -297,10 +424,14 @@ export function chooseAITube(
   const scores = new Map<number, number>();
 
   for (let s = 0; s < params.samples; s += 1) {
-    const guess = samplePlacement(known, rng);
+    const sampled = sampleOpponentWorld(view, rng);
+    const used: [boolean[], boolean[]] =
+      side === 0 ? [duel.used[0], sampled.used] : [sampled.used, duel.used[1]];
     const world: DuelState = {
       ...duel,
-      placements: side === 0 ? [myValues, guess] : [guess, myValues],
+      placements: side === 0 ? [myValues, sampled.placement] : [sampled.placement, myValues],
+      used,
+      pendingLead: duel.pendingLead !== null && duel.leader === opp ? sampled.pendingTube : duel.pendingLead,
     };
     for (const t of candidates) {
       const after = rollout(playTube(world, side, t));
