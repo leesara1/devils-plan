@@ -1,6 +1,7 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, RotateCcw } from 'lucide-react';
 import {
+  AuctionBingoPreviewDiagram,
   EquationSignalPreviewDiagram,
   GradationPreviewDiagram,
   HitStayPreviewDiagram,
@@ -27,6 +28,7 @@ import { RouletteRulesModal } from './games/russian-roulette/components/Roulette
 import { GradationRulesModal } from './games/gradation/components/GradationRulesModal';
 import { EquationRulesModal } from './games/equation-signal/components/EquationRulesModal';
 import { HitStayRulesModal } from './games/hit-stay/components/HitStayRulesModal';
+import { AuctionBingoRulesModal } from './games/auction-bingo/components/AuctionBingoRulesModal';
 import { ThemeProvider } from './theme/ThemeContext';
 
 const PREVIEW_DIAGRAMS: Record<string, React.ComponentType> = {
@@ -36,6 +38,7 @@ const PREVIEW_DIAGRAMS: Record<string, React.ComponentType> = {
   gradation: GradationPreviewDiagram,
   'equation-signal': EquationSignalPreviewDiagram,
   'hit-stay': HitStayPreviewDiagram,
+  'auction-bingo': AuctionBingoPreviewDiagram,
 };
 
 const RULES_MODALS: Record<string, React.ComponentType<{ open: boolean; onClose: () => void }>> = {
@@ -45,6 +48,7 @@ const RULES_MODALS: Record<string, React.ComponentType<{ open: boolean; onClose:
   gradation: GradationRulesModal,
   'equation-signal': EquationRulesModal,
   'hit-stay': HitStayRulesModal,
+  'auction-bingo': AuctionBingoRulesModal,
 };
 
 const GameLoadingScreen: React.FC<{ title: string }> = ({ title }) => (

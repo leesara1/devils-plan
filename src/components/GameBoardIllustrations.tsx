@@ -380,3 +380,56 @@ export const HitStayPreviewDiagram: React.FC = () => {
     </div>
   );
 };
+
+export const AuctionBingoPreviewDiagram: React.FC = () => {
+  const board = ['△', '○', '△', '○', '☆', '○', '☆', '○', '△'];
+  const filled = [true, true, true, false, true, false, false, true, false]; // top row is a line
+  const line = new Set([0, 1, 2]);
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 flex items-center justify-center gap-8 sm:gap-12 select-none overflow-hidden"
+    >
+      <div className="grid grid-cols-3 gap-1">
+        {board.map((s, i) => (
+          <div
+            key={i}
+            className={[
+              'w-9 h-9 sm:w-10 sm:h-10 rounded-md border flex items-center justify-center text-base',
+              filled[i]
+                ? line.has(i)
+                  ? 'bg-[#eab308] border-[#eab308] text-[#1c1503]'
+                  : 'bg-[#1e293b] border-[#1e293b] text-white dark:bg-[#e2e8f0] dark:border-[#e2e8f0] dark:text-[#0f172a]'
+                : 'border-slate-300 dark:border-white/15 text-slate-500 dark:text-slate-400',
+            ].join(' ')}
+          >
+            {s}
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-col gap-2 text-[11px] text-slate-600 dark:text-slate-400">
+        {[
+          ['△', '3명', '7원'],
+          ['○', '2명', '비공개'],
+          ['☆', '2명', '4원'],
+        ].map(([s, n, p]) => (
+          <div key={s} className="flex items-center gap-3 font-mono-tabular">
+            <span className="w-4 text-center text-slate-800 dark:text-slate-200">{s}</span>
+            <span>{n}</span>
+            <span className="ml-auto text-slate-800 dark:text-slate-200">{p}</span>
+          </div>
+        ))}
+        <div className="pt-1 flex gap-1">
+          {[1, 2, 3, 5, 10].map((c) => (
+            <span
+              key={c}
+              className="w-6 h-6 rounded-full border border-slate-300 dark:border-white/15 flex items-center justify-center font-mono-tabular text-[10px] text-slate-700 dark:text-slate-300"
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

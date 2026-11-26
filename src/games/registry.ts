@@ -121,4 +121,24 @@ export const GAMES_REGISTRY: GameEntry[] = [
     status: 'playable',
     ...lazyGame(() => import('./hit-stay/HitStayGame').then((m) => m.HitStayGame)),
   },
+  {
+    id: 'auction-bingo',
+    indexLabel: '07',
+    seasonLabel: '시즌 3 · 메인 매치',
+    matchFormatLabel: '7인 경매 심리전',
+    category: 'strategy',
+    titleKo: '경매 빙고',
+    titleEn: 'Auction Bingo',
+    description:
+      '△○☆ 상자 중 하나를 고르고 코인 30원으로 입찰해 빙고판을 채우는 7인 경매전입니다. 입찰한 코인은 낙찰받지 못해도 회수되고, 누가 낙찰받았는지는 끝날 때까지 모릅니다.',
+    playersLabel: '7인 · 1P vs AI',
+    durationLabel: '7라운드',
+    highlights: [
+      '도형 상자 선택 후 공개, 이어서 비공개 입찰',
+      '입찰 코인은 결과와 상관없이 회수',
+      '낙찰가만 공개, 최고가는 비공개',
+    ],
+    status: 'playable',
+    ...lazyGame(() => import('./auction-bingo/AuctionBingoGame').then((m) => m.AuctionBingoGame)),
+  },
 ];
