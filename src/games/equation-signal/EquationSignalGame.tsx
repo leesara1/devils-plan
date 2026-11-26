@@ -393,7 +393,7 @@ export function EquationSignalGame({ onExitToHub }: GameScreenProps) {
               </div>
               <div className="theme-control rounded-lg px-3 py-2 flex items-center justify-between text-xs">
                 <span className="theme-text-faint">내 비밀 수식</span>
-                <span className="font-mono-tabular font-bold text-base tracking-wider theme-text-gold">
+                <span className="font-mono-tabular font-semibold text-base theme-text-gold">
                   {mySecret.join('')}
                 </span>
               </div>
@@ -490,8 +490,8 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ difficulty, onChangeDifficult
         <EquationSignalPreviewDiagram />
       </div>
       <div className="space-y-2">
-        <div className="font-mono-tabular text-xs theme-text-muted">EQUATION SIGNAL · 9 SYMBOLS · 1:1</div>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold theme-text-primary">수식 신호등</h1>
+        <div className="font-mono-tabular text-xs theme-text-muted">결승 3회전 · 9칸 수식 · 1:1</div>
+        <h1 className="font-display display-tight text-3xl sm:text-4xl font-medium theme-text-primary">수식 신호등</h1>
         <p className="text-sm sm:text-base theme-text-secondary leading-relaxed text-pretty pt-1">
           9칸짜리 비밀 수식을 정하고, 상대 수식을 추측해 <strong className="theme-text-emerald font-semibold">초록</strong>·
           <strong className="theme-text-gold font-semibold">노랑</strong>·<strong className="theme-text-rival font-semibold">빨강</strong> 신호로 범위를 좁히세요. 먼저 맞히는 쪽이 이깁니다.

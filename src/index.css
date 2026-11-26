@@ -36,6 +36,11 @@
   --color-rival-400: #fb7185;
   --color-rival-500: #e11d48;
   --color-rival-950: #2a1219;
+
+  /* Hierarchy comes from size and colour, not weight: cap the heavy weights at 600. */
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 600;
+  --font-weight-black: 600;
 }
 
 @layer base {
@@ -123,10 +128,26 @@
     background-color: var(--surface-canvas);
     color: var(--text-primary);
   }
+
+  /* Korean wraps between words, not mid-word; long tokens can still break. */
+  body {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  /* One icon stroke everywhere (lucide). */
+  svg.lucide {
+    stroke-width: 1.5;
+  }
 }
 
 .font-display {
   font-family: var(--font-display);
+  letter-spacing: 0;
+}
+
+/* Tight tracking only for large display text (32px and up). */
+.display-tight {
   letter-spacing: -0.02em;
 }
 

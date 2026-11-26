@@ -977,9 +977,9 @@ const TitleScreen: React.FC<TitleScreenProps> = ({
       </div>
       <div className="space-y-2">
         <div className="font-mono-tabular text-xs theme-text-muted">
-          RUSSIAN ROULETTE · 6 PLAYERS · 16 CREDITS
+          감옥 매치 · 6인 · 크레딧 16
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold theme-text-primary">러시안 룰렛</h1>
+        <h1 className="font-display display-tight text-3xl sm:text-4xl font-medium theme-text-primary">러시안 룰렛</h1>
         <p className="text-sm sm:text-base theme-text-secondary leading-relaxed text-pretty pt-1">
           약실 6개 중 <strong className="theme-text-rival font-semibold">2개에 총알</strong>이 있습니다. 크레딧으로 약실을 조사하고, 총구를 돌리고, 몰래 약실을 바꾸세요.{' '}
           <strong className="theme-text-primary font-semibold">3명이 크레딧을 다 쓰면</strong> 격발합니다.

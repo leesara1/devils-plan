@@ -584,8 +584,8 @@ const TitleScreen: React.FC<{
         <HitStayPreviewDiagram />
       </div>
       <div className="space-y-2">
-        <div className="font-mono-tabular text-xs theme-text-muted">HIT, STAY · 5 PLAYERS · 30 CHIPS</div>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold theme-text-primary">HIT, STAY</h1>
+        <div className="font-mono-tabular text-xs theme-text-muted">메인 매치 · 5인 · 칩 30개</div>
+        <h1 className="font-display display-tight text-3xl sm:text-4xl font-medium theme-text-primary">HIT, STAY</h1>
         <p className="text-sm sm:text-base theme-text-secondary leading-relaxed text-pretty pt-1">
           주사위로 정한 <strong className="theme-text-rival font-semibold">한계 숫자</strong>에 가장 가깝게, 넘지 않게 카드를 모으세요. 카드 3장 중 1장만 공개하고 두 번의 베팅으로 칩을 따냅니다. 칩이 떨어지면 탈락, 마지막 1명이 살아남습니다.
         </p>

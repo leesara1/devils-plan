@@ -612,9 +612,9 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
 
                 <div className="space-y-2">
                   <div className="font-mono-tabular text-xs theme-text-muted">
-                    MEMORY POKER · 16 CARDS · 20 SEC
+                    데스매치 · 카드 16장 · 암기 20초
                   </div>
-                  <h1 className="font-display text-3xl sm:text-4xl font-bold theme-text-primary">
+                  <h1 className="font-display display-tight text-3xl sm:text-4xl font-medium theme-text-primary">
                     기억 포커
                   </h1>
                   <p className="text-sm sm:text-base theme-text-secondary leading-relaxed text-pretty pt-1">
@@ -757,7 +757,7 @@ export function MemoryPokerGame({ onExitToHub }: GameScreenProps) {
           </div>
 
           {/* Single flat control-hint line */}
-          <p className="text-center text-xs theme-text-faint tracking-wide">
+          <p className="text-center text-xs theme-text-faint">
             클릭: 말 배치 · Enter: 시작 및 확정 · Space: 암기 완료 · M: 음소거 · Esc: 일시정지
           </p>
         </main>

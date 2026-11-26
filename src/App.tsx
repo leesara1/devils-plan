@@ -10,6 +10,7 @@ import {
 } from './components/GameBoardIllustrations';
 import { ThemeToggleButton } from './components/ThemeToggleButton';
 import { GAMES_REGISTRY } from './games/registry';
+import { GameEntry } from './games/types';
 import {
   buildGameUrl,
   getDocumentTitleForGame,
@@ -178,33 +179,110 @@ function DevilsPlanHub() {
     setStatsVersion((v) => v + 1);
   };
 
+  const featured = GAMES_REGISTRY[GAMES_REGISTRY.length - 1];
+  const others = GAMES_REGISTRY.slice(0, -1);
+
+  const renderCard = (game: GameEntry, variant: 'featured' | 'split' | 'stack') => {
+    const Preview = PREVIEW_DIAGRAMS[game.id];
+    const split = variant !== 'stack';
+    const primary = variant === 'featured';
+    return (
+      <article
+        key={game.id}
+        className={[
+          'obsidian-panel rounded-2xl overflow-hidden flex transition-colors duration-150 hover:border-slate-400/60 dark:hover:border-white/20',
+          split ? 'flex-col md:flex-row md:col-span-2' : 'flex-col',
+        ].join(' ')}
+      >
+        <div className={split ? 'md:w-[55%] shrink-0 md:border-r theme-border' : ''}>
+          {Preview ? <Preview /> : null}
+        </div>
+
+        <div className={['flex flex-col justify-between gap-6 p-6', split ? 'md:justify-center md:p-8' : ''].join(' ')}>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs theme-text-muted">
+              <span className="font-mono-tabular theme-text-gold">{game.indexLabel}</span>
+              <span>{game.seasonLabel.replace(/^시즌 \d+ · /, '')}</span>
+              {primary && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>최근 추가</span>
+                </>
+              )}
+            </div>
+
+            <div className="flex items-baseline justify-between gap-3">
+              <h2
+                className={[
+                  'font-display font-medium theme-text-primary',
+                  primary ? 'display-tight text-2xl sm:text-3xl' : 'text-xl sm:text-2xl',
+                ].join(' ')}
+              >
+                {game.titleKo}
+              </h2>
+              <span className="font-mono-tabular text-xs theme-text-faint whitespace-nowrap">{game.titleEn}</span>
+            </div>
+
+            <p className="text-sm theme-text-secondary leading-relaxed [text-wrap:pretty]">{game.description}</p>
+
+            <div className="text-xs theme-text-muted">
+              {game.playersLabel}
+              <span className="mx-1.5" aria-hidden="true">·</span>
+              {game.durationLabel}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPreviewRulesGameId(game.id)}
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-lg border theme-border theme-text-secondary text-sm hover:border-slate-400/70 hover:text-slate-900 dark:hover:border-white/25 dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer"
+            >
+              <BookOpen className="w-4 h-4 theme-text-muted" strokeWidth={1.5} />
+              규칙 보기
+            </button>
+
+            <a
+              href={buildGameUrl(hubBasePathRef.current, game.id)}
+              onMouseEnter={() => void game.preload()}
+              onFocus={() => void game.preload()}
+              onTouchStart={() => void game.preload()}
+              onClick={(e) => {
+                if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) {
+                  e.preventDefault();
+                  navigateToGame(game.id);
+                }
+              }}
+              className={[
+                'ml-auto inline-flex items-center justify-center gap-2 h-10 px-5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer',
+                primary
+                  ? 'bg-gold-400 hover:bg-gold-300 text-gold-950'
+                  : 'theme-control theme-text-primary hover:border-slate-400/70 dark:hover:border-white/25',
+              ].join(' ')}
+            >
+              플레이
+              <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+            </a>
+          </div>
+        </div>
+      </article>
+    );
+  };
+
   return (
     <div className="min-h-screen w-full overflow-x-hidden theme-canvas flex flex-col transition-colors duration-150">
-      {/* Minimal Single-Row Header with Right Theme Toggle */}
       <header className="sticky top-0 z-30 border-b theme-border bg-[#f4f5f8]/95 dark:bg-obsidian-900/95 backdrop-blur-sm">
         <div className="max-w-5xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between gap-6">
-          <a
-            href="#top"
-            className="font-display text-base font-bold tracking-tight theme-text-primary whitespace-nowrap shrink-0"
-          >
+          <a href="#top" className="font-display text-base font-semibold theme-text-primary whitespace-nowrap shrink-0">
             데블스 플랜
           </a>
 
           <div className="flex items-center gap-5 sm:gap-6 shrink-0">
-            <nav
-              aria-label="페이지 내비게이션"
-              className="flex items-center gap-5 text-xs sm:text-sm font-medium theme-text-muted"
-            >
-              <a
-                href="#matches"
-                className="hover:text-slate-900 dark:hover:text-white transition-colors whitespace-nowrap shrink-0"
-              >
+            <nav aria-label="페이지 내비게이션" className="flex items-center gap-5 text-sm theme-text-muted">
+              <a href="#matches" className="hover:text-slate-900 dark:hover:text-white transition-colors whitespace-nowrap">
                 게임 목록
               </a>
-              <a
-                href="#records"
-                className="hover:text-slate-900 dark:hover:text-white transition-colors whitespace-nowrap shrink-0"
-              >
+              <a href="#records" className="hover:text-slate-900 dark:hover:text-white transition-colors whitespace-nowrap">
                 플레이 기록
               </a>
             </nav>
@@ -215,121 +293,45 @@ function DevilsPlanHub() {
       </header>
 
       <main id="top" className="flex-1">
-        {/* Clean Page Header */}
-        <section className="max-w-5xl mx-auto px-5 sm:px-8 pt-10 pb-8 sm:pt-14 sm:pb-10">
-          <div className="pb-8 border-b theme-border">
-            <div className="space-y-2.5 max-w-2xl">
-              <div className="flex flex-wrap items-center gap-2 text-xs font-mono-tabular theme-text-muted">
-                <span className="theme-text-gold font-semibold">시즌 3</span>
-                <span aria-hidden="true">·</span>
-                <span>1P vs AI · 로컬 대전</span>
-              </div>
-
-              <h1 className="font-display text-2xl sm:text-4xl font-bold theme-text-primary leading-tight [text-wrap:balance]">
-                데블스 플랜: 데드 어게인
-              </h1>
-
-              <p className="text-sm sm:text-base theme-text-muted leading-relaxed text-pretty">
-                원작의 핵심 규칙을 그대로 구현한 웹 보드게임입니다. 원하는 게임을 선택해 바로 플레이하세요.
-              </p>
+        <section className="max-w-5xl mx-auto px-5 sm:px-8 pt-12 pb-10 sm:pt-16 sm:pb-12">
+          <div className="space-y-3 max-w-2xl">
+            <div className="text-sm theme-text-muted">
+              시즌 3<span className="mx-1.5" aria-hidden="true">·</span>게임 {GAMES_REGISTRY.length}개
             </div>
+            <h1 className="font-display display-tight text-3xl sm:text-4xl font-medium theme-text-primary leading-tight [text-wrap:balance]">
+              데블스 플랜: 데드 어게인
+            </h1>
+            <p className="text-base theme-text-secondary leading-relaxed [text-wrap:pretty]">
+              시즌 3에 나온 두뇌 게임을 AI 상대로 바로 해볼 수 있게 옮겼습니다. 원작에서 모호한 규칙은 게임마다 규칙 창에 적어 두었습니다.
+            </p>
           </div>
         </section>
 
-        {/* Clean 2-Column Game Cards */}
-        <section
-          id="matches"
-          aria-label="플레이 가능한 게임"
-          className="max-w-5xl mx-auto px-5 sm:px-8 pb-14"
-        >
+        <section id="matches" aria-label="플레이 가능한 게임" className="max-w-5xl mx-auto px-5 sm:px-8 pb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {GAMES_REGISTRY.map((game) => (
-              <article
-                key={game.id}
-                className="obsidian-panel rounded-xl overflow-hidden flex flex-col justify-between transition-transform duration-150 hover:-translate-y-0.5"
-              >
-                <div>
-                  {(() => {
-                    const Preview = PREVIEW_DIAGRAMS[game.id];
-                    return Preview ? <Preview /> : null;
-                  })()}
-
-                  <div className="p-5 sm:p-6 space-y-3">
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-mono-tabular theme-text-muted">
-                      <span className="theme-text-gold font-semibold">{game.seasonLabel}</span>
-                      <span aria-hidden="true">·</span>
-                      <span>{game.playersLabel}</span>
-                      <span aria-hidden="true">·</span>
-                      <span>{game.durationLabel}</span>
-                    </div>
-
-                    <div className="flex items-baseline justify-between gap-2">
-                      <h2 className="font-display text-xl sm:text-2xl font-bold theme-text-primary">
-                        {game.titleKo}
-                      </h2>
-                      <span className="font-mono-tabular text-xs theme-text-faint">
-                        {game.titleEn}
-                      </span>
-                    </div>
-
-                    <p className="text-sm theme-text-secondary leading-relaxed">
-                      {game.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Single Clear Action Row per Game */}
-                <div className="px-5 pb-5 sm:px-6 sm:pb-6 pt-2 flex items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setPreviewRulesGameId(game.id)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-slate-300/90 bg-slate-50 hover:border-slate-400 hover:text-slate-900 dark:border-white/10 dark:bg-obsidian-900 dark:hover:border-white/25 dark:hover:text-white text-xs sm:text-sm font-medium theme-text-secondary transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-                  >
-                    <BookOpen className="w-4 h-4 theme-text-muted" />
-                    규칙 보기
-                  </button>
-
-                  <a
-                    href={buildGameUrl(hubBasePathRef.current, game.id)}
-                    onMouseEnter={() => void game.preload()}
-                    onFocus={() => void game.preload()}
-                    onTouchStart={() => void game.preload()}
-                    onClick={(e) => {
-                      if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) {
-                        e.preventDefault();
-                        navigateToGame(game.id);
-                      }
-                    }}
-                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg bg-gold-400 hover:bg-gold-300 text-gold-950 font-bold text-sm transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-                  >
-                    플레이
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
-                </div>
-              </article>
-            ))}
+            {renderCard(featured, 'featured')}
+            {others.map((game, i) =>
+              renderCard(game, others.length % 2 === 1 && i === others.length - 1 ? 'split' : 'stack'),
+            )}
           </div>
         </section>
 
-        {/* Quiet Records & Controls Footer Section */}
         <section
           id="records"
-          aria-label="플레이 기록 및 단축키 안내"
+          aria-label="플레이 기록과 안내"
           className="border-t theme-border bg-slate-200/45 dark:bg-obsidian-950/60"
         >
-          <div className="max-w-5xl mx-auto px-5 sm:px-8 py-9 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+          <div className="max-w-5xl mx-auto px-5 sm:px-8 py-10 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="font-display text-base font-bold theme-text-primary">
-                  기억 포커 누적 기록
-                </h2>
+                <h2 className="font-display text-base font-medium theme-text-primary">기억 포커 누적 기록</h2>
                 {memoryStats.totalRounds > 0 && (
                   <button
                     type="button"
                     onClick={handleClearMemoryStats}
-                    className="inline-flex items-center gap-1 text-xs theme-text-muted hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-xs theme-text-muted hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                   >
-                    <RotateCcw className="w-3.5 h-3.5" />
+                    <RotateCcw className="w-3.5 h-3.5" strokeWidth={1.5} />
                     초기화
                   </button>
                 )}
@@ -337,22 +339,20 @@ function DevilsPlanHub() {
 
               <div className="grid grid-cols-3 border-y theme-border divide-x divide-slate-300/70 dark:divide-white/[0.08] text-xs">
                 <div className="py-3 pr-3">
-                  <div className="theme-text-faint">총 라운드</div>
-                  <div className="mt-1 font-mono-tabular text-base font-bold theme-text-primary">
+                  <div className="theme-text-muted">총 라운드</div>
+                  <div className="mt-1 font-mono-tabular text-base font-medium theme-text-primary">
                     {memoryStats.totalRounds}R
                   </div>
                 </div>
                 <div className="py-3 px-3">
-                  <div className="theme-text-faint">AI전 성적</div>
-                  <div className="mt-1 font-mono-tabular text-base font-bold theme-text-primary">
-                    {memoryStats.aiTotal > 0
-                      ? `${memoryStats.aiWins}승 ${memoryStats.aiLosses}패`
-                      : '0전'}
+                  <div className="theme-text-muted">AI전 성적</div>
+                  <div className="mt-1 font-mono-tabular text-base font-medium theme-text-primary">
+                    {memoryStats.aiTotal > 0 ? `${memoryStats.aiWins}승 ${memoryStats.aiLosses}패` : '0전'}
                   </div>
                 </div>
                 <div className="py-3 pl-3">
-                  <div className="theme-text-faint">로컬 대전</div>
-                  <div className="mt-1 font-mono-tabular text-base font-bold theme-text-primary">
+                  <div className="theme-text-muted">로컬 대전</div>
+                  <div className="mt-1 font-mono-tabular text-base font-medium theme-text-primary">
                     {memoryStats.localTotal}R
                   </div>
                 </div>
@@ -360,19 +360,19 @@ function DevilsPlanHub() {
             </div>
 
             <div className="space-y-3">
-              <h2 className="font-display text-base font-bold theme-text-primary">
-                단축키 안내
-              </h2>
-              <div className="divide-y divide-slate-300/70 dark:divide-white/[0.08] border-y theme-border text-xs sm:text-sm">
-                <div className="py-2.5 flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-medium theme-text-primary">알아두기</h2>
+              <div className="divide-y divide-slate-300/70 dark:divide-white/[0.08] border-y theme-border text-sm">
+                <div className="py-3 flex items-center justify-between gap-4">
                   <span className="theme-text-secondary">대전 방식</span>
-                  <span className="theme-text-muted">1P vs AI · 로컬 대전</span>
+                  <span className="theme-text-muted text-right">1P vs AI · 기억 포커와 무거운 13은 로컬 대전도</span>
                 </div>
-                <div className="py-2.5 flex items-center justify-between gap-3">
-                  <span className="theme-text-secondary">키보드 조작</span>
-                  <span className="font-mono-tabular text-xs theme-text-muted">
-                    Enter 확정 · Esc 일시정지 · M 음소거
-                  </span>
+                <div className="py-3 flex items-center justify-between gap-4">
+                  <span className="theme-text-secondary">저장</span>
+                  <span className="theme-text-muted text-right">기록과 테마는 이 브라우저에만 저장</span>
+                </div>
+                <div className="py-3 flex items-center justify-between gap-4">
+                  <span className="theme-text-secondary">규칙</span>
+                  <span className="theme-text-muted text-right">나무위키 원문 기준 · 직접 정한 부분은 규칙 창에</span>
                 </div>
               </div>
             </div>
@@ -381,9 +381,9 @@ function DevilsPlanHub() {
       </main>
 
       <footer className="border-t theme-border bg-slate-200/70 dark:bg-obsidian-950">
-        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-2 text-xs theme-text-faint">
-          <span>데블스 플랜 · 시즌 3</span>
-          <span>{GAMES_REGISTRY.map((g) => g.titleKo).join(' · ')}</span>
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-2 text-xs theme-text-muted">
+          <span>데블스 플랜 시즌 3 · 비공식 팬 제작</span>
+          <span>규칙 출처 나무위키</span>
         </div>
       </footer>
 

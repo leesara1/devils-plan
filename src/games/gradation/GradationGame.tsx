@@ -765,7 +765,7 @@ const DuelResultPanel: React.FC<DuelResultPanelProps> = ({
         {([0, 1] as Side[]).map((side) => (
           <div key={side} className="theme-control rounded-xl p-3 space-y-1">
             <div className="theme-text-faint">{names[side]}의 배치</div>
-            <div className="font-mono-tabular text-base font-bold theme-text-primary tracking-wider">
+            <div className="font-mono-tabular text-base font-semibold theme-text-primary">
               {duel.placements[side].join(' ')}
             </div>
           </div>
@@ -863,8 +863,8 @@ const TitleScreen: React.FC<TitleScreenProps> = ({
         <GradationPreviewDiagram />
       </div>
       <div className="space-y-2">
-        <div className="font-mono-tabular text-xs theme-text-muted">GRADATION · 7 TUBES · SUM ≤ 30</div>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold theme-text-primary">그라데이션</h1>
+        <div className="font-mono-tabular text-xs theme-text-muted">감옥 매치 · 통 7개 · 합 30 이하</div>
+        <h1 className="font-display display-tight text-3xl sm:text-4xl font-medium theme-text-primary">그라데이션</h1>
         <p className="text-sm sm:text-base theme-text-secondary leading-relaxed text-pretty pt-1">
           큐브 7개를 <strong className="theme-text-primary font-semibold">오름차순, 합 30 이하</strong>로 몰래 배치하고, 통을 하나씩 맞붙여 더 큰 숫자로 점수를 따세요. 상대 통의 번호만 보고 숫자를 읽어내는 1:1 심리전입니다.
         </p>

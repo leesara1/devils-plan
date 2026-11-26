@@ -115,9 +115,9 @@ export const Heavy13TitleScreen: React.FC<Heavy13TitleScreenProps> = ({
 
             <div className="space-y-2">
               <div className="font-mono-tabular text-xs theme-text-muted">
-                HEAVY 13 · 14 ROUNDS · 3–7 PLAYERS
+                감옥 매치 · 14라운드 · 3–7인
               </div>
-              <h1 className="font-display text-3xl sm:text-4xl font-bold theme-text-primary">
+              <h1 className="font-display display-tight text-3xl sm:text-4xl font-medium theme-text-primary">
                 무거운 13
               </h1>
               <p className="text-sm sm:text-base theme-text-secondary leading-relaxed text-pretty pt-1">

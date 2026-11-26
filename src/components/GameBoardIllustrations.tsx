@@ -54,8 +54,8 @@ export const MemoryPokerPreviewDiagram: React.FC = () => {
 
       {/* Right: 3 Community Cards + Hand Rank Preview */}
       <div className="flex flex-col gap-3 min-w-0">
-        <div className="text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400 tracking-wide">
-          COMMUNITY CARDS
+        <div className="text-[11px] text-slate-600 dark:text-slate-400">
+          공유 카드
         </div>
         <div className="flex items-center gap-2">
           {[
@@ -247,7 +247,7 @@ export const RussianRoulettePreviewDiagram: React.FC = () => {
             <span className="text-[#a16207] dark:text-[#eab308] font-bold">{cost}</span>
           </div>
         ))}
-        <div className="pt-1 text-slate-500 dark:text-slate-500">16 CREDITS · 2 BULLETS</div>
+        <div className="pt-1 text-slate-500 dark:text-slate-500">크레딧 16 · 총알 2</div>
       </div>
     </div>
   );
@@ -297,7 +297,7 @@ export const GradationPreviewDiagram: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="text-[10px] font-mono-tabular text-slate-500">SUM 30 · ASCENDING</div>
+      <div className="text-[10px] font-mono-tabular text-slate-500">합 30 이하 · 오름차순</div>
     </div>
   );
 };
@@ -332,7 +332,7 @@ export const EquationSignalPreviewDiagram: React.FC = () => {
         </div>
       ))}
       <div className="pt-1.5 text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">
-        9 SYMBOLS · 0–9 + - × ÷ = ^
+        9칸 · 0–9 + - × ÷ = ^
       </div>
     </div>
   );
@@ -361,7 +361,7 @@ export const HitStayPreviewDiagram: React.FC = () => {
         <div className="w-16 h-16 sm:w-20 sm:h-20 rotate-45 rounded-lg bg-white dark:bg-[#232938] border border-slate-300 dark:border-white/10 flex items-center justify-center">
           <span className="-rotate-45 font-mono-tabular text-2xl sm:text-3xl font-bold text-[#be123c] dark:text-[#fb7185]">9</span>
         </div>
-        <span className="mt-3 text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">LIMIT 5–12</span>
+        <span className="mt-3 text-[10px] font-mono-tabular text-slate-600 dark:text-slate-400">한계 5–12</span>
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex gap-1.5">{[card(null, 'a'), card(4, 'b', true), card(null, 'c')]}</div>
@@ -374,7 +374,7 @@ export const HitStayPreviewDiagram: React.FC = () => {
           <span>·</span>
           <span>STAY</span>
           <span>·</span>
-          <span>30 CHIPS</span>
+          <span>칩 30개</span>
         </div>
       </div>
     </div>

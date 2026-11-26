@@ -440,7 +440,7 @@ export const Heavy13TutorialModal: React.FC<Heavy13TutorialModalProps> = ({
                     disabled={isPicked}
                     onClick={() => handlePickOrderCandidate(c)}
                     className={[
-                      'rounded-xl border p-3 text-left transition-all flex flex-col justify-between gap-2 min-h-[96px]',
+                      'rounded-xl border p-3 text-left transition-colors flex flex-col justify-between gap-2 min-h-[96px]',
                       isPicked
                         ? 'bg-emerald-50 border-emerald-400 dark:bg-emerald-950/50 dark:border-emerald-400/70 cursor-default'
                         : 'bg-white border-slate-300 hover:border-gold-500 dark:bg-obsidian-850 dark:border-lounge-slate-700 dark:hover:border-gold-400 cursor-pointer',
