@@ -433,3 +433,76 @@ export const AuctionBingoPreviewDiagram: React.FC = () => {
     </div>
   );
 };
+
+export const CardJanggiPreviewDiagram: React.FC = () => {
+  // 5×5 board mid-game: 1P (dark) bottom, opponent (red) top; big pieces larger.
+  const pieces: Record<string, { mine: boolean; big: boolean }> = {
+    '0,0': { mine: false, big: false },
+    '0,2': { mine: false, big: true },
+    '1,3': { mine: false, big: false },
+    '2,1': { mine: true, big: false },
+    '3,2': { mine: true, big: true },
+    '4,0': { mine: true, big: false },
+    '4,4': { mine: true, big: false },
+  };
+  const horse = new Set(['0,3', '0,1', '1,0', '1,4', '3,0', '3,4', '4,1', '4,3']);
+  return (
+    <div
+      aria-hidden="true"
+      className="w-full aspect-[16/9] bg-[#eef1f5] dark:bg-[#191d26] border-b border-slate-200 dark:border-white/[0.08] p-5 flex items-center justify-center gap-8 sm:gap-12 select-none overflow-hidden"
+    >
+      <div className="grid grid-cols-5 gap-1">
+        {Array.from({ length: 25 }, (_, i) => {
+          const key = `${Math.floor(i / 5)},${i % 5}`;
+          const p = pieces[key];
+          return (
+            <div
+              key={key}
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded border border-slate-300 dark:border-white/10 bg-white/60 dark:bg-white/[0.03] flex items-center justify-center"
+            >
+              {p && (
+                <span
+                  className={[
+                    'rounded-full',
+                    p.big ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-3 h-3 sm:w-3.5 sm:h-3.5',
+                    p.mine ? 'bg-[#1e293b] dark:bg-[#e2e8f0]' : 'bg-[#e11d48]',
+                  ].join(' ')}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex gap-1.5">
+        {['쥐', '말', '원숭이'].map((name, idx) => (
+          <div
+            key={name}
+            className={[
+              'w-12 h-16 sm:w-14 sm:h-[72px] rounded-md border bg-white dark:bg-[#232938] flex flex-col items-center justify-between p-1.5',
+              idx === 1 ? 'border-[#eab308]' : 'border-slate-300 dark:border-white/10',
+            ].join(' ')}
+          >
+            <span className="text-[10px] text-slate-800 dark:text-slate-200">{name}</span>
+            <span className="grid grid-cols-5 gap-[1.5px]">
+              {Array.from({ length: 25 }, (_, i) => {
+                const key = `${Math.floor(i / 5)},${i % 5}`;
+                const on =
+                  idx === 0
+                    ? ['1,2', '3,2', '2,1', '2,3'].includes(key)
+                    : idx === 1
+                      ? horse.has(key)
+                      : ['1,1', '1,2', '1,3', '2,1', '2,3', '3,1', '3,2', '3,3'].includes(key);
+                return (
+                  <span
+                    key={key}
+                    className={`w-1 h-1 rounded-[1px] ${key === '2,2' ? 'bg-slate-500' : on ? 'bg-[#ca8a04] dark:bg-[#eab308]' : 'bg-slate-200 dark:bg-white/10'}`}
+                  />
+                );
+              })}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

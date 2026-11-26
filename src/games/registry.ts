@@ -141,4 +141,24 @@ export const GAMES_REGISTRY: GameEntry[] = [
     status: 'playable',
     ...lazyGame(() => import('./auction-bingo/AuctionBingoGame').then((m) => m.AuctionBingoGame)),
   },
+  {
+    id: 'card-janggi',
+    indexLabel: '08',
+    seasonLabel: '시즌 3 · 결승',
+    matchFormatLabel: '1:1 보드게임',
+    category: 'strategy',
+    titleKo: '카드 장기',
+    titleEn: 'Card Janggi',
+    description:
+      '5×5 판에서 큰 말 1개와 작은 말 3개를 행마 카드 5장으로 움직이는 1:1 보드게임입니다. 카드 쓸 순서를 미리 정해 두고, 상대 큰 말을 잡거나 큰 말을 상대 시작 칸에 보내면 이깁니다.',
+    playersLabel: '1:1 · 1P vs AI',
+    durationLabel: '3판 2선승',
+    highlights: [
+      '쥐·말·원숭이·코끼리·기린 행마 카드',
+      '선공 5장, 후공 4장을 순서대로 사용',
+      '큰 말 잡기 또는 상대 시작 칸 도착',
+    ],
+    status: 'playable',
+    ...lazyGame(() => import('./card-janggi/CardJanggiGame').then((m) => m.CardJanggiGame)),
+  },
 ];
