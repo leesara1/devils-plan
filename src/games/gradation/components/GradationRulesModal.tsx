@@ -82,10 +82,6 @@ export const GradationRulesModal: React.FC<GradationRulesModalProps> = ({ open, 
           </ul>
         </section>
 
-        <p className="text-xs theme-text-faint">
-          원작에서 모호한 부분(같은 숫자 연속 배치 허용, 대결마다 새로 배치, 2연승 판정 방식)은 게임 진행에 맞게 정했습니다.
-        </p>
-
         <div className="pt-2 flex justify-end">
           <button
             type="button"

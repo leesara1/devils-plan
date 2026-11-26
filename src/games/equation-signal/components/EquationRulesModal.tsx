@@ -91,10 +91,6 @@ export const EquationRulesModal: React.FC<EquationRulesModalProps> = ({ open, on
           </ul>
         </section>
 
-        <p className="text-xs theme-text-faint">
-          원작의 5분 제한 시간은 없앴습니다. 동시 정답과 턴 제한은 원작에 없어 직접 정했습니다.
-        </p>
-
         <div className="pt-2 flex justify-end">
           <button
             type="button"

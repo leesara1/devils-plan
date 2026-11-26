@@ -94,9 +94,6 @@ export const RouletteRulesModal: React.FC<RouletteRulesModalProps> = ({ open, on
           <p>
             확인한 약실 정보에는 <strong className="theme-text-primary">그 뒤 다른 사람이 조작에 크레딧을 낸 횟수</strong>가 함께 표시됩니다. 이 숫자가 클수록 누군가 몰래 약실을 바꿨을 수 있습니다.
           </p>
-          <p className="text-xs theme-text-faint">
-            원작에 없는 세부(격발 판정 방식, 자리 배치 등)는 게임 진행에 맞게 정했습니다.
-          </p>
         </section>
 
         <div className="pt-2 flex justify-end">

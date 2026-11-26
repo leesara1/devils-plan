@@ -302,7 +302,7 @@ function DevilsPlanHub() {
               데블스 플랜: 데드 어게인
             </h1>
             <p className="text-base theme-text-secondary leading-relaxed [text-wrap:pretty]">
-              시즌 3에 나온 두뇌 게임을 AI 상대로 바로 해볼 수 있게 옮겼습니다. 원작에서 모호한 규칙은 게임마다 규칙 창에 적어 두었습니다.
+              시즌 3에 나온 두뇌 게임을 AI 상대로 바로 해볼 수 있게 옮겼습니다.
             </p>
           </div>
         </section>
@@ -369,10 +369,6 @@ function DevilsPlanHub() {
                 <div className="py-3 flex items-center justify-between gap-4">
                   <span className="theme-text-secondary">저장</span>
                   <span className="theme-text-muted text-right">기록과 테마는 이 브라우저에만 저장</span>
-                </div>
-                <div className="py-3 flex items-center justify-between gap-4">
-                  <span className="theme-text-secondary">규칙</span>
-                  <span className="theme-text-muted text-right">나무위키 원문 기준 · 직접 정한 부분은 규칙 창에</span>
                 </div>
               </div>
             </div>

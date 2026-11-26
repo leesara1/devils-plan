@@ -85,10 +85,6 @@ export const HitStayRulesModal: React.FC<HitStayRulesModalProps> = ({ open, onCl
           </ul>
         </section>
 
-        <p className="text-xs theme-text-faint">
-          원작에서 모호한 부분(공개할 카드를 직접 고름, STAY는 그 라운드 확정, 전원이 한계를 넘으면 합이 가장 작은 사람이 승리, 한 베팅에서 레이즈 최대 4번)은 게임 진행에 맞게 정했습니다. 피스를 칩으로 바꾸는 규칙은 넣지 않았습니다.
-        </p>
-
         <div className="pt-2 flex justify-end">
           <button
             type="button"
