@@ -301,9 +301,6 @@ function DevilsPlanHub() {
             <h1 className="font-display display-tight text-3xl sm:text-4xl font-medium theme-text-primary leading-tight [text-wrap:balance]">
               데블스 플랜: 데드 어게인
             </h1>
-            <p className="text-base theme-text-secondary leading-relaxed [text-wrap:pretty]">
-              시즌 3에 나온 두뇌 게임을 AI 상대로 바로 해볼 수 있게 옮겼습니다.
-            </p>
           </div>
         </section>
 
